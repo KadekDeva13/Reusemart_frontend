@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Container, Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 
 const categories = [
@@ -19,39 +19,45 @@ const categories = [
 const HomePagePenitip = () => {
   const [barangList, setBarangList] = useState([]);
   const navigate = useNavigate();
+  const { searchQuery } = useOutletContext(); // ✅ ambil dari layout
 
   useEffect(() => {
     fetchBarang();
   }, []);
 
   const fetchBarang = async () => {
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    if (!token) {
-      console.warn("Token tidak ditemukan di localStorage");
-      return;
+      if (!token) {
+        console.warn("Token tidak ditemukan di localStorage");
+        return;
+      }
+
+      const res = await axios.get("http://localhost:8000/api/penitipan/barang", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Barang penitipan:", res.data);
+
+      const barangData = res.data.map((penitipan) => ({
+        ...penitipan.barang,
+      }));
+
+      setBarangList(barangData);
+    } catch (error) {
+      console.error("Gagal mengambil data barang penitip:", error.response?.data || error.message);
     }
+  };
 
-    const res = await axios.get("http://localhost:8000/api/penitipan/barang", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    console.log("Barang penitipan:", res.data);
-
-    const barangData = res.data.map((penitipan) => ({
-      ...penitipan.barang,
-    }));
-
-    setBarangList(barangData);
-  } catch (error) {
-    console.error("Gagal mengambil data barang penitip:", error.response?.data || error.message);
-  }
-};
-
-
+  // ✅ Filter berdasarkan searchQuery (jika ada)
+  const filteredList = searchQuery
+    ? barangList.filter((barang) =>
+        barang.nama_barang.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : barangList;
 
   return (
     <Container fluid className="mt-5">
@@ -82,8 +88,8 @@ const HomePagePenitip = () => {
       <section className="bg-white rounded shadow-sm p-3">
         <h5 className="fw-bold mb-3">Barang yang Anda Titipkan</h5>
         <Row className="g-3">
-          {barangList.length > 0 ? (
-            barangList.map((barang) => (
+          {filteredList.length > 0 ? (
+            filteredList.map((barang) => (
               <Col xs={12} sm={6} md={4} key={barang.id_barang}>
                 <Card className="h-100 border-0 shadow-sm">
                   <Card.Img
