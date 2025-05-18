@@ -62,7 +62,8 @@ export default function KategoriPenitipPage() {
                                 <Button
                                     variant="outline-success"
                                     size="sm"
-                                    onClick={() =>navigate(`/penitip/penitipan/show/${barang.id_penitipan}`)}
+                                    onClick={() => navigate(`/user/penitip/penitipan/show/${barang.id_penitipan}`)}
+
                                 >
                                     Lihat Detail
                                 </Button>

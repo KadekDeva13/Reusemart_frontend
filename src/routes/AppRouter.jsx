@@ -136,7 +136,7 @@ const router = createBrowserRouter([
 
   // Penitip Routes
   {
-    path: "/user/penitip",  // Parent route
+    path: "/user/penitip",
     element: (
       <ProtectedRoutes role="penitip">
         <PenitipLayout />
@@ -146,7 +146,7 @@ const router = createBrowserRouter([
       { path: "", element: <HomePagePenitip /> },
       { path: "profile", element: <ProfilePagePenitip /> },
       { path: "kategori/:kategori", element: <KategoriBarangPenitipanPage /> },
-      { path: "penitipan/show/:id", element: <DetailBarangPenitipanPage /> },  // <-- Path relatif
+      { path: "penitipan/show/:id", element: <DetailBarangPenitipanPage /> },
     ],
   },
 
