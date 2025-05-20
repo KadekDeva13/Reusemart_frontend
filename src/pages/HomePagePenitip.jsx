@@ -19,7 +19,7 @@ const categories = [
 const HomePagePenitip = () => {
   const [barangList, setBarangList] = useState([]);
   const navigate = useNavigate();
-  const { searchQuery } = useOutletContext(); // ✅ ambil dari layout
+  const { searchQuery } = useOutletContext();
 
   useEffect(() => {
     fetchBarang();
@@ -28,7 +28,6 @@ const HomePagePenitip = () => {
   const fetchBarang = async () => {
     try {
       const token = localStorage.getItem("token");
-
       if (!token) {
         console.warn("Token tidak ditemukan di localStorage");
         return;
@@ -40,10 +39,9 @@ const HomePagePenitip = () => {
         },
       });
 
-      console.log("Barang penitipan:", res.data);
-
       const barangData = res.data.map((penitipan) => ({
         ...penitipan.barang,
+        id_penitipan: penitipan.id_penitipan, // ✅ Perbaikan di sini
       }));
 
       setBarangList(barangData);
@@ -52,7 +50,6 @@ const HomePagePenitip = () => {
     }
   };
 
-  // ✅ Filter berdasarkan searchQuery (jika ada)
   const filteredList = searchQuery
     ? barangList.filter((barang) =>
         barang.nama_barang.toLowerCase().includes(searchQuery.toLowerCase())
@@ -111,7 +108,7 @@ const HomePagePenitip = () => {
                     <Button
                       variant="outline-success"
                       size="sm"
-                      onClick={() => navigate(`/penitip/barang/${barang.id_barang}`)}
+                      onClick={() => navigate(`/user/penitip/penitipan/show/${barang.id_penitipan}`)}
                     >
                       Lihat Detail
                     </Button>
