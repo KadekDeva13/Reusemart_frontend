@@ -41,7 +41,7 @@ const HomePagePenitip = () => {
 
       const barangData = res.data.map((penitipan) => ({
         ...penitipan.barang,
-        id_penitipan: penitipan.id_penitipan, // ✅ Perbaikan di sini
+        id_penitipan: penitipan.id_penitipan,
       }));
 
       setBarangList(barangData);
