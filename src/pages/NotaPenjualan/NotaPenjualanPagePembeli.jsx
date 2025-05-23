@@ -18,7 +18,11 @@ const styles = StyleSheet.create({
     label: { fontWeight: 'bold', width: 90 },
 });
 
-const formatRupiah = (number) => `Rp${(number || 0).toLocaleString('id-ID')}`;
+const formatRupiah = (number) => {
+    if (!number && number !== 0) return '-';
+    return number.toLocaleString('id-ID');
+};
+
 const formatTanggalJam = (tanggal) => {
     if (!tanggal) return '-';
     const date = new Date(tanggal);

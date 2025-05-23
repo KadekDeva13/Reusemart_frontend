@@ -18,7 +18,11 @@ const styles = StyleSheet.create({
     label: { fontWeight: 'bold', width: 90 },
 });
 
-const formatRupiah = (number) => `Rp${(number || 0).toLocaleString('id-ID')}`;
+const formatRupiah = (number) => {
+    if (!number && number !== 0) return '-';
+    return number.toLocaleString('id-ID');
+};
+
 const formatTanggalJam = (tanggal) => {
     if (!tanggal) return '-';
     const date = new Date(tanggal);
@@ -32,8 +36,6 @@ const formatTanggalJam = (tanggal) => {
         hour12: false,
     }).replace(',', '');
 };
-
-
 
 const formatTanggal = (tanggal) => {
     if (!tanggal) return '-';
@@ -55,14 +57,14 @@ const NotaPDF = ({ transaksi }) => {
     const totalAkhir = (transaksi.total_pembayaran || 0) - ((transaksi.poin_digunakan || 0) * 100);
 
     const getQcName = () => {
-    for (const dt of transaksi.detailtransaksi || []) {
-        const barangId = dt.barang?.id_barang;
-        const qc = dt.barang?.penitipan?.nama_qc;
-        console.log(`[DEBUG] Barang ID: ${barangId}, QC: ${qc}`);
-        if (qc) return qc;
-    }
-    return '-';
-};
+        for (const dt of transaksi.detailtransaksi || []) {
+            const barangId = dt.barang?.id_barang;
+            const qc = dt.barang?.penitipan?.nama_qc;
+            console.log(`[DEBUG] Barang ID: ${barangId}, QC: ${qc}`);
+            if (qc) return qc;
+        }
+        return '-';
+    };
     return (
         <Document>
             <Page size={[283.5, 595]} style={styles.page}>
