@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalDetailPegawai from "../components/ModalDetailPegawai";
+import NotaPDF from "../pages/NotaPenjualan/NotaPenjualanPage";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const DaftarPegawaiPage = () => {
   const navigate = useNavigate();
@@ -9,18 +11,19 @@ const DaftarPegawaiPage = () => {
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedPegawai, setSelectedPegawai] = useState(null);
+  const [transaksiList, setTransaksiList] = useState([]);
+  const [selectedTransaksi, setSelectedTransaksi] = useState(null);
 
   useEffect(() => {
     fetchPegawai();
+    fetchTransaksi();
   }, []);
 
   const fetchPegawai = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/pegawai/daftar", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await axios.get("http://localhost:8000/api/pegawai/", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       setPegawaiList(res.data);
     } catch (err) {
@@ -28,8 +31,26 @@ const DaftarPegawaiPage = () => {
     }
   };
 
+  const fetchTransaksi = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:8000/api/transaksi/semua", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (Array.isArray(res.data)) {
+        setTransaksiList(res.data);
+      }
+    } catch (error) {
+      console.error("Gagal mengambil data transaksi", error);
+    }
+  };
+
   const filteredData = pegawaiList.filter((item) =>
-    item.nama_lengkap.toLowerCase().startsWith(search.toLowerCase())
+    item.nama_lengkap.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const validTransaksi = transaksiList.filter(trx =>
+    ['selesai', 'sedang disiapkan'].includes(trx.status_transaksi)
   );
 
   const handleDetail = (pegawai) => {
@@ -40,7 +61,7 @@ const DaftarPegawaiPage = () => {
   const handleEdit = async (formData) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
+      await axios.post(
         `http://localhost:8000/api/pegawai/update/${formData.id_pegawai}`,
         {
           nama_lengkap: formData.nama_lengkap,
@@ -51,29 +72,13 @@ const DaftarPegawaiPage = () => {
           komisi_hunter:
             parseInt(formData.id_jabatan) === 5 ? formData.komisi_hunter : null,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log(res.data.message);
       fetchPegawai();
       setShowModal(false);
     } catch (error) {
-      console.error("Gagal update data pegawai", error);
-      if (error.response?.status === 422 && error.response.data?.errors) {
-        console.table(error.response.data.errors);
-        alert(
-          "Validasi gagal:\n" +
-            Object.entries(error.response.data.errors)
-              .map(([field, messages]) => `- ${field}: ${messages.join(", ")}`)
-              .join("\n")
-        );
-      } else {
-        alert("Terjadi kesalahan saat menyimpan data.");
-      }
+      console.error("Gagal update pegawai", error);
     }
   };
 
@@ -84,22 +89,17 @@ const DaftarPegawaiPage = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`http://localhost:8000/api/pegawai/delete/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      alert("Pegawai berhasil dihapus");
-      setShowModal(false);
       fetchPegawai();
+      setShowModal(false);
     } catch (error) {
       console.error("Gagal menghapus pegawai", error);
-      alert("Terjadi kesalahan saat menghapus pegawai.");
     }
   };
 
   const handleResetPassword = async (email) => {
-    const konfirmasi = window.confirm(`Yakin ingin reset password untuk ${email}?`);
+    const konfirmasi = window.confirm(`Yakin reset password untuk ${email}?`);
     if (!konfirmasi) return;
 
     try {
@@ -107,27 +107,54 @@ const DaftarPegawaiPage = () => {
       const res = await axios.post(
         "http://localhost:8000/api/admin/reset-password/pegawai",
         { email },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
       alert(res.data.message);
     } catch (error) {
-      console.error("Gagal reset password", error);
-      alert(
-        error.response?.data?.message ||
-          "Terjadi kesalahan saat mereset password."
-      );
+      alert(error.response?.data?.message || "Gagal reset password.");
     }
   };
 
   return (
     <div className="overflow-x-auto px-5">
-      <h2 className="text-center mb-4 display-5">Daftar Pegawai</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-center display-5">Daftar Pegawai</h2>
+      </div>
 
+      {/* Dropdown & Tombol PDF */}
+      <div className="mb-6">
+        <h4 className="font-bold mb-2">Nota Transaksi</h4>
+        <select
+          value={selectedTransaksi?.id_transaksi || ""}
+          onChange={(e) => {
+            const selectedId = parseInt(e.target.value);
+            const trx = validTransaksi.find(t => t.id_transaksi === selectedId);
+            setSelectedTransaksi(trx);
+          }}
+          className="border border-gray-300 rounded px-3 py-2"
+        >
+          <option value="">Pilih Transaksi</option>
+          {validTransaksi.map(trx => (
+            <option key={trx.id_transaksi} value={trx.id_transaksi}>
+              {trx.nomor_nota} - {trx.pembeli?.nama_lengkap || "Pembeli"}
+            </option>
+          ))}
+        </select>
+
+        {selectedTransaksi && (
+          <div className="mt-3">
+            <PDFDownloadLink
+              document={<NotaPDF transaksi={selectedTransaksi} />}
+              fileName={`Nota-${selectedTransaksi.nomor_nota}.pdf`}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+            >
+              {({ loading }) => loading ? "Membuat Nota..." : "Download Nota Penjualan"}
+            </PDFDownloadLink>
+          </div>
+        )}
+      </div>
+
+      {/* Pencarian */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
         <button
           onClick={() => navigate("/user/admin/tambah-pegawai")}
@@ -144,23 +171,15 @@ const DaftarPegawaiPage = () => {
         />
       </div>
 
-      <table
-        className="w-full table-fixed text-center align-middle border border-gray-300 border-collapse"
-        style={{ backgroundColor: "white", fontSize: "0.95rem" }}
-      >
+      {/* Tabel Pegawai */}
+      <table className="w-full table-fixed text-center align-middle border border-gray-300 border-collapse" style={{ backgroundColor: "white", fontSize: "0.95rem" }}>
         <thead className="bg-green-100 font-semibold text-gray-700">
           <tr>
             <th className="w-[5%] border border-gray-300 px-3 py-3">No</th>
             <th className="w-[10%] border border-gray-300 px-3 py-3">Foto</th>
-            <th className="w-[25%] border border-gray-300 px-3 py-3">
-              Nama Pegawai
-            </th>
-            <th className="w-[20%] border border-gray-300 px-3 py-3">
-              Jabatan
-            </th>
-            <th className="w-[20%] border border-gray-300 px-3 py-3">
-              No Telepon
-            </th>
+            <th className="w-[25%] border border-gray-300 px-3 py-3">Nama Pegawai</th>
+            <th className="w-[20%] border border-gray-300 px-3 py-3">Jabatan</th>
+            <th className="w-[20%] border border-gray-300 px-3 py-3">No Telepon</th>
             <th className="w-[20%] border border-gray-300 px-3 py-3">Aksi</th>
           </tr>
         </thead>
