@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalDetailPegawai from "../components/ModalDetailPegawai";
-import NotaPDF from "../pages/NotaPenjualan/NotaPenjualanPage";
+import NotaPDF from "./NotaPenjualan/NotaPenjualanPageKurir";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const DaftarPegawaiPage = () => {
@@ -49,9 +49,10 @@ const DaftarPegawaiPage = () => {
     item.nama_lengkap.toLowerCase().includes(search.toLowerCase())
   );
 
-  const validTransaksi = transaksiList.filter(trx =>
-    ['selesai', 'sedang disiapkan'].includes(trx.status_transaksi)
-  );
+const validTransaksi = transaksiList.filter(trx =>
+  ['selesai', 'sedang disiapkan'].includes(trx.status_transaksi) &&
+  ['Kurir ReuseMart'].includes(trx.jenis_pengiriman)
+);
 
   const handleDetail = (pegawai) => {
     setSelectedPegawai(pegawai);
