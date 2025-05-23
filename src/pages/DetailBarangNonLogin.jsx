@@ -15,7 +15,7 @@ export default function DetailBarangNonLoginPage() {
   useEffect(() => {
     const fetchBarang = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/non/${id}`);
+        const res = await axios.get(`http://localhost:8000/api/barang/${id}`);
         setBarang(res.data);
       } catch (error) {
         console.error("Gagal memuat detail barang:", error);
@@ -50,7 +50,7 @@ export default function DetailBarangNonLoginPage() {
       <TopNavbarNonLogin />
 
       {/* Main content */}
-      <Container className="my-4">
+      <Container className="my-4 mt-8">
         <Row className="g-4">
           {/* Kolom Kiri: Gambar */}
           <Col md={6}>

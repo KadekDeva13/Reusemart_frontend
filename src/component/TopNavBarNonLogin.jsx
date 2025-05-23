@@ -6,7 +6,7 @@ const TopNavbarNonLogin = () => {
   const navigate = useNavigate();
 
   const handleLogoClick = () => {
-    navigate("/home");
+    navigate("/");
   };
 
   return (

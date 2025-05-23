@@ -22,9 +22,11 @@ import PegawaiCSLayout from "../layouts/PegawaiCSLayout";
 import RequestDonasiLayout from "../layouts/RequestDonasiLayout";
 import ResetEmailSentPage from "../pages/Auth/ResetPasswordSent";
 import OwnerLayout from "../layouts/OwnerLayout";
+import PegawaiGudangLayout from "../layouts/PegawaiGudangLayout";
+import PublicLayout from "../layouts/PublicLayout";
 
 // Auth Pages
-import LoginPage from "../pages/Auth/loginpage";
+import LoginPage from "../pages/Auth/LoginPage";
 import RegisterPage from "../pages/Auth/RegisterPage";
 import RegisterOrganisasiPage from "../pages/Auth/OrganisasiPageRegister";
 import ForgotPasswordPage from "../pages/Auth/LupaPasswordPage";
@@ -65,6 +67,11 @@ import OwnerPages from "../pages/OwnerPage";
 import OwnerRequestDonasiPage from "../pages/OwnerRequestDonasiPage";
 import HistoryDonasiPage from "../pages/HistoryDonasiPage";
 
+//Pegawai Gudang Pages
+import ManajemenBarangPage from "../pages/ManajemenBarangPage";
+import HistoryPenitipanPage from "../pages/HistoryPenitipanPage";
+
+
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -74,7 +81,6 @@ const router = createBrowserRouter([
     path: "/register",
     element: <RegisterPage />,
   },
-
   {
     path: "/register-organisasi",
     element: <RegisterOrganisasiPage />,
@@ -102,8 +108,23 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <HomeNonLoginPage />,
+    element: <PublicLayout />,
+    children: [
+      {
+        path: "",
+        element: <HomeNonLoginPage />,
+      },
+      {
+        path: "barang/:id",
+        element: <DetailBarangPage />,
+      },
+      {
+        path: "kategori/:kategori",
+        element: <KategoriBarangPage />,
+      },
+    ],
   },
+
 
   {
     path: "/kategori/:kategori",
@@ -111,8 +132,8 @@ const router = createBrowserRouter([
   },
 
   {
-    path:"non/:id",
-    element: <DetailBarangNonLogin />,
+    path: "barang/:id",
+    element: <DetailBarangPage />,
   },
 
   {
@@ -205,6 +226,22 @@ const router = createBrowserRouter([
       { path: "", element: <h2 className="p-3">Selamat Datang di Dashboard</h2> },
       { path: "request-donasi", element: <OwnerRequestDonasiPage /> },
       { path: "history-donasi", element: <HistoryDonasiPage /> },
+    ],
+  },
+
+  //Pegawai Gudang Routes
+  {
+    path: "/user/gudang",
+    element: (
+      <ProtectedRoutes role="gudang">
+        <PegawaiGudangLayout />
+      </ProtectedRoutes>
+    ),
+    children: [
+      { path: "", element: <h2 className="p-3">Selamat Datang di Dashboard</h2> },
+      { path: "manajemen-barang", element: <ManajemenBarangPage /> },
+      { path: "history-penitipan", element: <HistoryPenitipanPage /> },
+      { path: "pengiriman", element: <HistoryPenitipanPage /> },
     ],
   },
 
