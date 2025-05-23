@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     outlineBox: {
         border: '1pt solid black',
         padding: 10,
-        borderRadius: 5,
+        borderRadius: '0pt',
     },
     labelRow: {
         flexDirection: 'row',
@@ -44,10 +44,14 @@ const formatTanggal = (tanggal) => {
 };
 
 const NotaPDF = ({ transaksi }) => {
+    const itemCount = transaksi?.detailtransaksi?.length || 1;
+    const baseHeight = 430; // tinggi konten tetap
+    const pageHeight = baseHeight + itemCount * 22; // 1 item = +22pt
+
     if (!transaksi || !['selesai', 'sedang disiapkan'].includes(transaksi.status_transaksi)) {
         return (
             <Document>
-                <Page size={[283.5, 595]} style={styles.page}>
+                <Page size={[283.5, pageHeight]} style={styles.page}>
                     <Text style={styles.title}>Transaksi ini tidak berhak mendapatkan nota.</Text>
                 </Page>
             </Document>
@@ -67,7 +71,7 @@ const NotaPDF = ({ transaksi }) => {
     };
     return (
         <Document>
-            <Page size={[283.5, 595]} style={styles.page}>
+            <Page size={[283.5, pageHeight]} style={styles.page}>
                 <View style={styles.outlineBox}>
                     <Text style={styles.title}>Nota Penjualan</Text>
 

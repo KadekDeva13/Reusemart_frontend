@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     outlineBox: {
         border: '1pt solid black',
         padding: 10,
-        borderRadius: 5,
+        borderRadius: '0pt',
     },
     labelRow: {
         flexDirection: 'row',
@@ -37,8 +37,6 @@ const formatTanggalJam = (tanggal) => {
     }).replace(',', '');
 };
 
-
-
 const formatTanggal = (tanggal) => {
     if (!tanggal) return '-';
     const [year, month, day] = tanggal.split('T')[0].split('-');
@@ -46,30 +44,32 @@ const formatTanggal = (tanggal) => {
 };
 
 const NotaPDF = ({ transaksi }) => {
+    const itemCount = transaksi?.detailtransaksi?.length || 1;
+    const baseHeight = 430; // tinggi konten tetap
+    const pageHeight = baseHeight + itemCount * 22; // 1 item = +22pt
     if (!transaksi || !['selesai', 'sedang disiapkan'].includes(transaksi.status_transaksi)) {
         return (
             <Document>
-                <Page size={[283.5, 595]} style={styles.page}>
+                <Page size={[283.5, pageHeight]} style={styles.page}>
                     <Text style={styles.title}>Transaksi ini tidak berhak mendapatkan nota.</Text>
                 </Page>
             </Document>
         );
     }
-
     const totalAkhir = (transaksi.total_pembayaran || 0) - ((transaksi.poin_digunakan || 0) * 100);
 
     const getQcName = () => {
-    for (const dt of transaksi.detailtransaksi || []) {
-        const barangId = dt.barang?.id_barang;
-        const qc = dt.barang?.penitipan?.nama_qc;
-        console.log(`[DEBUG] Barang ID: ${barangId}, QC: ${qc}`);
-        if (qc) return qc;
-    }
-    return '-';
-};
+        for (const dt of transaksi.detailtransaksi || []) {
+            const barangId = dt.barang?.id_barang;
+            const qc = dt.barang?.penitipan?.nama_qc;
+            console.log(`[DEBUG] Barang ID: ${barangId}, QC: ${qc}`);
+            if (qc) return qc;
+        }
+        return '-';
+    };
     return (
         <Document>
-            <Page size={[283.5, 595]} style={styles.page}>
+            <Page size={[283.5, pageHeight]} style={styles.page}>
                 <View style={styles.outlineBox}>
                     <Text style={styles.title}>Nota Penjualan</Text>
 
