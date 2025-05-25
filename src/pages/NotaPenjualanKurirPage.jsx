@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NotaPDF from "../pages/NotaPenjualan/NotaPenjualanPageKurir";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { pdf } from "@react-pdf/renderer";
 
 export default function NotaPenjualanKurirPage() {
   const [transaksiList, setTransaksiList] = useState([]);
   const [selectedTransaksi, setSelectedTransaksi] = useState(null);
-  const [showNota, setShowNota] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchTransaksi();
@@ -31,25 +31,40 @@ export default function NotaPenjualanKurirPage() {
     }
   };
 
-  const handleProsesDanTampilkanNota = async () => {
+  const handleProsesDanDownloadNota = async () => {
     if (!selectedTransaksi) return;
 
-    const konfirmasi = window.confirm(`Proses final dan tampilkan nota untuk transaksi ${selectedTransaksi.nomor_nota}?`);
+    const konfirmasi = window.confirm(`Proses final dan download nota untuk transaksi ${selectedTransaksi.nomor_nota}?`);
     if (!konfirmasi) return;
 
     try {
+      setLoading(true);
       const token = localStorage.getItem("token");
 
+      // Proses final ke backend
       await axios.post(
         `http://localhost:8000/api/transaksi/proses-final/${selectedTransaksi.id_transaksi}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setShowNota(true);
+      // Generate PDF
+      const blob = await pdf(<NotaPDF transaksi={selectedTransaksi} />).toBlob();
+
+      // Trigger download
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${selectedTransaksi.nomor_nota}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Gagal memproses final transaksi", err);
-      alert("Gagal memproses transaksi. Pastikan backend sudah mengizinkan status 'sedang disiapkan' untuk kurir.");
+      alert("Gagal memproses transaksi.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,7 +80,6 @@ export default function NotaPenjualanKurirPage() {
             const selectedId = parseInt(e.target.value);
             const trx = transaksiList.find(t => t.id_transaksi === selectedId);
             setSelectedTransaksi(trx);
-            setShowNota(false); // reset PDF
           }}
           className="border border-gray-300 rounded px-3 py-2 w-full max-w-md bg-white"
         >
@@ -79,24 +93,13 @@ export default function NotaPenjualanKurirPage() {
       </div>
 
       {selectedTransaksi && (
-        <>
-          <button
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded mb-4"
-            onClick={handleProsesDanTampilkanNota}
-          >
-            Proses Final & Tampilkan Nota
-          </button>
-
-          {showNota && (
-            <PDFDownloadLink
-              document={<NotaPDF transaksi={selectedTransaksi} />}
-              fileName={`${selectedTransaksi.nomor_nota}.pdf`}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
-            >
-              {({ loading }) => (loading ? "Membuat Nota..." : "Download Nota Penjualan")}
-            </PDFDownloadLink>
-          )}
-        </>
+        <button
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded mb-4"
+          onClick={handleProsesDanDownloadNota}
+          disabled={loading}
+        >
+          {loading ? "Memproses & Membuat Nota..." : "Proses Final & Download Nota"}
+        </button>
       )}
     </div>
   );
