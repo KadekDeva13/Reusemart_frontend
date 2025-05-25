@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 const ManajemenBarangPage = () => {
+    const location = useLocation();
     const [barangList, setBarangList] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchBy, setSearchBy] = useState("all");
@@ -11,6 +15,19 @@ const ManajemenBarangPage = () => {
 
     useEffect(() => {
         fetchBarang();
+    }, []);
+
+    useEffect(() => {
+        const message = localStorage.getItem("penitipanSuccess");
+
+        if (message) {
+            toast.success(message, {
+                position: "top-right",
+                autoClose: 2000,
+            });
+
+            localStorage.removeItem("penitipanSuccess"); // supaya tidak muncul lagi
+        }
     }, []);
 
     const fetchBarang = async () => {
