@@ -43,14 +43,14 @@ const OwnerSidebar = () => {
                     </div>
                     <div className={`overflow-hidden transition-all duration-300 ${donasiOpen ? "max-h-40" : "max-h-0"}`}>
                         <div
-                            className={`w-full py-2 pl-8 pr-2 cursor-pointer hover:bg-[#2c2d2f] ${activePage === "request-donasi" ? "bg-[#798248] text-white font-semibold" : ""
+                            className={`w-full py-2 pl-9 pr-2 cursor-pointer hover:bg-[#2c2d2f] ${activePage === "request-donasi" ? "bg-[#798248] text-white font-semibold" : ""
                                 }`}
                             onClick={() => navigate("/user/owner/request-donasi")}
                         >
                             Request Donasi
                         </div>
                         <div
-                            className={`w-full py-2 pl-8 pr-2 cursor-pointer hover:bg-[#2c2d2f] ${activePage === "history-donasi" ? "bg-[#798248] text-white font-semibold" : ""
+                            className={`w-full py-2 pl-9 pr-2 cursor-pointer hover:bg-[#2c2d2f] ${activePage === "history-donasi" ? "bg-[#798248] text-white font-semibold" : ""
                                 }`}
                             onClick={() => navigate("/user/owner/history-donasi")}
                         >
@@ -62,40 +62,41 @@ const OwnerSidebar = () => {
                 {/* Laporan */}
                 <div>
                     <div
-                        className={`sidebar-subitem ${activePage === "laporan" ? "sidebar-active" : ""}`}
-                        onClick={() => navigate("/user/owner/laporan/laporan-penjualan-bulanan")}
-                    >
-                        Penjualan Bulanan
-                    </div>
-                </div>
-
-                <div className={`ml-4 transition-all duration-300 overflow-hidden ${laporanOpen ? 'max-h-20' : 'max-h-0'}`}>
-                    <div
-                        className={`sidebar-subitem ${activePage === "laporan" ? "sidebar-active" : ""}`}
-                        onClick={() => navigate("/user/owner/laporan/laporan-penjualan-kategori")}
-                    >
-                        Penjualan Per Kategori Barang
-                    </div>
-                </div>
-
-                <div className={`ml-4 transition-all duration-300 overflow-hidden ${laporanOpen ? 'max-h-20' : 'max-h-0'}`}>
-                    <div
-                        className={`sidebar-subitem ${activePage === "laporan" ? "sidebar-active" : ""}`}
-                        onClick={() => navigate("/user/owner/laporan/laporan-masa-penitipan-habis")}
-                    >
-                        Masa Penitipan Habis
                         className="flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f]"
                         onClick={() => setLaporanOpen(!laporanOpen)}
+                    >
+                        {laporanOpen ? <FaChevronDown className="mr-2" /> : <FaChevronRight className="mr-2" />}
+                        <FaFileAlt className="mr-3" />
+                        Laporan
                     </div>
                     <div className={`overflow-hidden transition-all duration-300 ${laporanOpen ? "max-h-20" : "max-h-0"}`}>
                         <div
-                            className={`w-full py-2 pl-8 pr-2 cursor-pointer hover:bg-[#2c2d2f] ${activePage === "laporan" ? "bg-[#798248] text-white font-semibold" : ""
+                            className={`w-full py-2 pl-9 pr-2 cursor-pointer hover:bg-[#2c2d2f] ${activePage === "laporan" ? "bg-[#798248] text-white font-semibold" : ""
                                 }`}
-                            onClick={() => navigate("/user/owner/laporan")}
+                            onClick={() => navigate("/user/owner/laporan/laporan-penjualan-bulanan")}
                         >
-                            Penjualan Bulan ini
-                        </div>
+                            Penjualan Bulanan
+                        </div> 
                     </div>
+                      <div className={`overflow-hidden transition-all duration-300 ${laporanOpen ? "max-h-20" : "max-h-0"}`}>
+                        <div
+                            className={`w-full py-2 pl-9 pr-2 cursor-pointer hover:bg-[#2c2d2f] ${activePage === "laporan" ? "bg-[#798248] text-white font-semibold" : ""
+                                }`}
+                            onClick={() => navigate("/user/owner/laporan/laporan-penjualan-kategori")}
+                        >
+                            Penjualan Per Kategori Barang
+                        </div> 
+                    </div>
+                     <div className={`overflow-hidden transition-all duration-300 ${laporanOpen ? "max-h-20" : "max-h-0"}`}>
+                        <div
+                            className={`w-full py-2 pl-9 pr-2 cursor-pointer hover:bg-[#2c2d2f] ${activePage === "laporan" ? "bg-[#798248] text-white font-semibold" : ""
+                                }`}
+                            onClick={() => navigate("/user/owner/laporan/laporan-masa-penitipan-habis")}
+                        >
+                            Masa Penitipan Habis
+                        </div> 
+                    </div>
+                    
                 </div>
             </div>
 
