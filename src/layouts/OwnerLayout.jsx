@@ -8,9 +8,9 @@ const OwnerLayout = () => {
   const activePage = location.pathname.split("/").pop(); // untuk highlight sidebar
 
   return (
-    <div className="owner-page">
+    <div className="owner-layout">
       <OwnerSidebar activePage={activePage} />
-      <main className="ml-[230px] py-3 min-h-screen overflow-y-auto">
+      <main className="ml-[230px] py-3 min-h-screen overflow-y-auto bg-white">
         <Outlet />
       </main>
     </div>

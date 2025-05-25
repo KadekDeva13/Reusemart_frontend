@@ -63,9 +63,27 @@ const OwnerSidebar = () => {
                 <div className={`ml-4 transition-all duration-300 overflow-hidden ${laporanOpen ? 'max-h-20' : 'max-h-0'}`}>
                     <div
                         className={`sidebar-subitem ${activePage === "laporan" ? "sidebar-active" : ""}`}
-                        onClick={() => navigate("/user/owner/laporan")}
+                        onClick={() => navigate("/user/owner/laporan/laporan-penjualan-bulanan")}
                     >
-                        Penjualan Bulan ini
+                        Penjualan Bulanan
+                    </div>
+                </div>
+
+                <div className={`ml-4 transition-all duration-300 overflow-hidden ${laporanOpen ? 'max-h-20' : 'max-h-0'}`}>
+                    <div
+                        className={`sidebar-subitem ${activePage === "laporan" ? "sidebar-active" : ""}`}
+                        onClick={() => navigate("/user/owner/laporan/laporan-penjualan-kategori")}
+                    >
+                        Penjualan Per Kategori Barang
+                    </div>
+                </div>
+
+                <div className={`ml-4 transition-all duration-300 overflow-hidden ${laporanOpen ? 'max-h-20' : 'max-h-0'}`}>
+                    <div
+                        className={`sidebar-subitem ${activePage === "laporan" ? "sidebar-active" : ""}`}
+                        onClick={() => navigate("/user/owner/laporan/laporan-masa-penitipan-habis")}
+                    >
+                        Masa Penitipan Habis
                     </div>
                 </div>
             </div>

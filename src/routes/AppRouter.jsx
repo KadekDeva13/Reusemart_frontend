@@ -64,6 +64,9 @@ import DetailBarangPenitipanPage from "../pages/DetailBarangPenitipanPage";
 import OwnerPages from "../pages/OwnerPage";
 import OwnerRequestDonasiPage from "../pages/OwnerRequestDonasiPage";
 import HistoryDonasiPage from "../pages/HistoryDonasiPage";
+import LaporanKategoriPage from "../pages/Laporan/LaporanPenjualanPerkategoriPage";
+import LaporanBarangHabis from "../pages/Laporan/LaporanMasaPenitipanHabis";
+import LaporanPenjualanBulananPage from "../pages/Laporan/LaporanPenjualanBulananPage";
 
 const router = createBrowserRouter([
   {
@@ -205,6 +208,9 @@ const router = createBrowserRouter([
       { path: "", element: <h2 className="p-3">Selamat Datang di Dashboard</h2> },
       { path: "request-donasi", element: <OwnerRequestDonasiPage /> },
       { path: "history-donasi", element: <HistoryDonasiPage /> },
+      { path: "laporan/laporan-penjualan-kategori", element: <LaporanKategoriPage /> },
+      {path: "laporan/laporan-masa-penitipan-habis", element: <LaporanBarangHabis />},
+      {path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPage />}
     ],
   },
 

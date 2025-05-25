@@ -137,7 +137,7 @@ const DaftarOrganisasiPage = () => {
                 <div className="mt-3">
                   <PDFDownloadLink
                     document={<NotaPDF transaksi={selectedTransaksi} />}
-                    fileName={`Nota-${selectedTransaksi.nomor_nota}.pdf`}
+                    fileName={`${selectedTransaksi.nomor_nota}.pdf`}
                     className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
                   >
                     {({ loading }) => loading ? "Membuat Nota..." : "Download Nota Penjualan"}
