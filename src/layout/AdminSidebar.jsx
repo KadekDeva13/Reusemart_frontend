@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './OwnerSidebar.css';
 import {
     FaTachometerAlt,
     FaUserCog,
@@ -9,7 +8,7 @@ import {
     FaSignOutAlt,
 } from 'react-icons/fa';
 
-const AdminSidebar = ({ setActivePage, activePage }) => {
+const AdminSidebar = ({ activePage }) => {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -19,12 +18,12 @@ const AdminSidebar = ({ setActivePage, activePage }) => {
     };
 
     return (
-        <div className="sidebar">
+        <div className="w-[240px] h-screen fixed top-0 left-0 bg-[#1e1f20] flex flex-col justify-between text-white text-sm">
             <div>
-                <h2 className="sidebar-title">Reusemart Admin</h2>
+                <h2 className="text-center font-bold text-xl py-4 border-b border-gray-700">Reusemart Admin</h2>
 
                 <div
-                    className={`sidebar-item ${activePage === 'dashboard' ? 'sidebar-active' : ''}`}
+                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage === 'dashboard' ? 'bg-[#798248] text-white' : ''}`}
                     onClick={() => navigate("/user/admin")}
                 >
                     <FaTachometerAlt className="mr-3" />
@@ -32,16 +31,15 @@ const AdminSidebar = ({ setActivePage, activePage }) => {
                 </div>
 
                 <div
-                    className={`sidebar-item ${activePage === 'daftar-pegawai' ? 'sidebar-active' : ''}`}
+                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage === 'daftar-pegawai' ? 'bg-[#798248] text-white' : ''}`}
                     onClick={() => navigate("/user/admin/daftar-pegawai")}
                 >
                     <FaUserCog className="mr-3" />
                     Manajemen Pegawai
                 </div>
 
-                {/* Manajemen Organisasi */}
                 <div
-                    className={`sidebar-item ${activePage === 'daftar-organisasi' ? 'sidebar-active' : ''}`}
+                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage === 'daftar-organisasi' ? 'bg-[#798248] text-white' : ''}`}
                     onClick={() => navigate("/user/admin/daftar-organisasi")}
                 >
                     <FaIdBadge className="mr-3" />
@@ -49,30 +47,27 @@ const AdminSidebar = ({ setActivePage, activePage }) => {
                 </div>
             </div>
 
-            {/* Footer - User Info */}
+            {/* Footer */}
             <div className="relative mt-auto">
                 <div
-                    className="sidebar-footer cursor-pointer"
+                    className="flex items-center px-4 py-3 border-t border-blue-600 cursor-pointer"
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
                     <FaUser />
                     <span className="font-semibold ml-3">Admin Rani</span>
                 </div>
 
-                <div
-                    className={`absolute bottom-full left-0 mb-2 bg-white shadow-lg rounded-md w-40 z-10 py-2 transition-all duration-300 transform ${userMenuOpen
-                        ? 'opacity-100 translate-y-0'
-                        : 'opacity-0 translate-y-2 pointer-events-none'
-                        }`}
-                >
-                    <div
-                        className="sidebar-subitem flex items-center text-red-600 hover:bg-red-100 hover:text-red-700 px-4 py-2"
-                        onClick={handleLogout}
-                    >
-                        <FaSignOutAlt className="mr-2" />
-                        Logout
+                {userMenuOpen && (
+                    <div className="absolute bottom-full left-0 mb-2 bg-white text-black shadow-lg rounded-md w-40 z-10 py-2">
+                        <div
+                            className="flex items-center text-red-600 hover:bg-red-100 hover:text-red-700 px-4 py-2 cursor-pointer"
+                            onClick={handleLogout}
+                        >
+                            <FaSignOutAlt className="mr-2" />
+                            Logout
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

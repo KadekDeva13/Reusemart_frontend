@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import ModalKonfirmasiDonasi from "../components/ModalKonfirmasiDonasi"; // sesuaikan path sesuai proyekmu
 
 export default function HistoryDonasiPage() {
     const [historyList, setHistoryList] = useState([]);
@@ -7,11 +8,11 @@ export default function HistoryDonasiPage() {
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchHistory();
-    }, []);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedDonasi, setSelectedDonasi] = useState(null);
 
     useEffect(() => {
+        fetchHistory();
         fetchBarang();
     }, []);
 
@@ -24,7 +25,6 @@ export default function HistoryDonasiPage() {
                 },
             });
             setHistoryList(res.data);
-            console.log("Data berhasil diambil", res.data);
         } catch (error) {
             console.error("Gagal mengambil data history donasi", error);
         } finally {
@@ -41,12 +41,18 @@ export default function HistoryDonasiPage() {
                 },
             });
             setBarangList(res.data);
-            console.log("Data berhasil diambil", res.data);
         } catch (error) {
-            console.error("Gagal mengambil data history donasi", error);
-        } finally {
-            setLoading(false);
+            console.error("Gagal mengambil data barang", error);
         }
+    };
+
+    const handleUpdate = ({ id_donasi, tanggal_donasi }) => {
+        setHistoryList((prev) =>
+            prev.map((item) =>
+                item.id_donasi === id_donasi ? { ...item, tanggal_donasi } : item
+            )
+        );
+        fetchHistory();
     };
 
     const filteredData = historyList.filter((item) =>
@@ -91,57 +97,39 @@ export default function HistoryDonasiPage() {
                             {filteredData.map((item) => (
                                 <tr key={item.id_donasi}>
                                     <td className="col-organisasi">{item.organisasi?.nama_organisasi || "-"}</td>
-                                    <td className="col-penerima">{item.organisasi?.nama_penerima || "-"}</td>
+                                    <td className="col-penerima">{item?.nama_penerima || "-"}</td>
                                     <td className="col-barang">{item.barang?.nama_barang || "-"}</td>
                                     <td className="col-status">{item.status_donasi}</td>
                                     <td className="col-tanggal">{item.tanggal_donasi}</td>
-                                    <td className="col-tanggal">
-                                       
+                                    <td>
+                                        {item.status_donasi === "disiapkan" && (
+                                            <button
+                                                className="btn bg-blue-500 text-white hover:bg-blue-600"
+                                                onClick={() => {
+                                                    setSelectedDonasi(item);
+                                                    setShowModal(true);
+                                                }}
+                                            >
+                                                Update
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </>
-            )
-            }
-            {/* <div className="overflow-x-auto px-5">
-                <h2 className="text-center mt-9 mb-3 display-5">Barang Terjual</h2>
+            )}
 
-                {loading ? (
-                    <p className="text-center font-medium text-gray-500">Memuat data...</p>
-                ) : (
-                    <>
-
-                        <table
-                            bordered="true"
-                            hover="true"
-                            responsive="true"
-                            className="request-donasi-table w-full text-center align-middle fixed-table"
-                        >
-                            <thead className="table-success">
-                                <tr>
-                                    <th className="col-organisasi">Nama Barang</th>
-                                    <th className="col-penerima">Kategori Barang</th>
-                                    <th className="col-barang">Harga Barang</th>
-                                    <th className="col-status">Status Donasi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {barangList.map((item) => (
-                                    <tr key={item.id_donasi}>
-                                        <td className="col-organisasi">{item.nama_barang || "-"}</td>
-                                        <td className="col-penerima">{item.kategori_barang || "-"}</td>
-                                        <td className="col-barang">{item.harga_barang || "-"}</td>
-                                        <td className="col-status">{item.status_barang}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </>
-                )}
-            </div> */}
-        </div >
-
+            {selectedDonasi && (
+                <ModalKonfirmasiDonasi
+                    show={showModal}
+                    handleClose={() => setShowModal(false)}
+                    request={selectedDonasi}
+                    mode="update"
+                    onUpdateTanggal={handleUpdate}
+                />
+            )}
+        </div>
     );
 }

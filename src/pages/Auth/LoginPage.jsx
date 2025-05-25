@@ -97,6 +97,10 @@ export default function LoginPage() {
           console.log("Redirecting to: /user/organisasi");
           navigate("/user/organisasi");
           break;
+        case "gudang":
+          console.log("Redirecting to: /user/pegawai gudang");
+          navigate("/user/gudang");
+          break;
         default:
           navigate("/");
       }

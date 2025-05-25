@@ -22,9 +22,11 @@ import PegawaiCSLayout from "../layouts/PegawaiCSLayout";
 import RequestDonasiLayout from "../layouts/RequestDonasiLayout";
 import ResetEmailSentPage from "../pages/Auth/ResetPasswordSent";
 import OwnerLayout from "../layouts/OwnerLayout";
+import PegawaiGudangLayout from "../layouts/PegawaiGudangLayout";
+import PublicLayout from "../layouts/PublicLayout";
 
 // Auth Pages
-import LoginPage from "../pages/Auth/loginpage";
+import LoginPage from "../pages/Auth/LoginPage";
 import RegisterPage from "../pages/Auth/RegisterPage";
 import RegisterOrganisasiPage from "../pages/Auth/OrganisasiPageRegister";
 import ForgotPasswordPage from "../pages/Auth/LupaPasswordPage";
@@ -36,7 +38,7 @@ import ProfilePagePembeli from "../pages/ProfilePagePembeli";
 import PembelianPage from "../pages/PembelianPage";
 import AlamatPage from "../pages/AlamatPage";
 import KategoriBarangPage from "../pages/KategoriBarangPage";
-import DetailBarangPage from "../pages/DetaillBarangPage";
+import DetailBarangPage from "../pages/DetailBarangPage";
 import DiskusiPage from "../pages/DiskusiPage";
 
 // Pegawai Pages
@@ -68,6 +70,12 @@ import LaporanKategoriPage from "../pages/Laporan/LaporanPenjualanPerkategoriPag
 import LaporanBarangHabis from "../pages/Laporan/LaporanMasaPenitipanHabis";
 import LaporanPenjualanBulananPage from "../pages/Laporan/LaporanPenjualanBulananPage";
 
+//Pegawai Gudang Pages
+import ManajemenBarangPage from "../pages/ManajemenBarangPage";
+import HistoryPenitipanPage from "../pages/HistoryPenitipanPage";
+import PenitipanBarangPage from "../pages/PenitipanBarangPage";
+
+
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -77,7 +85,6 @@ const router = createBrowserRouter([
     path: "/register",
     element: <RegisterPage />,
   },
-
   {
     path: "/register-organisasi",
     element: <RegisterOrganisasiPage />,
@@ -105,8 +112,23 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <HomeNonLoginPage />,
+    element: <PublicLayout />,
+    children: [
+      {
+        path: "",
+        element: <HomeNonLoginPage />,
+      },
+      {
+        path: "barang/:id",
+        element: <DetailBarangPage />,
+      },
+      {
+        path: "kategori/:kategori",
+        element: <KategoriBarangPage />,
+      },
+    ],
   },
+
 
   {
     path: "/kategori/:kategori",
@@ -114,8 +136,8 @@ const router = createBrowserRouter([
   },
 
   {
-    path:"non/:id",
-    element: <DetailBarangNonLogin />,
+    path: "barang/:id",
+    element: <DetailBarangPage />,
   },
 
   {
@@ -211,6 +233,23 @@ const router = createBrowserRouter([
       { path: "laporan/laporan-penjualan-kategori", element: <LaporanKategoriPage /> },
       {path: "laporan/laporan-masa-penitipan-habis", element: <LaporanBarangHabis />},
       {path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPage />}
+    ],
+  },
+
+  //Pegawai Gudang Routes
+  {
+    path: "/user/gudang",
+    element: (
+      <ProtectedRoutes role="gudang">
+        <PegawaiGudangLayout />
+      </ProtectedRoutes>
+    ),
+    children: [
+      { path: "", element: <h2 className="p-3">Selamat Datang di Dashboard</h2> },
+      { path: "manajemen-barang", element: <ManajemenBarangPage /> },
+      { path: "tambah-barang", element: <PenitipanBarangPage /> },
+      { path: "history-penitipan", element: <HistoryPenitipanPage /> },
+      { path: "pengiriman", element: <HistoryPenitipanPage /> },
     ],
   },
 
