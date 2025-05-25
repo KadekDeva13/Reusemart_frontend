@@ -8,7 +8,7 @@ const PegawaiGudangLayout = () => {
   const activePage = location.pathname.split("/").pop(); // untuk highlight sidebar
 
   return (
-    <div className="owner-page">
+    <div className="gudang-page">
       <GudangSidebar activePage={activePage} />
       <main className="ml-[230px] py-3 min-h-screen overflow-y-auto">
         <Outlet />

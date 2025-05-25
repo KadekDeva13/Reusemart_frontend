@@ -1,12 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import axios from "axios";
 import { MessageCircle, Heart, Share2 } from "lucide-react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import TopNavbarNonLogin from "../component/TopNavBarNonLogin";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Thumbs } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/thumbs";
+
 
 export default function DetailBarangPage() {
   const { id } = useParams();
+  const swiperRef = useRef(null);
   const navigate = useNavigate();
   const [barang, setBarang] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -45,31 +53,76 @@ export default function DetailBarangPage() {
 
         <Row className="g-4">
           {/* Kolom Kiri: Gambar */}
-          <Col md={6}>
-            <img
-              src={
-                barang.fotoBarang?.[selectedImage]?.url_foto
-                  ? `http://localhost:8000/storage/foto_barang/${barang.fotoBarang[selectedImage].url_foto}`
-                  : "https://via.placeholder.com/500x500?text=No+Image"
-              }
-              alt={barang.nama_barang}
-              className="w-100 rounded border"
-              style={{ objectFit: "cover", maxHeight: "500px" }}
-            />
+          <Col md={6} className="relative">
+            {/* Wrapper Swiper + Panah */}
+            <div className="relative bg-black rounded max-h-[480px] overflow-hidden">
+              {barang.foto_barang.length > 1 && (
+                <>
+                  {/* Panah kiri */}
+                  <button
+                    onClick={() => swiperRef.current.slidePrev()}
+                    className="absolute top-1/2 left-0 -translate-y-1/2 z-10 bg-black/0 rounded-full px-2 py-1 border-0"
+                  >
+                    <FaChevronLeft className="text-white w-6 h-6" />
+                  </button>
 
-            <div className="d-flex gap-2 mt-3">
-              {barang.fotoBarang?.map((foto, i) => (
+                  {/* Panah kanan */}
+                  <button
+                    onClick={() => swiperRef.current.slideNext()}
+                    className="absolute top-1/2 right-0 -translate-y-1/2 z-10 bg-black/0 rounded-full px-2 py-1 border-0"
+                  >
+                    <FaChevronRight className="text-white w-6 h-6" />
+                  </button>
+                </>
+              )}
+
+              {/* Swiper */}
+              <Swiper
+                modules={[Pagination]}
+                loop={true}
+                pagination={{ clickable: true }}
+                spaceBetween={10}
+                slidesPerView={1}
+                onSwiper={(swiper) => (swiperRef.current = swiper)}
+                onSlideChange={(swiper) => setSelectedImage(swiper.realIndex)}
+                className="rounded"
+              >
+                {barang.foto_barang.map((foto, i) => (
+                  <SwiperSlide key={i}>
+                    <div className="flex justify-center items-center h-[450px] bg-black-100">
+                      <img
+                        src={`http://localhost:8000/storage/${foto.foto_barang}`}
+                        alt={`Foto ${i + 1}`}
+                        className="rounded max-h-full max-w-full object-contain"
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+
+            {/* Indikator Posisi */}
+            <div className="text-center text-muted mt-2 mb-3">
+              {selectedImage + 1} / {barang.foto_barang.length}
+            </div>
+
+            {/* Thumbnail */}
+            <div className="flex justify-center flex-wrap gap-2">
+              {barang.foto_barang.map((foto, i) => (
                 <img
                   key={i}
-                  src={`http://localhost:8000/storage/foto_barang/${foto.url_foto}`}
-                  alt={`Foto ${i + 1}`}
-                  onClick={() => setSelectedImage(i)}
-                  className={`border rounded ${i === selectedImage ? "border-primary" : ""}`}
-                  style={{ width: "60px", height: "60px", objectFit: "cover", cursor: "pointer" }}
+                  src={`http://localhost:8000/storage/${foto.foto_barang}`}
+                  alt={`Thumb ${i + 1}`}
+                  onClick={() => swiperRef.current.slideToLoop(i)}
+                  className={`w-[70px] h-[70px] object-cover cursor-pointer rounded border ${i === selectedImage ? "border-blue-600 border-2" : "border-gray-300"}`}
                 />
               ))}
             </div>
           </Col>
+
+
+
+
 
           {/* Kolom Kanan: Detail dan Aksi */}
           <Col md={6}>

@@ -38,7 +38,7 @@ import ProfilePagePembeli from "../pages/ProfilePagePembeli";
 import PembelianPage from "../pages/PembelianPage";
 import AlamatPage from "../pages/AlamatPage";
 import KategoriBarangPage from "../pages/KategoriBarangPage";
-import DetailBarangPage from "../pages/DetaillBarangPage";
+import DetailBarangPage from "../pages/DetailBarangPage";
 import DiskusiPage from "../pages/DiskusiPage";
 
 // Pegawai Pages
@@ -70,6 +70,7 @@ import HistoryDonasiPage from "../pages/HistoryDonasiPage";
 //Pegawai Gudang Pages
 import ManajemenBarangPage from "../pages/ManajemenBarangPage";
 import HistoryPenitipanPage from "../pages/HistoryPenitipanPage";
+import PenitipanBarangPage from "../pages/PenitipanBarangPage";
 
 
 const router = createBrowserRouter([
@@ -240,6 +241,7 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <h2 className="p-3">Selamat Datang di Dashboard</h2> },
       { path: "manajemen-barang", element: <ManajemenBarangPage /> },
+      { path: "tambah-barang", element: <PenitipanBarangPage /> },
       { path: "history-penitipan", element: <HistoryPenitipanPage /> },
       { path: "pengiriman", element: <HistoryPenitipanPage /> },
     ],
