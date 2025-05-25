@@ -11,13 +11,10 @@ export default function PengirimanPengambilanPage() {
 
   useEffect(() => {
     fetchJadwal();
-
-    // Otomatis cek transaksi hangus setiap 10 menit
     const interval = setInterval(() => {
       handleHanguskanOtomatis();
-    }, 10 * 60 * 1000); // 10 menit
-
-    return () => clearInterval(interval); // Bersihkan interval saat komponen unmount
+    }, 10 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchJadwal = async () => {
@@ -66,7 +63,7 @@ export default function PengirimanPengambilanPage() {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      fetchJadwal(); // Refresh list
+      fetchJadwal();
     } catch (error) {
       console.error("Gagal menghanguskan otomatis:", error.response?.data?.message);
     }
@@ -111,18 +108,41 @@ export default function PengirimanPengambilanPage() {
                     <td className="border border-gray-300 px-3 py-2 space-x-2">
                       {trx.jenis_pengiriman?.toLowerCase() === "kurir reusemart" && (
                         <button
-                          className="bg-yellow-400 hover:bg-yellow-500 text-white text-sm font-semibold px-3 py-1 rounded"
-                          onClick={() => handleOpenModalKurir(trx)}
+                          className={`text-white text-sm font-semibold px-3 py-1 rounded ${
+                            trx.status_transaksi === "kurir sedang mengirim"
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-yellow-400 hover:bg-yellow-500"
+                          }`}
+                          onClick={() => {
+                            if (trx.status_transaksi !== "kurir sedang mengirim") {
+                              handleOpenModalKurir(trx);
+                            }
+                          }}
+                          disabled={trx.status_transaksi === "kurir sedang mengirim"}
                         >
-                          Jadwalkan Kurir
+                          {trx.status_transaksi === "kurir sedang mengirim"
+                            ? "Kurir Sedang Mengirim"
+                            : "Jadwalkan Kurir"}
                         </button>
                       )}
+
                       {trx.jenis_pengiriman?.toLowerCase() === "pengambilan mandiri" && (
                         <button
-                          className="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-3 py-1 rounded"
-                          onClick={() => handleJadwalkanAmbilSendiri(trx)}
+                          className={`text-white text-sm font-semibold px-3 py-1 rounded ${
+                            trx.status_transaksi === "pembeli akan mengambil"
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-green-600 hover:bg-green-700"
+                          }`}
+                          onClick={() => {
+                            if (trx.status_transaksi !== "pembeli akan mengambil") {
+                              handleJadwalkanAmbilSendiri(trx);
+                            }
+                          }}
+                          disabled={trx.status_transaksi === "pembeli akan mengambil"}
                         >
-                          Jadwalkan Ambil
+                          {trx.status_transaksi === "pembeli akan mengambil"
+                            ? "Pembeli Akan Mengambil"
+                            : "Jadwalkan Ambil"}
                         </button>
                       )}
                     </td>

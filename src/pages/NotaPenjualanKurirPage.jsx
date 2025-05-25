@@ -21,7 +21,7 @@ export default function NotaPenjualanKurirPage() {
       if (Array.isArray(res.data)) {
         const filtered = res.data.filter(
           trx =>
-            ["selesai", "sedang disiapkan"].includes(trx.status_transaksi?.toLowerCase()) &&
+            ["selesai", "sedang disiapkan", "dikirim"].includes(trx.status_transaksi?.toLowerCase()) &&
             trx.jenis_pengiriman?.toLowerCase() === "kurir reusemart"
         );
         setTransaksiList(filtered);

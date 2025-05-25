@@ -56,7 +56,7 @@ const NotaPDF = ({ transaksi }) => {
   const baseHeight = 430;
   const pageHeight = baseHeight + itemCount * 22;
 
-  if (!transaksi || !['selesai', 'sedang disiapkan'].includes(transaksi.status_transaksi)) {
+  if (!transaksi || !['selesai', 'sedang disiapkan', 'dikirim'].includes(transaksi.status_transaksi)) {
     return (
       <Document>
         <Page size={[283.5, pageHeight]} style={styles.page}>
