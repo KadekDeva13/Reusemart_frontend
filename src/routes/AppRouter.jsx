@@ -74,6 +74,11 @@ import LaporanPenjualanBulananPage from "../pages/Laporan/LaporanPenjualanBulana
 import ManajemenBarangPage from "../pages/ManajemenBarangPage";
 import HistoryPenitipanPage from "../pages/HistoryPenitipanPage";
 import PenitipanBarangPage from "../pages/PenitipanBarangPage";
+import DaftarTransaksiGudangPage from "../pages/DaftarTransaksiGudangPage";
+import PengirimanPengambilanPage from "../pages/PengirimanPengambilanPage";
+import KonfirmasiBarangDiterimaPage from "../pages/KonfirmasiBarangDiterima";
+import NotaPenjualanKurirPage from "../pages/NotaPenjualanKurirPage";
+import NotaPenjualanPembeliPage from "../pages/NotaPenjualanPembeliPage";
 
 
 const router = createBrowserRouter([
@@ -250,6 +255,11 @@ const router = createBrowserRouter([
       { path: "tambah-barang", element: <PenitipanBarangPage /> },
       { path: "history-penitipan", element: <HistoryPenitipanPage /> },
       { path: "pengiriman", element: <HistoryPenitipanPage /> },
+      { path: "daftar-transaksi-dikirim-diambil", element: <DaftarTransaksiGudangPage /> },
+      { path: "pengiriman-pengambilan", element: <PengirimanPengambilanPage /> },
+      { path: "nota-penjualan-kurir", element: <NotaPenjualanKurirPage /> },
+      { path: "nota-penjualan-pembeli", element: <NotaPenjualanPembeliPage /> },
+      { path: "konfirmasi-barang-diterima", element: <KonfirmasiBarangDiterimaPage /> },
     ],
   },
 

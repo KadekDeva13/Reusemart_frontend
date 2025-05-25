@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import {
     FaTachometerAlt, FaBoxOpen, FaHistory,
-    FaUser, FaSignOutAlt, FaTruck
+    FaUser, FaSignOutAlt, FaTruck, FaReceipt, FaChevronDown
 } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const GudangSidebar = () => {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const [notaMenuOpen, setNotaMenuOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
-    const activePage = location.pathname.split('/').pop();
+    const activePage = location.pathname;
+
     const handleLogout = () => {
         localStorage.removeItem("token");
         window.location.href = "/";
@@ -21,9 +23,9 @@ const GudangSidebar = () => {
             <div>
                 <h2 className="text-center font-bold text-xl py-4 border-b border-gray-700">Reusemart Gudang</h2>
 
+                {/* MENU UTAMA */}
                 <div
-                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage === 'gudang' ? 'bg-[#798248] text-white' : ''
-                        }`}
+                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage === '/user/gudang' ? 'bg-[#798248]' : ''}`}
                     onClick={() => navigate("/user/gudang")}
                 >
                     <FaTachometerAlt className="mr-3" />
@@ -31,8 +33,7 @@ const GudangSidebar = () => {
                 </div>
 
                 <div
-                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage === 'manajemen-barang' ? 'bg-[#798248] text-white' : ''
-                        }`}
+                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('manajemen-barang') ? 'bg-[#798248]' : ''}`}
                     onClick={() => navigate("/user/gudang/manajemen-barang")}
                 >
                     <FaBoxOpen className="mr-3" />
@@ -40,8 +41,7 @@ const GudangSidebar = () => {
                 </div>
 
                 <div
-                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage === 'history-penitipan' ? 'bg-[#798248] text-white' : ''
-                        }`}
+                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('history-penitipan') ? 'bg-[#798248]' : ''}`}
                     onClick={() => navigate("/user/gudang/history-penitipan")}
                 >
                     <FaHistory className="mr-3" />
@@ -49,15 +49,59 @@ const GudangSidebar = () => {
                 </div>
 
                 <div
-                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage === 'pengiriman' ? 'bg-[#798248] text-white' : ''
-                        }`}
-                    onClick={() => navigate("/user/gudang/pengiriman")}
+                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('daftar-transaksi-dikirim-diambil') ? 'bg-[#798248]' : ''}`}
+                    onClick={() => navigate("/user/gudang/daftar-transaksi-dikirim-diambil")}
+                >
+                    <FaReceipt className="mr-3" />
+                    Daftar Transaksi Dikirim/Diambil
+                </div>
+
+                <div
+                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('pengiriman-pengambilan') ? 'bg-[#798248]' : ''}`}
+                    onClick={() => navigate("/user/gudang/pengiriman-pengambilan")}
                 >
                     <FaTruck className="mr-3" />
                     Atur Pengiriman & Pengambilan
                 </div>
+
+                <div
+                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('konfirmasi-penerimaan') ? 'bg-[#798248]' : ''}`}
+                    onClick={() => navigate("/user/gudang/konfirmasi-barang-diterima")}
+                >
+                    <FaReceipt className="mr-3" />
+                    Konfirmasi Penerimaan Barang
+                </div>
+                {/* MENU NOTA */}
+                <div
+                    className={`flex items-center justify-between px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('/nota-penjualan-kurir') || activePage.includes('/nota-penjualan-pembeli') ? 'bg-[#798248]' : ''}`}
+                    onClick={() => setNotaMenuOpen(!notaMenuOpen)}
+                >
+                    <div className="flex items-center">
+                        <FaReceipt className="mr-3" />
+                        Nota
+                    </div>
+                    <FaChevronDown className={`transition-transform ${notaMenuOpen ? 'rotate-180' : ''}`} />
+                </div>
+
+                {notaMenuOpen && (
+                    <>
+                        <div
+                            className={`pl-12 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('/nota-penjualan-kurir') ? 'bg-[#798248]' : ''}`}
+                            onClick={() => navigate("/user/gudang/nota-penjualan-kurir")}
+                        >
+                            Nota Penjualan Kurir
+                        </div>
+                        <div
+                            className={`pl-12 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('/nota-penjualan-pembeli') ? 'bg-[#798248]' : ''}`}
+                            onClick={() => navigate("/user/gudang/nota-penjualan-pembeli")}
+                        >
+                            Nota Penjualan Pembeli
+                        </div>
+                    </>
+                )}
             </div>
 
+            {/* USER MENU */}
             <div className="relative mt-auto">
                 <div
                     className="flex items-center px-4 py-3 border-t border-blue-600 cursor-pointer"

@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ModalDetailOrganisasi from "../components/ModalDetailOrganisasi";
-import NotaPDF from "./NotaPenjualan/NotaPenjualanPagePembeli";
-import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const DaftarOrganisasiPage = () => {
   const [organisasiList, setOrganisasiList] = useState([]);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedOrganisasi, setSelectedOrganisasi] = useState(null);
-  const [transaksiList, setTransaksiList] = useState([]);
-  const [selectedTransaksi, setSelectedTransaksi] = useState(null);
 
   useEffect(() => {
     fetchOrganisasi();
-    fetchTransaksi();
   }, []);
 
   const fetchOrganisasi = async () => {
@@ -34,25 +29,6 @@ const DaftarOrganisasiPage = () => {
   const filteredData = organisasiList.filter((item) =>
     item.nama_organisasi.toLowerCase().startsWith(search.toLowerCase())
   );
-
-  const fetchTransaksi = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/transaksi/semua", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (Array.isArray(res.data)) {
-        setTransaksiList(res.data);
-      }
-    } catch (error) {
-      console.error("Gagal mengambil data transaksi", error);
-    }
-  };
-
-  const validTransaksi = transaksiList.filter(trx =>
-  ['selesai', 'sedang disiapkan'].includes(trx.status_transaksi) &&
-  ['Pengambilan Mandiri'].includes(trx.jenis_pengiriman)
-);
 
   const handleDetail = (organisasi) => {
     setSelectedOrganisasi(organisasi);
@@ -112,40 +88,6 @@ const DaftarOrganisasiPage = () => {
   return (
     <div className="overflow-x-auto px-5">
       <h2 className="text-center mb-4 display-5">Daftar Organisasi</h2>
-
-        {/* Dropdown & Tombol PDF */}
-            <div className="mb-6">
-              <h4 className="font-bold mb-2">Nota Transaksi</h4>
-              <select
-                value={selectedTransaksi?.id_transaksi || ""}
-                onChange={(e) => {
-                  const selectedId = parseInt(e.target.value);
-                  const trx = validTransaksi.find(t => t.id_transaksi === selectedId);
-                  setSelectedTransaksi(trx);
-                }}
-                className="border border-gray-300 rounded px-3 py-2"
-              >
-                <option value="">Pilih Transaksi</option>
-                {validTransaksi.map(trx => (
-                  <option key={trx.id_transaksi} value={trx.id_transaksi}>
-                    {trx.nomor_nota} - {trx.pembeli?.nama_lengkap || "Pembeli"}
-                  </option>
-                ))}
-              </select>
-      
-              {selectedTransaksi && (
-                <div className="mt-3">
-                  <PDFDownloadLink
-                    document={<NotaPDF transaksi={selectedTransaksi} />}
-                    fileName={`${selectedTransaksi.nomor_nota}.pdf`}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
-                  >
-                    {({ loading }) => loading ? "Membuat Nota..." : "Download Nota Penjualan"}
-                  </PDFDownloadLink>
-                </div>
-              )}
-            </div>
-      
 
       <div className="flex justify-end mb-4">
         <input

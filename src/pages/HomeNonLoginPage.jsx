@@ -31,7 +31,7 @@ const HomeNonLogin = () => {
         withCredentials: false,
       });
 
-      console.log("Data barang:", res.data.barang); // ✅ Pasti defined
+      console.log("Data barang:", res.data.barang);
       setBarangList(res.data.barang);
     } catch (error) {
       console.error("Gagal mengambil data barang:", error);

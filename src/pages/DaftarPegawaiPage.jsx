@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalDetailPegawai from "../components/ModalDetailPegawai";
-import NotaPDF from "./NotaPenjualan/NotaPenjualanPageKurir";
-import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const DaftarPegawaiPage = () => {
   const navigate = useNavigate();
@@ -11,12 +9,9 @@ const DaftarPegawaiPage = () => {
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedPegawai, setSelectedPegawai] = useState(null);
-  const [transaksiList, setTransaksiList] = useState([]);
-  const [selectedTransaksi, setSelectedTransaksi] = useState(null);
 
   useEffect(() => {
     fetchPegawai();
-    fetchTransaksi();
   }, []);
 
   const fetchPegawai = async () => {
@@ -31,28 +26,9 @@ const DaftarPegawaiPage = () => {
     }
   };
 
-  const fetchTransaksi = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/transaksi/semua", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (Array.isArray(res.data)) {
-        setTransaksiList(res.data);
-      }
-    } catch (error) {
-      console.error("Gagal mengambil data transaksi", error);
-    }
-  };
-
   const filteredData = pegawaiList.filter((item) =>
     item.nama_lengkap.toLowerCase().includes(search.toLowerCase())
   );
-
-const validTransaksi = transaksiList.filter(trx =>
-  ['selesai', 'sedang disiapkan'].includes(trx.status_transaksi) &&
-  ['Kurir ReuseMart'].includes(trx.jenis_pengiriman)
-);
 
   const handleDetail = (pegawai) => {
     setSelectedPegawai(pegawai);
@@ -120,39 +96,6 @@ const validTransaksi = transaksiList.filter(trx =>
     <div className="overflow-x-auto px-5">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-center display-5">Daftar Pegawai</h2>
-      </div>
-
-      {/* Dropdown & Tombol PDF */}
-      <div className="mb-6">
-        <h4 className="font-bold mb-2">Nota Transaksi</h4>
-        <select
-          value={selectedTransaksi?.id_transaksi || ""}
-          onChange={(e) => {
-            const selectedId = parseInt(e.target.value);
-            const trx = validTransaksi.find(t => t.id_transaksi === selectedId);
-            setSelectedTransaksi(trx);
-          }}
-          className="border border-gray-300 rounded px-3 py-2"
-        >
-          <option value="">Pilih Transaksi</option>
-          {validTransaksi.map(trx => (
-            <option key={trx.id_transaksi} value={trx.id_transaksi}>
-              {trx.nomor_nota} - {trx.pembeli?.nama_lengkap || "Pembeli"}
-            </option>
-          ))}
-        </select>
-
-        {selectedTransaksi && (
-          <div className="mt-3">
-            <PDFDownloadLink
-              document={<NotaPDF transaksi={selectedTransaksi} />}
-              fileName={`${selectedTransaksi.nomor_nota}.pdf`}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
-            >
-              {({ loading }) => loading ? "Membuat Nota..." : "Download Nota Penjualan"}
-            </PDFDownloadLink>
-          </div>
-        )}
       </div>
 
       {/* Pencarian */}
