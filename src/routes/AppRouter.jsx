@@ -79,6 +79,7 @@ import PengirimanPengambilanPage from "../pages/PengirimanPengambilanPage";
 import KonfirmasiBarangDiterimaPage from "../pages/KonfirmasiBarangDiterima";
 import NotaPenjualanKurirPage from "../pages/NotaPenjualanKurirPage";
 import NotaPenjualanPembeliPage from "../pages/NotaPenjualanPembeliPage";
+import KonfirmasiPengambilanPage from "../pages/KonfirmasiPengambilanPage";
 
 
 const router = createBrowserRouter([
@@ -260,6 +261,7 @@ const router = createBrowserRouter([
       { path: "nota-penjualan-kurir", element: <NotaPenjualanKurirPage /> },
       { path: "nota-penjualan-pembeli", element: <NotaPenjualanPembeliPage /> },
       { path: "konfirmasi-barang-diterima", element: <KonfirmasiBarangDiterimaPage /> },
+      { path: "pengambilan-barang-pemilik", element: <KonfirmasiPengambilanPage /> },
     ],
   },
 

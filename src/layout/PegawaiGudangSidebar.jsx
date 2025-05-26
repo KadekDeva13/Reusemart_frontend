@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
     FaTachometerAlt, FaBoxOpen, FaHistory,
-    FaUser, FaSignOutAlt, FaTruck, FaReceipt, FaChevronDown
+    FaUser, FaSignOutAlt, FaTruck, FaReceipt, FaChevronDown,
+    FaCheck,
 } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -62,6 +63,14 @@ const GudangSidebar = () => {
                 >
                     <FaTruck className="mr-3" />
                     Atur Pengiriman & Pengambilan
+                </div>
+
+                 <div
+                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('pengiriman-pengambilan') ? 'bg-[#798248]' : ''}`}
+                    onClick={() => navigate("/user/gudang/pengambilan-barang-pemilik")}
+                >
+                    <FaCheck className="mr-3" />
+                    Pengambilan Barang Pemilik
                 </div>
 
                 <div
