@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   totalRow: { flexDirection: 'row', backgroundColor: '#eee' },
 });
 
-/* ---------- PDF component ---------- */
+/* ---------- PDF Component ---------- */
 const LaporanPDF = ({ data, tahun, grafikImage }) => {
   const totalUang = data.reduce(
     (sum, item) => sum + (item.total_penjualan || 0),
@@ -68,8 +68,8 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
-        {/* Header */}
+      {/* Halaman 1 - Grafik */}
+      <Page size="A4" orientation="landscape" style={styles.page}>
         <Text style={styles.bold}>ReUse Mart</Text>
         <Text>Jl. Green Eco Park No. 456 Yogyakarta</Text>
         <Text style={[styles.title, styles.underline]}>
@@ -78,20 +78,25 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
         <Text>Tahun: {tahun}</Text>
         <Text style={{ marginBottom: 6 }}>Tanggal cetak: {tanggalCetak}</Text>
 
-        {/* Grafik di PDF */}
         {grafikImage && (
-          <View style={{ textAlign: 'center', marginBottom: 15 }}>
-            <Text style={[styles.bold, { marginBottom: 4 }]}>
+          <View style={{ textAlign: 'center', marginTop: 20 }}>
+            <Text style={[styles.bold, { marginBottom: 6 }]}>
               Grafik Penjualan per Bulan
             </Text>
             <Image
               src={grafikImage}
-              style={{ width: 500, height: 500, margin: 'auto' }}
+              style={{ width: 700, height: 300, margin: 'auto' }}
             />
           </View>
         )}
+      </Page>
 
-        {/* Tabel di PDF */}
+      {/* Halaman 2 - Tabel */}
+      <Page size="A4" orientation="landscape" style={styles.page}>
+        <Text style={[styles.title, styles.underline, { marginBottom: 10 }]}>
+          RINCIAN PENJUALAN
+        </Text>
+
         <View style={styles.table}>
           <View style={styles.row}>
             <Text style={styles.monthCell}>Bulan</Text>
@@ -102,7 +107,9 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
             <View key={i} style={styles.row}>
               <Text style={styles.monthCell}>{item.bulan}</Text>
               <Text style={styles.cell}>{item.jumlah_terjual}</Text>
-              <Text style={styles.cell}>{formatRupiah(item.total_penjualan)}</Text>
+              <Text style={styles.cell}>
+                {formatRupiah(item.total_penjualan)}
+              </Text>
             </View>
           ))}
           <View style={styles.totalRow}>
@@ -134,7 +141,6 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
           </View>
         </View>
 
-        {/* Footer nomor halaman */}
         <View
           fixed
           style={{
@@ -158,7 +164,7 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
   );
 };
 
-/* ---------- Halaman React ---------- */
+/* ---------- Main React Page ---------- */
 const LaporanPenjualanBulananPage = () => {
   const chartRef = useRef();
   const thisYear = new Date().getFullYear();
@@ -166,12 +172,12 @@ const LaporanPenjualanBulananPage = () => {
   const [tahun, setTahun] = useState(thisYear);
   const [data, setData] = useState([]);
   const [pdfUrl, setPdfUrl] = useState(null);
+  const [loadingPDF, setLoadingPDF] = useState(false);
 
   useEffect(() => {
     fetchData(tahun);
   }, [tahun]);
 
-  /* --- Ambil data dari backend --- */
   const fetchData = async (tahunDipilih) => {
     try {
       const token = localStorage.getItem('token');
@@ -181,27 +187,38 @@ const LaporanPenjualanBulananPage = () => {
       );
       const hasil = res.data.data || [];
       setData(hasil);
-      // Sedikit delay agar chart selesai render sebelum di-screenshot
+      setPdfUrl(null);
+      setLoadingPDF(true);
       setTimeout(() => generatePDF(hasil, tahunDipilih), 500);
     } catch (err) {
       console.error('Gagal mengambil data:', err);
     }
   };
 
-  /* --- Buat PDF (capture chart sebagai image) --- */
   const generatePDF = async (dataArr, tahunVal) => {
-    if (!chartRef.current) return;
-    const image = await htmlToImage.toPng(chartRef.current);
-    const doc = <LaporanPDF data={dataArr} tahun={tahunVal} grafikImage={image} />;
-    const blob = await pdf(doc).toBlob();
-    const url = URL.createObjectURL(blob);
-    setPdfUrl(url);
+    if (!chartRef.current) {
+      console.warn("⚠️ chartRef.current null, grafik belum siap.");
+      return;
+    }
+
+    try {
+      const image = await htmlToImage.toPng(chartRef.current, {
+        skipFonts: true,
+      });
+      const doc = <LaporanPDF data={dataArr} tahun={tahunVal} grafikImage={image} />;
+      const blob = await pdf(doc).toBlob();
+      const url = URL.createObjectURL(blob);
+      setPdfUrl(url);
+      setLoadingPDF(false);
+      console.log("✅ PDF URL dibuat:", url);
+    } catch (err) {
+      console.error("❌ Gagal generate PDF:", err);
+      setLoadingPDF(false);
+    }
   };
 
-  /* ---------- RENDER ---------- */
   return (
     <div className="p-6 bg-white">
-      {/* Header & selector tahun */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold text-gray-800">
           📈 Laporan Penjualan Bulanan
@@ -219,9 +236,12 @@ const LaporanPenjualanBulananPage = () => {
         </select>
       </div>
 
-      {/* ---------- GRAFIK (di atas) ---------- */}
+      {/* Grafik */}
       <div className="overflow-x-auto mb-6 bg-white">
-        <div style={{ width: 1200, height: 400 }} ref={chartRef}>
+        <div
+          style={{ width: 1200, height: 400, fontFamily: 'Arial, sans-serif' }}
+          ref={chartRef}
+        >
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={data}
@@ -243,7 +263,7 @@ const LaporanPenjualanBulananPage = () => {
         </div>
       </div>
 
-      {/* ---------- TABEL (di bawah) ---------- */}
+      {/* Tabel */}
       <div className="bg-white rounded shadow p-4 overflow-x-auto w-full">
         <table className="w-full border border-gray-300 text-sm">
           <thead className="bg-gray-100">
@@ -269,9 +289,11 @@ const LaporanPenjualanBulananPage = () => {
         </table>
       </div>
 
-      {/* Tombol unduh PDF */}
-      {pdfUrl && (
-        <div className="mt-6">
+      {/* Tombol Unduh */}
+      <div className="mt-6">
+        {!pdfUrl && loadingPDF ? (
+          <span className="text-gray-500 text-sm">⏳ Menyiapkan PDF...</span>
+        ) : pdfUrl ? (
           <a
             href={pdfUrl}
             download={`Laporan_Penjualan_Bulanan_${tahun}.pdf`}
@@ -279,8 +301,8 @@ const LaporanPenjualanBulananPage = () => {
           >
             ⬇️ Unduh PDF
           </a>
-        </div>
-      )}
+        ) : null}
+      </div>
     </div>
   );
 };

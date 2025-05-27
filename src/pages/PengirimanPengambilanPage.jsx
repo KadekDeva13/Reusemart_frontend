@@ -11,10 +11,6 @@ export default function PengirimanPengambilanPage() {
 
   useEffect(() => {
     fetchJadwal();
-    const interval = setInterval(() => {
-      handleHanguskanOtomatis();
-    }, 10 * 60 * 1000);
-    return () => clearInterval(interval);
   }, []);
 
   const fetchJadwal = async () => {
@@ -55,26 +51,16 @@ export default function PengirimanPengambilanPage() {
     }
   };
 
-  const handleHanguskanOtomatis = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        "http://localhost:8000/api/transaksi/hanguskan-otomatis",
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      fetchJadwal();
-    } catch (error) {
-      console.error("Gagal menghanguskan otomatis:", error.response?.data?.message);
-    }
-  };
-
   return (
     <div className="p-6">
       <h4 className="text-xl font-bold mb-4">Atur Pengiriman & Pengambilan</h4>
 
       {alert.show && (
-        <div className={`mb-4 p-3 rounded text-sm text-white ${alert.variant === 'danger' ? 'bg-red-500' : 'bg-green-500'}`}>
+        <div
+          className={`mb-4 p-3 rounded text-sm text-white ${
+            alert.variant === "danger" ? "bg-red-500" : "bg-green-500"
+          }`}
+        >
           {alert.message}
         </div>
       )}
@@ -114,14 +100,14 @@ export default function PengirimanPengambilanPage() {
                               : "bg-yellow-400 hover:bg-yellow-500"
                           }`}
                           onClick={() => {
-                            if (trx.status_transaksi !== "kurir sedang mengirim") {
+                            if (trx.status_transaksi !== "dikirim") {
                               handleOpenModalKurir(trx);
                             }
                           }}
-                          disabled={trx.status_transaksi === "kurir sedang mengirim"}
+                          disabled={trx.status_transaksi === "dikirim"}
                         >
-                          {trx.status_transaksi === "kurir sedang mengirim"
-                            ? "Kurir Sedang Mengirim"
+                          {trx.status_transaksi === "dikirim"
+                            ? "dikirim"
                             : "Jadwalkan Kurir"}
                         </button>
                       )}
@@ -129,19 +115,19 @@ export default function PengirimanPengambilanPage() {
                       {trx.jenis_pengiriman?.toLowerCase() === "pengambilan mandiri" && (
                         <button
                           className={`text-white text-sm font-semibold px-3 py-1 rounded ${
-                            trx.status_transaksi === "pembeli akan mengambil"
+                            trx.status_transaksi === "pengambilan mandiri"
                               ? "bg-gray-400 cursor-not-allowed"
                               : "bg-green-600 hover:bg-green-700"
                           }`}
                           onClick={() => {
-                            if (trx.status_transaksi !== "pembeli akan mengambil") {
+                            if (trx.status_transaksi !== "") {
                               handleJadwalkanAmbilSendiri(trx);
                             }
                           }}
-                          disabled={trx.status_transaksi === "pembeli akan mengambil"}
+                          disabled={trx.status_transaksi === "pengambilan mandiri"}
                         >
-                          {trx.status_transaksi === "pembeli akan mengambil"
-                            ? "Pembeli Akan Mengambil"
+                          {trx.status_transaksi === "pengambilan mandiri"
+                            ? "pengambilan mandiri"
                             : "Jadwalkan Ambil"}
                         </button>
                       )}
