@@ -136,35 +136,51 @@ export default function DaftarTransaksiGudangPage() {
 
       {showDetail && selectedTransaksi && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h5 className="text-lg font-bold">Detail Transaksi</h5>
-              <button onClick={() => setShowDetail(false)} className="text-gray-500 hover:text-gray-700">&times;</button>
+              <button onClick={() => setShowDetail(false)} className="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
             </div>
+
             <div className="space-y-2">
               <p><strong>Pembeli:</strong> {selectedTransaksi.pembeli?.nama_lengkap}</p>
               <p><strong>Jenis Pengiriman:</strong> {selectedTransaksi.jenis_pengiriman}</p>
               <p><strong>Status:</strong> {selectedTransaksi.status_transaksi}</p>
+
               <div>
-                <h6 className="font-bold mb-1">Barang:</h6>
-                {selectedTransaksi.penitip?.barang?.map((barang, i) => (
-                  <div key={i} className="mb-4">
-                    <p className="font-semibold">{barang.nama_barang}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {(barang.foto_barang || []).map((foto, j) => (
-                        <img
-                          key={j}
-                          src={`http://localhost:8000/storage/${foto.foto_barang}`}
-                          alt={`Foto ${j + 1}`}
-                          width="100"
-                          className="rounded border"
-                        />
-                      ))}
+                <h6 className="font-bold mt-4 mb-1">Barang:</h6>
+                {(selectedTransaksi.detailtransaksi || []).map((detail, i) => {
+                  const barang = detail.barang;
+                  return (
+                    <div key={i} className="mb-6 border-t pt-3">
+                      <p><strong>Nama:</strong> {barang?.nama_barang}</p>
+                      <p><strong>Kategori:</strong> {barang?.kategori_barang}</p>
+                      <p><strong>Harga:</strong> Rp{barang?.harga_barang?.toLocaleString("id-ID")}</p>
+                      {barang?.tanggal_garansi && (
+                        <p><strong>Garansi sampai:</strong> {barang.tanggal_garansi}</p>
+                      )}
+
+                      {barang?.foto_barang?.length > 0 ? (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {barang.foto_barang.map((foto, j) => (
+                            <img
+                              key={j}
+                              src={`http://localhost:8000/storage/${foto.foto_barang}`}
+                              alt={`Foto ${j + 1}`}
+                              width="100"
+                              className="rounded border"
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500 italic mt-1">Tidak ada foto.</p>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
+
             <div className="mt-6 text-right">
               <button onClick={() => setShowDetail(false)} className="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-1 px-4 rounded">
                 Tutup
