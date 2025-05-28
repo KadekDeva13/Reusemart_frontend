@@ -243,6 +243,7 @@ const router = createBrowserRouter([
       { path: "manajemen-barang", element: <ManajemenBarangPage /> },
       { path: "tambah-barang", element: <PenitipanBarangPage /> },
       { path: "history-penitipan", element: <HistoryPenitipanPage /> },
+      { path: "edit-barang/:id_barang", element: <PenitipanBarangPage /> },
       { path: "pengiriman", element: <HistoryPenitipanPage /> },
     ],
   },

@@ -45,9 +45,9 @@ const ManajemenBarangPage = () => {
     };
 
     const handleEdit = (barang) => {
-        console.log("Edit barang:", barang);
-        // Implementasi modal detail menyusul
+        navigate(`/user/gudang/edit-barang/${barang.id_barang}`);
     };
+
 
     const filteredBarang = barangList.filter((item) => {
         const keyword = searchQuery.toLowerCase();
