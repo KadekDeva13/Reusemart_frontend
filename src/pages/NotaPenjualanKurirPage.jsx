@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NotaPDF from "../pages/NotaPenjualan/NotaPenjualanPageKurir";
-import { pdf } from "@react-pdf/renderer";
+import { pdf, PDFViewer } from "@react-pdf/renderer";
 
 export default function NotaPenjualanKurirPage() {
   const [transaksiList, setTransaksiList] = useState([]);
@@ -41,17 +41,14 @@ export default function NotaPenjualanKurirPage() {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      // Proses final ke backend
       await axios.post(
         `http://localhost:8000/api/transaksi/proses-final/${selectedTransaksi.id_transaksi}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Generate PDF
       const blob = await pdf(<NotaPDF transaksi={selectedTransaksi} />).toBlob();
 
-      // Trigger download
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -69,37 +66,49 @@ export default function NotaPenjualanKurirPage() {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Nota Penjualan Kurir</h2>
+    <div className="p-6 flex flex-col lg:flex-row gap-6">
+      {/* Kiri: Form */}
+      <div className="lg:w-1/2">
+        <h2 className="text-2xl font-bold mb-4">Nota Penjualan Kurir</h2>
 
-      <div className="mb-4">
-        <label className="block font-semibold mb-2">Pilih Transaksi:</label>
-        <select
-          value={selectedTransaksi?.id_transaksi || ""}
-          onChange={(e) => {
-            const selectedId = parseInt(e.target.value);
-            const trx = transaksiList.find(t => t.id_transaksi === selectedId);
-            setSelectedTransaksi(trx);
-          }}
-          className="border border-gray-300 rounded px-3 py-2 w-full max-w-md bg-white"
-        >
-          <option value="">-- Pilih Transaksi --</option>
-          {transaksiList.map(trx => (
-            <option key={trx.id_transaksi} value={trx.id_transaksi}>
-              {trx.nomor_nota} - {trx.pembeli?.nama_lengkap || "Pembeli"}
-            </option>
-          ))}
-        </select>
+        <div className="mb-4">
+          <label className="block font-semibold mb-2">Pilih Transaksi:</label>
+          <select
+            value={selectedTransaksi?.id_transaksi || ""}
+            onChange={(e) => {
+              const selectedId = parseInt(e.target.value);
+              const trx = transaksiList.find(t => t.id_transaksi === selectedId);
+              setSelectedTransaksi(trx);
+            }}
+            className="border border-gray-300 rounded px-3 py-2 w-full max-w-md bg-white"
+          >
+            <option value="">-- Pilih Transaksi --</option>
+            {transaksiList.map(trx => (
+              <option key={trx.id_transaksi} value={trx.id_transaksi}>
+                {trx.nomor_nota} - {trx.pembeli?.nama_lengkap || "Pembeli"}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {selectedTransaksi && (
+          <button
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded mb-4"
+            onClick={handleProsesDanDownloadNota}
+            disabled={loading}
+          >
+            {loading ? "Memproses & Membuat Nota..." : "Proses Final & Download Nota"}
+          </button>
+        )}
       </div>
 
+      {/* Kanan: Preview */}
       {selectedTransaksi && (
-        <button
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded mb-4"
-          onClick={handleProsesDanDownloadNota}
-          disabled={loading}
-        >
-          {loading ? "Memproses & Membuat Nota..." : "Proses Final & Download Nota"}
-        </button>
+        <div className="lg:w-1/2 h-[600px] border border-gray-300 rounded">
+          <PDFViewer width="100%" height="100%" className="rounded">
+            <NotaPDF transaksi={selectedTransaksi} />
+          </PDFViewer>
+        </div>
       )}
     </div>
   );
