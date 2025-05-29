@@ -51,6 +51,13 @@ const formatTanggal = (tanggal) => {
   return `${day}/${month}/${year}`;
 };
 
+const getNamaKurir = (transaksi) => {
+  if (transaksi?.pegawai?.id_jabatan === 2) {
+    return transaksi.pegawai.nama_lengkap;
+  }
+  return '-';
+};
+
 const NotaPDF = ({ transaksi }) => {
   const itemCount = transaksi?.detailtransaksi?.length || 1;
   const baseHeight = 430;
@@ -80,6 +87,7 @@ const NotaPDF = ({ transaksi }) => {
     <Document>
       <Page size={[283.5, pageHeight]} style={styles.page}>
         <View style={styles.outlineBox}>
+
           <View style={styles.section}>
             <Text style={styles.bold}>ReUse Mart</Text>
             <Text>Jl. Green Eco Park No. 456 Yogyakarta</Text>
@@ -112,7 +120,7 @@ const NotaPDF = ({ transaksi }) => {
                 ? `${transaksi.pembeli.alamat.detail_alamat}, ${transaksi.pembeli.alamat.kelurahan}, ${transaksi.pembeli.alamat.kecamatan}, ${transaksi.pembeli.alamat.provinsi}, ${transaksi.pembeli.alamat.kode_pos}`
                 : 'Alamat tidak tersedia'}
             </Text>
-            <Text>Delivery: Kurir ReUseMart ({transaksi.nama_pengirim || '-'})</Text>
+            <Text>Delivery: Kurir ReUseMart ({getNamaKurir(transaksi)})</Text>
           </View>
 
           <View style={styles.section}>
@@ -146,9 +154,11 @@ const NotaPDF = ({ transaksi }) => {
             <Text style={{ marginTop: 20 }}>(........................................)</Text>
             <Text>Tanggal: ............................</Text>
           </View>
+
         </View>
       </Page>
     </Document>
   );
 };
+
 export default NotaPDF;

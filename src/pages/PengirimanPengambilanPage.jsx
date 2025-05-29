@@ -70,7 +70,7 @@ export default function PengirimanPengambilanPage() {
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm border border-gray-300">
-            <thead className="bg-green-100 text-gray-700 font-semibold">
+            <thead className="bg-green-100 text-gray-700 font-semibold text-center">
               <tr>
                 <th className="w-[5%] border border-gray-300 px-3 py-3">No</th>
                 <th className="w-[25%] border border-gray-300 px-3 py-3">Pembeli</th>

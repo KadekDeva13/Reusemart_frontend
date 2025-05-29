@@ -91,7 +91,7 @@ export default function DaftarTransaksiGudangPage() {
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm border border-gray-300">
-            <thead className="bg-green-100 font-semibold text-gray-700">
+            <thead className="bg-green-100 font-semibold text-gray-700 text-center">
               <tr>
                 <th className="w-[5%] border border-gray-300 px-3 py-3">No</th>
                 <th className="w-[25%] border border-gray-300 px-3 py-3">Pembeli</th>

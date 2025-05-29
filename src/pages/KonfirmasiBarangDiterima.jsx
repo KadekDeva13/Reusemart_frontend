@@ -84,7 +84,7 @@ export default function KonfirmasiBarangDiterimaPage() {
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm border border-gray-300">
-            <thead className="bg-green-100 text-gray-700 font-semibold">
+            <thead className="bg-green-100 text-gray-700 font-semibold text-center">
               <tr>
                 <th className="border border-gray-300 px-3 py-2">No</th>
                 <th className="border border-gray-300 px-3 py-2">Pembeli</th>
