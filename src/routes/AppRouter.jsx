@@ -71,6 +71,9 @@ import LaporanBarangHabis from "../pages/Laporan/LaporanMasaPenitipanHabis";
 import LaporanPenjualanBulananPage from "../pages/Laporan/LaporanPenjualanBulananPage";
 
 //Pegawai Gudang Pages
+import DaftarPenitipanPage from "../pages/DaftarPenitipanPage";
+import DetailPenitipanPage from "../pages/DetailPenitipanPage";
+import TambahPenitipanPage from "../pages/TambahPenitipanPage";
 import ManajemenBarangPage from "../pages/ManajemenBarangPage";
 import HistoryPenitipanPage from "../pages/HistoryPenitipanPage";
 import PenitipanBarangPage from "../pages/PenitipanBarangPage";
@@ -80,6 +83,7 @@ import KonfirmasiBarangDiterimaPage from "../pages/KonfirmasiBarangDiterima";
 import NotaPenjualanKurirPage from "../pages/NotaPenjualanKurirPage";
 import NotaPenjualanPembeliPage from "../pages/NotaPenjualanPembeliPage";
 import KonfirmasiPengambilanPage from "../pages/KonfirmasiPengambilanPage";
+
 
 
 const router = createBrowserRouter([
@@ -237,8 +241,8 @@ const router = createBrowserRouter([
       { path: "request-donasi", element: <OwnerRequestDonasiPage /> },
       { path: "history-donasi", element: <HistoryDonasiPage /> },
       { path: "laporan/laporan-penjualan-kategori", element: <LaporanKategoriPage /> },
-      {path: "laporan/laporan-masa-penitipan-habis", element: <LaporanBarangHabis />},
-      {path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPage />}
+      { path: "laporan/laporan-masa-penitipan-habis", element: <LaporanBarangHabis /> },
+      { path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPage /> }
     ],
   },
 
@@ -252,6 +256,9 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: "", element: <h2 className="p-3">Selamat Datang di Dashboard</h2> },
+      { path: "penitipan-daftar", element: <DaftarPenitipanPage /> },
+      { path: "penitipan-detail/:id", element: <DetailPenitipanPage /> },
+      { path: "penitipan-tambah", element: <TambahPenitipanPage /> },
       { path: "manajemen-barang", element: <ManajemenBarangPage /> },
       { path: "tambah-barang", element: <PenitipanBarangPage /> },
       { path: "history-penitipan", element: <HistoryPenitipanPage /> },
