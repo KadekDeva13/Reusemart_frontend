@@ -60,7 +60,7 @@ export default function PenitipanBarangPage() {
                 kategori_barang: b.kategori_barang,
                 deskripsi: b.deskripsi,
                 harga_barang: b.harga_barang,
-                nama_qc: b.penitipan?.nama_qc || "",
+                nama_qc: b.detailpenitipan?.penitipan?.nama_qc || "",
                 punya_garansi: Boolean(b.tanggal_garansi),
                 tanggal_garansi: b.tanggal_garansi || "",
             });
