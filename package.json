@@ -15,6 +15,7 @@
     "bootstrap": "^5.3.5",
     "font-awesome": "^4.7.0",
     "html-to-image": "^1.11.13",
+    "file-saver": "^2.0.5",
     "lucide-react": "^0.507.0",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.9",
