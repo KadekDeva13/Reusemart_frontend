@@ -72,7 +72,7 @@ const LaporanBarangHabisPDF = ({ data = [], tanggalCetak = "" }) => {
         </View>
 
         <Text style={[styles.title, styles.underline]}>
-          LAPORAN Barang yang Masa Penitipannya Sudah Habis
+          Laporan Barang Yang Masa Penitipannya Sudah Habis
         </Text>
         <Text>Tanggal cetak: {formatTanggal(tanggalCetak)}</Text>
 
