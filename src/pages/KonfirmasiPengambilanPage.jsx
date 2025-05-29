@@ -23,7 +23,7 @@ const KonfirmasiPengambilanPage = () => {
         (item) => item.status_perpanjangan !== "diambil"
       );
       setPenitipanList(belumDiambil);
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setErrorMsg("Gagal mengambil data.");
     } finally {
@@ -84,7 +84,16 @@ const KonfirmasiPengambilanPage = () => {
                 penitipanList.map((item, index) => (
                   <tr key={item.id_penitipan}>
                     <td className="border border-gray-300 px-3 py-2">{index + 1}</td>
-                    <td className="border border-gray-300 px-3 py-2">{item.barang?.nama_barang || item.id_barang}</td>
+                    <td className="border border-gray-300 px-3 py-2">
+                      {item.barang && item.barang.length > 0 ? (
+                        item.barang.map((b, idx) => (
+                          <div key={idx}>{b.nama_barang}</div>
+                        ))
+                      ) : (
+                        <span className="text-red-500 italic">Tidak ditemukan</span>
+                      )}
+                    </td>
+
                     <td className="border border-gray-300 px-3 py-2">{item.penitip?.nama_lengkap}</td>
                     <td className="border border-gray-300 px-3 py-2">{item.tanggal_masuk}</td>
                     <td className="border border-gray-300 px-3 py-2">{item.batas_pengambilan}</td>
