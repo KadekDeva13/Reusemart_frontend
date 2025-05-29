@@ -31,6 +31,34 @@ export default function NotaPenjualanKurirPage() {
     }
   };
 
+  // Filter untuk dropdown unik berdasarkan nomor_nota + nama pembeli
+  const uniqueNotaList = transaksiList.filter(
+    (trx, index, self) =>
+      index === self.findIndex(
+        t =>
+          t.nomor_nota === trx.nomor_nota &&
+          t.pembeli?.nama_lengkap === trx.pembeli?.nama_lengkap
+      )
+  );
+
+  const handleSelectNota = (nomorNota) => {
+    const semuaTransaksiDenganNota = transaksiList.filter(
+      t => t.nomor_nota === nomorNota
+    );
+
+    if (semuaTransaksiDenganNota.length > 0) {
+      const referensi = semuaTransaksiDenganNota[0];
+      const semuaBarangGabung = semuaTransaksiDenganNota.flatMap(t => t.detailtransaksi);
+
+      const transaksiGabungan = {
+        ...referensi,
+        detailtransaksi: semuaBarangGabung,
+      };
+
+      setSelectedTransaksi(transaksiGabungan);
+    }
+  };
+
   const handleProsesDanDownloadNota = async () => {
     if (!selectedTransaksi) return;
 
@@ -47,8 +75,7 @@ export default function NotaPenjualanKurirPage() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      const blob = await pdf(<NotaPDF transaksi={selectedTransaksi} />).toBlob();
-
+      const blob = await pdf(<NotaPDF transaksiList={[selectedTransaksi]} />).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -74,17 +101,16 @@ export default function NotaPenjualanKurirPage() {
         <div className="mb-4">
           <label className="block font-semibold mb-2">Pilih Transaksi:</label>
           <select
-            value={selectedTransaksi?.id_transaksi || ""}
-            onChange={(e) => {
-              const selectedId = parseInt(e.target.value);
-              const trx = transaksiList.find(t => t.id_transaksi === selectedId);
-              setSelectedTransaksi(trx);
-            }}
+            value={selectedTransaksi?.nomor_nota || ""}
+            onChange={(e) => handleSelectNota(e.target.value)}
             className="border border-gray-300 rounded px-3 py-2 w-full max-w-md bg-white"
           >
             <option value="">-- Pilih Transaksi --</option>
-            {transaksiList.map(trx => (
-              <option key={trx.id_transaksi} value={trx.id_transaksi}>
+            {uniqueNotaList.map(trx => (
+              <option
+                key={trx.nomor_nota + trx.pembeli?.nama_lengkap}
+                value={trx.nomor_nota}
+              >
                 {trx.nomor_nota} - {trx.pembeli?.nama_lengkap || "Pembeli"}
               </option>
             ))}
@@ -102,11 +128,11 @@ export default function NotaPenjualanKurirPage() {
         )}
       </div>
 
-      {/* Kanan: Preview */}
+      {/* Kanan: Preview PDF */}
       {selectedTransaksi && (
         <div className="lg:w-1/2 h-[600px] border border-gray-300 rounded">
           <PDFViewer width="100%" height="100%" className="rounded">
-            <NotaPDF transaksi={selectedTransaksi} />
+            <NotaPDF transaksiList={[selectedTransaksi]} />
           </PDFViewer>
         </div>
       )}
