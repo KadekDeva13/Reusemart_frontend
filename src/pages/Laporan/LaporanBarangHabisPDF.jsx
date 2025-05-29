@@ -89,7 +89,7 @@ const LaporanBarangHabisPDF = ({ data = [], tanggalCetak = "" }) => {
 
           {pageData.map((item, i) => (
             <View key={i} style={styles.row}>
-              <Text style={styles.wideCell}>{item.kode_produk}</Text>
+              <Text style={styles.wideCell}>{item.id_barang}</Text>
               <Text style={styles.wideCell}>
                 {item.nama_produk.length > 30 ? item.nama_produk.slice(0, 30) + '…' : item.nama_produk}
               </Text>

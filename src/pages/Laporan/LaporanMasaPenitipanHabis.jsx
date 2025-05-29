@@ -16,7 +16,7 @@ const LaporanBarangHabisPage = () => {
     const fetchLaporan = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:8000/api/laporan/barang-penitipan-habis', {
+            const res = await axios.get('http://localhost:8000/api/penitipan/laporan/penitipan/habis', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
