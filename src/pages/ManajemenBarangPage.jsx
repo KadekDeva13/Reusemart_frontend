@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import NotaPenitipanBarang from "../component/NotaPenitipan/NotaPenitipanBarang";
+import { pdf } from "@react-pdf/renderer";
+import { saveAs } from "file-saver";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
@@ -39,6 +42,7 @@ const ManajemenBarangPage = () => {
                 },
             });
             setBarangList(res.data.barang || []);
+            console.log("DATA BARANG:", res.data.barang);
         } catch (err) {
             console.error("Gagal mengambil data barang:", err);
         }
@@ -47,7 +51,6 @@ const ManajemenBarangPage = () => {
     const handleEdit = (barang) => {
         navigate(`/user/gudang/edit-barang/${barang.id_barang}`);
     };
-
 
     const filteredBarang = barangList.filter((item) => {
         const keyword = searchQuery.toLowerCase();
@@ -67,6 +70,39 @@ const ManajemenBarangPage = () => {
             );
         }
     });
+
+    const handleCetakNota = async (item) => {
+        try {
+            const data = {
+                nomor_nota: item.nomor_nota || `RM-${item.id_barang}`,
+                tanggal_masuk: item.penitipan?.tanggal_masuk || "-",
+                tanggal_akhir: item.penitipan?.tanggal_akhir || "-",
+                nama_pengirim: "Kurir ReUseMart (Manual)",
+                qc: item.penitipan?.nama_qc || "-",
+                penitip: {
+                    id_penitip: item.penitip?.id_penitip,
+                    nama_lengkap: item.penitip?.nama_lengkap,
+                    alamat: "-", // placeholder kalau kamu belum ambil alamat
+                },
+                barang: [
+                    {
+                        nama_barang: item.nama_barang,
+                        harga_barang: item.harga_barang,
+                        tanggal_garansi: item.tanggal_garansi,
+                        berat: 0,
+                    },
+                ],
+            };
+
+            const blob = await pdf(<NotaPenitipanBarang data={data} />).toBlob();
+            saveAs(blob, `Nota_Penitipan_${data.nomor_nota}.pdf`);
+        } catch (error) {
+            console.error("Gagal generate nota:", error);
+            toast.error("Gagal generate nota.");
+        }
+    };
+
+
 
     return (
         <div className="overflow-x-auto px-5">
@@ -114,36 +150,49 @@ const ManajemenBarangPage = () => {
                     </thead>
                     <tbody>
                         {filteredBarang.length > 0 ? (
-                            filteredBarang.map((item, index) => (
-                                <tr key={item.id_barang} className="hover:bg-gray-50">
-                                    <td className="border border-gray-300 px-2 py-2">{index + 1}</td>
-                                    <td className="border border-gray-300 px-2 py-2">
-                                        <img
-                                            src={
-                                                item.foto_barang?.[0]?.foto_barang
-                                                    ? `http://localhost:8000/storage/${item.foto_barang[0].foto_barang}`
-                                                    : "https://via.placeholder.com/40"
-                                            }
-                                            alt="Foto Barang"
-                                            className="w-100 h-100 object-cover rounded mx-auto"
-                                        />
-                                    </td>
-                                    <td className="border border-gray-300 px-2 py-2 text-left">
-                                        <div className="font-semibold text-center">{item.nama_barang}</div>
-                                        <div className="text-sm text-gray-500">{item.deskripsi}</div>
-                                    </td>
-                                    <td className="border border-gray-300 px-2 py-2">{item.kategori_barang}</td>
-                                    <td className="border border-gray-300 px-2 py-2">{item.penitip?.nama_lengkap || "-"}</td>
-                                    <td className="border border-gray-300 px-2 py-2">
-                                        <button
-                                            onClick={() => handleEdit(item)}
-                                            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded text-sm"
-                                        >
-                                            Edit Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
+                            filteredBarang.map((item, index) => {
+                                // console.log("Item barang:", item);
+                                // console.log("Item.penitipan:", item.penitipan); // DEBUG ⬅️ Tambahan log di sini
+
+                                return (
+                                    <tr key={item.id_barang} className="hover:bg-gray-50">
+                                        <td className="border border-gray-300 px-2 py-2">{index + 1}</td>
+                                        <td className="border border-gray-300 px-2 py-2">
+                                            <img
+                                                src={
+                                                    item.foto_barang?.[0]?.foto_barang
+                                                        ? `http://localhost:8000/storage/${item.foto_barang[0].foto_barang}`
+                                                        : "https://via.placeholder.com/40"
+                                                }
+                                                alt="Foto Barang"
+                                                className="w-100 h-100 object-cover rounded mx-auto"
+                                            />
+                                        </td>
+                                        <td className="border border-gray-300 px-2 py-2 text-left">
+                                            <div className="font-semibold text-center">{item.nama_barang}</div>
+                                            <div className="text-sm text-gray-500">{item.deskripsi}</div>
+                                        </td>
+                                        <td className="border border-gray-300 px-2 py-2">{item.kategori_barang}</td>
+                                        <td className="border border-gray-300 px-2 py-2">
+                                            {item.penitip?.nama_lengkap || "-"}
+                                        </td>
+                                        <td className="border border-gray-300 px-2 py-2">
+                                            <button
+                                                onClick={() => handleEdit(item)}
+                                                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded text-sm"
+                                            >
+                                                Detail Barang
+                                            </button>
+                                            <button
+                                                onClick={() => handleCetakNota(item)}
+                                                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 mt-4 rounded text-sm"
+                                            >
+                                                Cetak Nota
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })
                         ) : (
                             <tr>
                                 <td colSpan="6" className="text-center py-4 text-gray-500">
@@ -152,6 +201,7 @@ const ManajemenBarangPage = () => {
                             </tr>
                         )}
                     </tbody>
+
                 </table>
             </div>
         </div>

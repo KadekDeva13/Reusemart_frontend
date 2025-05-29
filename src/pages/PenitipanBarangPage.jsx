@@ -9,6 +9,9 @@ export default function PenitipanBarangPage() {
     const { id_barang } = useParams();
     const isEditMode = Boolean(id_barang);
 
+    // Tambahan: kontrol mode edit
+    const [isEditable, setIsEditable] = useState(!isEditMode);
+
     const [penitipList, setPenitipList] = useState([]);
     const [form, setForm] = useState({
         id_penitip: "",
@@ -61,12 +64,14 @@ export default function PenitipanBarangPage() {
                 punya_garansi: Boolean(b.tanggal_garansi),
                 tanggal_garansi: b.tanggal_garansi || "",
             });
-            console.log("Response detail barang:", res.data.data);
+
             setSearchPenitip(b.penitip?.nama_lengkap || "");
-            setPreviewImage(b.foto_barang.map(f => ({
-                id: f.id_foto,
-                url: `http://localhost:8000/storage/${f.foto_barang}`
-            })));
+            setPreviewImage(
+                b.foto_barang.map((f) => ({
+                    id: f.id_foto,
+                    url: `http://localhost:8000/storage/${f.foto_barang}`,
+                }))
+            );
         } catch (err) {
             console.error("Gagal ambil detail barang:", err);
         }
@@ -74,7 +79,7 @@ export default function PenitipanBarangPage() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setForm(prev => ({ ...prev, [name]: value }));
+        setForm((prev) => ({ ...prev, [name]: value }));
     };
 
     const handlePenitipSearch = (e) => {
@@ -85,7 +90,7 @@ export default function PenitipanBarangPage() {
             setShowDropdown(false);
             return;
         }
-        const filtered = penitipList.filter(p =>
+        const filtered = penitipList.filter((p) =>
             p.nama_lengkap.toLowerCase().startsWith(keyword.toLowerCase())
         );
         setFilteredPenitip(filtered);
@@ -93,27 +98,30 @@ export default function PenitipanBarangPage() {
     };
 
     const handleSelectPenitip = (p) => {
-        setForm(prev => ({ ...prev, id_penitip: p.id_penitip }));
+        setForm((prev) => ({ ...prev, id_penitip: p.id_penitip }));
         setSearchPenitip(p.nama_lengkap);
         setShowDropdown(false);
     };
 
     const handleImageChange = (e) => {
+        if (!isEditable) return;
         const files = Array.from(e.target.files);
-        const previews = files.map(file => ({
+        const previews = files.map((file) => ({
             file,
-            url: URL.createObjectURL(file)
+            url: URL.createObjectURL(file),
         }));
-        setFotoBarang(prev => [...prev, ...files]);
-        setPreviewImage(prev => [...prev, ...previews]);
+        setFotoBarang((prev) => [...prev, ...files]);
+        setPreviewImage((prev) => [...prev, ...previews]);
     };
 
     const handleRemoveImage = (index) => {
-        const image = previewImage[index];
-        if (image?.id) setFotoHapus(prev => [...prev, image.id]);
-        setPreviewImage(prev => prev.filter((_, i) => i !== index));
+        if (!isEditable) return;
 
-        const oldFotoBaruCount = previewImage.filter(i => i.file).length;
+        const image = previewImage[index];
+        if (image?.id) setFotoHapus((prev) => [...prev, image.id]);
+        setPreviewImage((prev) => prev.filter((_, i) => i !== index));
+
+        const oldFotoBaruCount = previewImage.filter((i) => i.file).length;
         const startIndex = previewImage.length - oldFotoBaruCount;
         const uploadIndex = index - startIndex;
         if (uploadIndex >= 0) {
@@ -122,7 +130,7 @@ export default function PenitipanBarangPage() {
             setFotoBarang(updatedFiles);
         }
 
-        setCurrentSlide(prev => {
+        setCurrentSlide((prev) => {
             if (index === 0 || previewImage.length <= 1) return 0;
             return prev >= previewImage.length - 1 ? previewImage.length - 2 : prev;
         });
@@ -144,32 +152,8 @@ export default function PenitipanBarangPage() {
             data.append("status_barang", "tersedia");
             data.append("tanggal_garansi", form.punya_garansi ? form.tanggal_garansi : "");
             data.append("nama_qc", form.nama_qc);
-
-            fotoBarang.forEach(file => data.append("foto_barang[]", file));
-            fotoHapus.forEach(id => data.append("foto_hapus[]", id));
-
-
-            // const endpoint = isEditMode
-            //     ? `http://localhost:8000/api/barang/update/${id_barang}`
-            //     : "http://localhost:8000/api/barang/store";
-
-            // await axios.post(endpoint, data, {
-            //     headers: {
-            //         Authorization: `Bearer ${token}`,
-            //         "Content-Type": "multipart/form-data",
-            //     },
-            // });
-
-            // const barangRes = await axios.post("http://localhost:8000/api/barang/store", data, {
-            //     headers: {
-            //         Authorization: `Bearer ${token}`,
-            //         "Content-Type": "multipart/form-data",
-            //     },
-            // });
-
-            // const id_barang = barangRes.data?.data?.id_barang;
-
-            let idBarangBaru = null;
+            fotoBarang.forEach((file) => data.append("foto_barang[]", file));
+            fotoHapus.forEach((id) => data.append("foto_hapus[]", id));
 
             if (isEditMode) {
                 await axios.post(`http://localhost:8000/api/barang/update/${id_barang}`, data, {
@@ -178,10 +162,6 @@ export default function PenitipanBarangPage() {
                         "Content-Type": "multipart/form-data",
                     },
                 });
-                console.log("Isi previewImage:", previewImage);
-                console.log("Foto dihapus:", fotoHapus);
-
-                idBarangBaru = id_barang;
             } else {
                 const barangRes = await axios.post("http://localhost:8000/api/barang/store", data, {
                     headers: {
@@ -189,9 +169,7 @@ export default function PenitipanBarangPage() {
                         "Content-Type": "multipart/form-data",
                     },
                 });
-                idBarangBaru = barangRes.data?.data?.id_barang;
-
-                // Simpan penitipan hanya saat tambah (bukan edit)
+                const idBarangBaru = barangRes.data?.data?.id_barang;
                 await axios.post(
                     "http://localhost:8000/api/penitipan/store",
                     {
@@ -205,13 +183,12 @@ export default function PenitipanBarangPage() {
                 );
             }
 
-
-            localStorage.setItem("penitipanSuccess", isEditMode
-                ? "Barang berhasil diperbarui!"
-                : "Barang berhasil dititipkan!");
+            localStorage.setItem(
+                "penitipanSuccess",
+                isEditMode ? "Barang berhasil diperbarui!" : "Barang berhasil dititipkan!"
+            );
 
             navigate("/user/gudang/manajemen-barang");
-
         } catch (err) {
             console.error(err);
             alert("Gagal menyimpan data.");
@@ -222,9 +199,16 @@ export default function PenitipanBarangPage() {
 
     return (
         <div className="max-w-5xl mx-auto mt-10 p-6 bg-white shadow rounded">
-            <h3 className="text-2xl font-semibold mb-6">
-                {isEditMode ? "Edit Barang Titipan" : "Tambah Barang Titipan"}
-            </h3>
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-2xl font-semibold">
+                    {isEditMode ? "Edit Barang Titipan" : "Tambah Barang Titipan"}
+                </h3>
+                {isEditMode && !isEditable && (
+                    <Button variant="warning" onClick={() => setIsEditable(true)}>
+                        Edit Data
+                    </Button>
+                )}
+            </div>
 
             <Form onSubmit={handleSubmit}>
                 {/* FOTO */}
@@ -235,14 +219,24 @@ export default function PenitipanBarangPage() {
                         <div className="relative bg-black rounded overflow-hidden max-h-[450px] mb-2">
                             {previewImage.length > 1 && (
                                 <>
-                                    <button type="button" onClick={() =>
-                                        setCurrentSlide(prev => prev === 0 ? previewImage.length - 1 : prev - 1)}
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setCurrentSlide((prev) =>
+                                                prev === 0 ? previewImage.length - 1 : prev - 1
+                                            )
+                                        }
                                         className="absolute top-1/2 left-0 -translate-y-1/2 z-10 bg-black/0 px-2 py-1 border-0"
                                     >
                                         <span className="text-black text-4xl">&#10094;</span>
                                     </button>
-                                    <button type="button" onClick={() =>
-                                        setCurrentSlide(prev => prev === previewImage.length - 1 ? 0 : prev + 1)}
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setCurrentSlide((prev) =>
+                                                prev === previewImage.length - 1 ? 0 : prev + 1
+                                            )
+                                        }
                                         className="absolute top-1/2 right-0 -translate-y-1/2 z-10 bg-black/0 px-2 py-1 border-0"
                                     >
                                         <span className="text-black text-4xl">&#10095;</span>
@@ -256,38 +250,58 @@ export default function PenitipanBarangPage() {
                                     alt={`Preview ${currentSlide + 1}`}
                                     className="max-h-full max-w-full object-contain"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveImage(currentSlide)}
-                                    className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1"
-                                >
-                                    <X size={16} />
-                                </button>
+                                {isEditable && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveImage(currentSlide)}
+                                        className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                )}
                             </div>
 
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                id="fotoInput"
-                                onChange={handleImageChange}
-                                className="hidden"
-                            />
-                            <label
-                                htmlFor="fotoInput"
-                                className="absolute bottom-2 right-2 bg-green-600 text-white rounded-sm w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-green-700 text-lg"
-                                title="Tambah Foto"
-                            >
-                                +
-                            </label>
+                            {isEditable && (
+                                <>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        id="fotoInput"
+                                        onChange={handleImageChange}
+                                        className="hidden"
+                                    />
+                                    <label
+                                        htmlFor="fotoInput"
+                                        className="absolute bottom-2 right-2 bg-green-600 text-white rounded-sm w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-green-700 text-lg"
+                                        title="Tambah Foto"
+                                    >
+                                        +
+                                    </label>
+                                </>
+                            )}
                         </div>
                     ) : (
                         <div className="w-full h-48 flex items-center justify-center border rounded bg-gray-100 text-gray-400 relative">
                             Preview
-                            <div className="absolute bottom-2 right-2">
-                                <input type="file" accept="image/*" multiple id="fotoInput" onChange={handleImageChange} className="hidden" />
-                                <label htmlFor="fotoInput" className="bg-green-600 text-white rounded-sm w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-green-700 text-lg">+</label>
-                            </div>
+                            {isEditable && (
+                                <div className="absolute bottom-2 right-2">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        id="fotoInput"
+                                        onChange={handleImageChange}
+                                        className="hidden"
+                                    />
+                                    <label
+                                        htmlFor="fotoInput"
+                                        className="bg-green-600 text-white rounded-sm w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-green-700 text-lg"
+                                    >
+                                        +
+                                    </label>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -310,6 +324,7 @@ export default function PenitipanBarangPage() {
                             onChange={handlePenitipSearch}
                             autoComplete="off"
                             required
+                            disabled={!isEditable}
                         />
                         {showDropdown && filteredPenitip.length > 0 && (
                             <div className="position-absolute bg-white border rounded shadow w-100 z-10 max-h-60 overflow-auto">
@@ -327,12 +342,27 @@ export default function PenitipanBarangPage() {
                     </Form.Group>
 
                     {/* Field lainnya */}
-                    <Form.Group><Form.Label>Nama Barang</Form.Label>
-                        <Form.Control type="text" name="nama_barang" value={form.nama_barang} onChange={handleChange} required />
+                    <Form.Group>
+                        <Form.Label>Nama Barang</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="nama_barang"
+                            value={form.nama_barang}
+                            onChange={handleChange}
+                            required
+                            disabled={!isEditable}
+                        />
                     </Form.Group>
 
-                    <Form.Group><Form.Label>Kategori Barang</Form.Label>
-                        <Form.Select name="kategori_barang" value={form.kategori_barang} onChange={handleChange} required>
+                    <Form.Group>
+                        <Form.Label>Kategori Barang</Form.Label>
+                        <Form.Select
+                            name="kategori_barang"
+                            value={form.kategori_barang}
+                            onChange={handleChange}
+                            required
+                            disabled={!isEditable}
+                        >
                             <option value="">Pilih Kategori</option>
                             <option value="Elektronik & Gadget">Elektronik & Gadget</option>
                             <option value="Pakaian & Aksesori">Pakaian & Aksesori</option>
@@ -350,39 +380,84 @@ export default function PenitipanBarangPage() {
                     {form.kategori_barang === "Elektronik & Gadget" && (
                         <>
                             <Form.Group>
-                                <Form.Check type="checkbox" label="Barang ini memiliki garansi"
+                                <Form.Check
+                                    type="checkbox"
+                                    label="Barang ini memiliki garansi"
                                     checked={form.punya_garansi}
-                                    onChange={(e) => setForm({ ...form, punya_garansi: e.target.checked })}
+                                    onChange={(e) =>
+                                        setForm({ ...form, punya_garansi: e.target.checked })
+                                    }
+                                    disabled={!isEditable}
                                 />
                             </Form.Group>
                             {form.punya_garansi && (
                                 <Form.Group>
                                     <Form.Label>Tanggal Berakhir Garansi</Form.Label>
-                                    <Form.Control type="date" name="tanggal_garansi" value={form.tanggal_garansi} onChange={handleChange} />
+                                    <Form.Control
+                                        type="date"
+                                        name="tanggal_garansi"
+                                        value={form.tanggal_garansi}
+                                        onChange={handleChange}
+                                        disabled={!isEditable}
+                                    />
                                 </Form.Group>
                             )}
                         </>
                     )}
 
-                    <Form.Group><Form.Label>Deskripsi</Form.Label>
-                        <Form.Control as="textarea" name="deskripsi" value={form.deskripsi} onChange={handleChange} rows={3} required />
+                    <Form.Group>
+                        <Form.Label>Deskripsi</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            name="deskripsi"
+                            value={form.deskripsi}
+                            onChange={handleChange}
+                            rows={3}
+                            required
+                            disabled={!isEditable}
+                        />
                     </Form.Group>
 
-                    <Form.Group><Form.Label>Harga Barang</Form.Label>
-                        <Form.Control type="number" name="harga_barang" value={form.harga_barang} onChange={handleChange} required />
+                    <Form.Group>
+                        <Form.Label>Harga Barang</Form.Label>
+                        <Form.Control
+                            type="number"
+                            name="harga_barang"
+                            value={form.harga_barang}
+                            onChange={handleChange}
+                            required
+                            disabled={!isEditable}
+                        />
                     </Form.Group>
 
-                    <Form.Group><Form.Label>Nama QC</Form.Label>
-                        <Form.Control type="text" name="nama_qc" value={form.nama_qc} onChange={handleChange} required />
+                    <Form.Group>
+                        <Form.Label>Nama QC</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="nama_qc"
+                            value={form.nama_qc}
+                            onChange={handleChange}
+                            required
+                            disabled={!isEditable}
+                        />
                     </Form.Group>
                 </div>
 
-                <div className="text-center mt-5">
-                    <Button type="submit" disabled={loading}>
-                        {loading ? <Spinner size="sm" animation="border" /> : isEditMode ? "Update Barang" : "Simpan & Titipkan"}
-                    </Button>
-                </div>
+                {isEditable && (
+                    <div className="text-center mt-5">
+                        <Button type="submit" disabled={loading}>
+                            {loading ? (
+                                <Spinner size="sm" animation="border" />
+                            ) : isEditMode ? (
+                                "Update Barang"
+                            ) : (
+                                "Simpan & Titipkan"
+                            )}
+                        </Button>
+                    </div>
+                )}
             </Form>
         </div>
     );
+
 }
