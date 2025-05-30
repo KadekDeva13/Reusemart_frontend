@@ -49,7 +49,7 @@ const OwnerRequestDonasiPage = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-      `http://127.0.0.1:8000/api/kirim/{id_donasi}`,
+        "http://127.0.0.1:8000/api/kirimDonasi",
         {
           id_donasi: request.id_donasi,
           id_barang: barang.id_barang,

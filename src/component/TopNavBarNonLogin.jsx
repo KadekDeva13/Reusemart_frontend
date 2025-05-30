@@ -6,7 +6,7 @@ const TopNavbarNonLogin = () => {
   const navigate = useNavigate();
 
   const handleLogoClick = () => {
-    navigate("/home");
+    navigate("/home"); // Ganti "/home" dengan path yang sesuai untuk halaman Home Non Login
   };
 
   return (
@@ -43,7 +43,7 @@ const TopNavbarNonLogin = () => {
         {/* Sign In button on the right */}
         <Button
           variant="outline-light"
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/")}
           className="rounded-pill"
         >
           Sign In

@@ -10,6 +10,7 @@ export default function DetailBarangPage() {
   const [barang, setBarang] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     const fetchBarang = async () => {
@@ -17,8 +18,8 @@ export default function DetailBarangPage() {
         const token = localStorage.getItem("token");
         const res = await axios.get(`http://localhost:8000/api/barang/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
         setBarang(res.data);
       } catch (error) {
@@ -36,10 +37,39 @@ export default function DetailBarangPage() {
   };
 
   if (loading) return <div className="text-center mt-5">Memuat...</div>;
-  if (!barang) return <div className="text-center mt-5">Barang tidak ditemukan.</div>;
+  if (!barang)
+    return <div className="text-center mt-5">Barang tidak ditemukan.</div>;
+
+  const handleTambahKeranjang = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setAdding(true);
+    try {
+      await axios.post(
+        "http://localhost:8000/api/keranjang/tambah",
+        { id_barang: barang.id_barang },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      localStorage.setItem("cart_updated", Date.now());
+      window.dispatchEvent(new Event("storage"));
+
+      alert("Barang berhasil ditambahkan ke keranjang!");
+    } catch (err) {
+      console.error("Gagal menambahkan ke keranjang:", err);
+      alert("Gagal menambahkan barang.");
+    } finally {
+      setAdding(false);
+    }
+  };
 
   return (
-    <Container className="my-4">
+    <Container className="my-4" style={{ paddingTop: "100px" }}>
       <Row className="g-4">
         {/* Kolom Kiri: Gambar */}
         <Col md={6}>
@@ -61,8 +91,15 @@ export default function DetailBarangPage() {
                 src={`http://localhost:8000/storage/foto_barang/${foto.url_foto}`}
                 alt={`Foto ${i + 1}`}
                 onClick={() => setSelectedImage(i)}
-                className={`border rounded ${i === selectedImage ? "border-primary" : ""}`}
-                style={{ width: "60px", height: "60px", objectFit: "cover", cursor: "pointer" }}
+                className={`border rounded ${
+                  i === selectedImage ? "border-primary" : ""
+                }`}
+                style={{
+                  width: "60px",
+                  height: "60px",
+                  objectFit: "cover",
+                  cursor: "pointer",
+                }}
               />
             ))}
           </div>
@@ -71,16 +108,22 @@ export default function DetailBarangPage() {
         {/* Kolom Kanan: Detail dan Aksi */}
         <Col md={6}>
           <h4>{barang.nama_barang}</h4>
-          <h3 className="text-danger mb-4">Rp{parseInt(barang.harga_barang).toLocaleString("id-ID")}</h3>
+          <h3 className="text-danger mb-4">
+            Rp{parseInt(barang.harga_barang).toLocaleString("id-ID")}
+          </h3>
 
           {/* Card Aksi Pembelian */}
           <div className="border rounded p-3 shadow-sm mb-4">
             <div className="fw-semibold mb-2">Atur jumlah dan catatan</div>
 
             <div className="d-flex align-items-center mb-3">
-              <Button variant="outline-secondary" size="sm" disabled>-</Button>
+              <Button variant="outline-secondary" size="sm" disabled>
+                -
+              </Button>
               <span className="mx-3">1</span>
-              <Button variant="outline-secondary" size="sm" disabled>+</Button>
+              <Button variant="outline-secondary" size="sm" disabled>
+                +
+              </Button>
               <span className="ms-3 text-warning fw-semibold">
                 Stok Total: Sisa {barang.stock}
               </span>
@@ -93,7 +136,15 @@ export default function DetailBarangPage() {
               </span>
             </div>
 
-            <Button className="w-100 mb-2" variant="success">+ Keranjang</Button>
+            <Button
+              className="w-100 mb-2"
+              variant="success"
+              onClick={handleTambahKeranjang}
+              disabled={adding}
+            >
+              {adding ? "Menambahkan..." : "+ Keranjang"}
+            </Button>
+
             <div className="d-flex justify-content-between px-3 text-muted fs-6">
               <div
                 className="d-flex align-items-center gap-1"
@@ -113,9 +164,13 @@ export default function DetailBarangPage() {
 
           {/* Detail Tambahan */}
           <h6>Detail Barang</h6>
-          <p><strong>Kategori:</strong> {barang.kategori_barang}</p>
+          <p>
+            <strong>Kategori:</strong> {barang.kategori_barang}
+          </p>
           {barang.tanggal_garansi && (
-            <p><strong>Garansi:</strong> {barang.tanggal_garansi}</p>
+            <p>
+              <strong>Garansi:</strong> {barang.tanggal_garansi}
+            </p>
           )}
           <p>{barang.deskripsi}</p>
         </Col>

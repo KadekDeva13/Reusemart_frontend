@@ -40,7 +40,7 @@ export default function ResetEmailSentPage() {
         </Button>
 
         <p className="text-muted">
-          Didn't receive the email?{" "}
+          Didn’t receive the email?{" "}
           <span
             onClick={() => navigate("/forgot-password")}
             style={{ cursor: "pointer", color: "#6f42c1" }}

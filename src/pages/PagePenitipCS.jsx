@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Nav, Card, Form, Button, Row, Col, Table, Modal } from "react-bootstrap";
+import {
+  Tab,
+  Nav,
+  Card,
+  Form,
+  Button,
+  Row,
+  Col,
+  Table,
+  Modal,
+} from "react-bootstrap";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -23,30 +33,42 @@ export default function PenitipPageCS() {
   const [imagePreview, setImagePreview] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [editingId, setEditingId] = useState(null);
-  const [modalInfo, setModalInfo] = useState({ show: false, success: true, message: "" });
+  const [modalInfo, setModalInfo] = useState({
+    show: false,
+    success: true,
+    message: "",
+  });
   const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
-
   useEffect(() => {
     fetchPenitip();
   }, []);
+
+
 
   const fetchPenitip = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        showModal(false, "Token tidak ditemukan, silakan login terlebih dahulu.");
+        showModal(
+          false,
+          "Token tidak ditemukan, silakan login terlebih dahulu."
+        );
         return;
       }
 
-      const res = await axios.get("http://127.0.0.1:8000/api/penitip", {
+      const res = await axios.get("http://localhost:8000/api/penitip/", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       const data = res.data;
-      const list = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
+      const list = Array.isArray(data)
+        ? data
+        : Array.isArray(data.data)
+        ? data.data
+        : [];
       setPenitipList(list);
     } catch (error) {
       console.error("Gagal mengambil data penitip:", error);
@@ -101,7 +123,7 @@ export default function PenitipPageCS() {
     try {
       const endpoint = editingId
         ? `http://127.0.0.1:8000/api/penitip/update/${editingId}?_method=PUT`
-        : "http://127.0.0.1:8000/api/penitip/register";
+        : "http://127.0.0.1:8000/api/penitip/store";
 
       const token = localStorage.getItem("token");
 
@@ -112,13 +134,17 @@ export default function PenitipPageCS() {
         },
       });
 
-      showModal(true, editingId ? "Data berhasil diubah." : "Data berhasil ditambahkan.");
+      showModal(
+        true,
+        editingId ? "Data berhasil diubah." : "Data berhasil ditambahkan."
+      );
       fetchPenitip();
       resetForm();
       setShowEditModal(false);
     } catch (err) {
       console.error("Error submit data:", err);
-      const msg = err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.";
+      const msg =
+        err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.";
       showModal(false, msg);
     }
     resetForm();
@@ -167,20 +193,47 @@ export default function PenitipPageCS() {
   };
 
   const filteredPenitip = Array.isArray(penitipList)
-    ? penitipList.filter((p) => p.nama_lengkap?.toLowerCase().includes(searchQuery.toLowerCase()))
+    ? penitipList.filter((p) =>
+        p.nama_lengkap?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
     : [];
 
   return (
     <div className="pt-1 px-4 pb-4">
-      <div className="d-flex justify-content-end mb-3">
-        <Button variant="primary" onClick={() => navigate("/user/pegawai/barang")}>Kelola Barang</Button>
+      <div className="d-flex justify-content-between mb-3">
+        <Button
+          variant="primary"
+          onClick={() => navigate("/user/pegawai/barang")}
+        >
+          Kelola Barang
+        </Button>
+        <Button
+          variant="outline-success"
+          onClick={() => navigate("/user/pegawai/verifikasi-transaksi")}
+        >
+          Verifikasi Transaksi
+        </Button>
       </div>
-      <h4 className="fw-bold mb-4">Kelola Data Penitip</h4>
+
+      <Nav.Item>
+        <Nav.Link className="fw-bold mb-4" eventKey="data_penitip">
+          Kelola Data Penitip
+        </Nav.Link>
+      </Nav.Item>
       <Tab.Container defaultActiveKey="tambah">
         <Nav variant="tabs">
-          <Nav.Item><Nav.Link eventKey="tambah">Tambah</Nav.Link></Nav.Item>
-          <Nav.Item><Nav.Link eventKey="tampil">Tampil</Nav.Link></Nav.Item>
-          <Nav.Item><Nav.Link eventKey="cari">Cari</Nav.Link></Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey="tambah">Tambah</Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey="tampil">Tampil</Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey="cari">Cari</Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey="transaksi">Transaksi</Nav.Link>
+          </Nav.Item>
         </Nav>
 
         <Tab.Content className="mt-4">
@@ -294,7 +347,12 @@ export default function PenitipPageCS() {
 
                     <Form.Group className="mb-3">
                       <Form.Label>Foto KTP</Form.Label>
-                      <Form.Control type="file" name="foto_ktp" accept="image/*" onChange={handleInputChange} />
+                      <Form.Control
+                        type="file"
+                        name="foto_ktp"
+                        accept="image/*"
+                        onChange={handleInputChange}
+                      />
                     </Form.Group>
 
                     <Form.Group className="mb-3 text-center">
@@ -304,14 +362,26 @@ export default function PenitipPageCS() {
                           src={imagePreview}
                           alt="Preview"
                           className="rounded mb-2"
-                          style={{ width: "100%", height: 200, objectFit: "cover", border: "1px solid #ddd" }}
+                          style={{
+                            width: "100%",
+                            height: 200,
+                            objectFit: "cover",
+                            border: "1px solid #ddd",
+                          }}
                         />
                       )}
-                      <Form.Control type="file" name="image_user" accept="image/*" onChange={handleInputChange} />
+                      <Form.Control
+                        type="file"
+                        name="image_user"
+                        accept="image/*"
+                        onChange={handleInputChange}
+                      />
                     </Form.Group>
                   </Col>
                 </Row>
-                <Button type="submit" variant="success">Tambah Penitip</Button>
+                <Button type="submit" variant="success">
+                  Tambah Penitip
+                </Button>
               </Form>
             </Card>
           </Tab.Pane>
@@ -420,7 +490,11 @@ export default function PenitipPageCS() {
       </Tab.Container>
 
       {/* Edit Modal */}
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
+      <Modal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Ubah Data Penitip</Modal.Title>
         </Modal.Header>
@@ -477,26 +551,48 @@ export default function PenitipPageCS() {
                       src={imagePreview}
                       alt="Preview"
                       className="rounded mb-2"
-                      style={{ width: "100%", height: 200, objectFit: "cover", border: "1px solid #ddd" }}
+                      style={{
+                        width: "100%",
+                        height: 200,
+                        objectFit: "cover",
+                        border: "1px solid #ddd",
+                      }}
                     />
                   )}
-                  <Form.Control type="file" name="image_user" accept="image/*" onChange={handleInputChange} />
+                  <Form.Control
+                    type="file"
+                    name="image_user"
+                    accept="image/*"
+                    onChange={handleInputChange}
+                  />
                 </Form.Group>
               </Col>
             </Row>
-            <Button type="submit" variant="success">Ubah Penitip</Button>
+            <Button type="submit" variant="success">
+              Ubah Penitip
+            </Button>
           </Form>
         </Modal.Body>
       </Modal>
 
       {/* Modal Info */}
       <Modal show={modalInfo.show} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton className={modalInfo.success ? "bg-success text-white" : "bg-danger text-white"}>
+        <Modal.Header
+          closeButton
+          className={
+            modalInfo.success ? "bg-success text-white" : "bg-danger text-white"
+          }
+        >
           <Modal.Title>{modalInfo.success ? "Berhasil" : "Gagal"}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-center">{modalInfo.message}</Modal.Body>
         <Modal.Footer>
-          <Button variant={modalInfo.success ? "success" : "danger"} onClick={handleCloseModal}>Tutup</Button>
+          <Button
+            variant={modalInfo.success ? "success" : "danger"}
+            onClick={handleCloseModal}
+          >
+            Tutup
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

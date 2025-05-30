@@ -84,16 +84,18 @@ const HomePagePembeli = () => {
                   )
                 }
               >
-                <img
-                  src={cat.icon}
-                  alt={cat.label}
-                  className="mb-2"
-                  style={{
-                    width: "48px",
-                    height: "48px",
-                    objectFit: "contain",
-                  }}
-                />
+                <div className="flex justify-center">
+                  <img
+                    src={cat.icon}
+                    alt={cat.label}
+                    className="mb-2"
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      objectFit: "contain",
+                    }}
+                  />
+                </div>
                 <div className="small text-truncate">{cat.label}</div>
               </div>
             </Col>

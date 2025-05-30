@@ -420,7 +420,19 @@ export default function ProfilePagePenitip() {
                   <tr key={index}>
                     <td>{item.nama_barang}</td>
                     <td>{item.kategori_barang}</td>
-                    <td>Rp{parseInt(item.harga).toLocaleString()}</td>
+                    <td>
+                      Rp
+                      {isNaN(parseFloat(item.harga))
+                        ? "0"
+                        : parseFloat(item.harga).toLocaleString(
+                            "id-ID",
+                            {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                            }
+                          )}
+                    </td>
+
                     <td>{item.jumlah}</td>
                   </tr>
                 ))}

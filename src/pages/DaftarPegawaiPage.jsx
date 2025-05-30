@@ -40,7 +40,7 @@ const DaftarPegawaiPage = () => {
   const handleEdit = async (formData) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
+      const res = await axios.put(
         `http://localhost:8000/api/pegawai/update/${formData.id_pegawai}`,
         {
           nama_lengkap: formData.nama_lengkap,
