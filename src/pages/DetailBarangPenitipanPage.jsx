@@ -6,6 +6,7 @@ import axios from "axios";
 export default function DetailBarangPenitipanPage() {
   const { id } = useParams();
   const [penitipan, setPenitipan] = useState(null);
+  const [barang, setBarang] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [statusTransaksi, setStatusTransaksi] = useState("");
@@ -23,6 +24,7 @@ export default function DetailBarangPenitipanPage() {
       });
 
       setPenitipan(res.data.penitipan);
+      setBarang(res.data.barang);
       setStatusTransaksi(res.data.status_transaksi || "tidak diketahui");
       setStatusBarang(res.data.status_barang || "tidak diketahui");
     } catch (error) {
@@ -94,10 +96,8 @@ export default function DetailBarangPenitipanPage() {
       </div>
     );
 
-  if (!penitipan || !penitipan.barang)
+  if (!penitipan || !barang)
     return <div className="text-center mt-5">Data tidak ditemukan.</div>;
-
-  const barang = penitipan.barang;
 
   const renderStatusBarang = () => {
     const text = statusBarang;
