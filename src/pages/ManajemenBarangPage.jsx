@@ -29,14 +29,14 @@ const ManajemenBarangPage = () => {
                 autoClose: 2000,
             });
 
-            localStorage.removeItem("penitipanSuccess"); // supaya tidak muncul lagi
+            localStorage.removeItem("penitipanSuccess");
         }
     }, []);
 
     const fetchBarang = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:8000/api/barang/all", {
+            const res = await axios.get("http://localhost:8000/api/barang/all/barang", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -56,17 +56,19 @@ const ManajemenBarangPage = () => {
         const keyword = searchQuery.toLowerCase();
         const regex = new RegExp(`\\b${keyword}`, 'i');
 
+        const namaPenitip = item.detailpenitipan?.[0]?.penitipan?.penitip?.nama_lengkap || "";
+
         if (searchBy === "nama_barang") {
             return regex.test(item.nama_barang || "");
         } else if (searchBy === "kategori_barang") {
             return regex.test(item.kategori_barang || "");
         } else if (searchBy === "penitip") {
-            return regex.test(item.penitip?.nama_lengkap || "");
+            return regex.test(namaPenitip);
         } else {
             return (
                 regex.test(item.nama_barang || "") ||
                 regex.test(item.kategori_barang || "") ||
-                regex.test(item.penitip?.nama_lengkap || "")
+                regex.test(namaPenitip)
             );
         }
     });
@@ -118,9 +120,8 @@ const ManajemenBarangPage = () => {
                     <tbody>
                         {filteredBarang.length > 0 ? (
                             filteredBarang.map((item, index) => {
-                                // console.log("Item barang:", item);
-                                // console.log("Item.penitipan:", item.penitipan); // DEBUG ⬅️ Tambahan log di sini
-
+                                console.log("Penitip dari detailpenitipan:", item.detailpenitipan?.[0]?.penitipan?.penitip);
+                                const namaPenitip = item.detailpenitipan?.[0]?.penitipan?.penitip?.nama_lengkap || "-";
                                 return (
                                     <tr key={item.id_barang} className="hover:bg-gray-50">
                                         <td className="border border-gray-300 px-2 py-2">{index + 1}</td>
@@ -140,9 +141,7 @@ const ManajemenBarangPage = () => {
                                             <div className="text-sm text-gray-500">{item.deskripsi}</div>
                                         </td>
                                         <td className="border border-gray-300 px-2 py-2">{item.kategori_barang}</td>
-                                        <td className="border border-gray-300 px-2 py-2">
-                                            {item.penitip?.nama_lengkap || "-"}
-                                        </td>
+                                        <td className="border border-gray-300 px-2 py-2">{namaPenitip}</td>
                                         <td className="border border-gray-300 px-2 py-2">
                                             <button
                                                 onClick={() => handleEdit(item)}
@@ -162,7 +161,6 @@ const ManajemenBarangPage = () => {
                             </tr>
                         )}
                     </tbody>
-
                 </table>
             </div>
         </div>

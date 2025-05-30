@@ -85,7 +85,7 @@ export default function NotaPenjualanPembeliPage() {
 
         {selectedTransaksi && (
           <PDFDownloadLink
-            document={<NotaPDF transaksiList={[selectedTransaksi]} />}
+            document={<NotaPDFPembeli transaksiList={[selectedTransaksi]} />}
             fileName={`${selectedTransaksi.nomor_nota}.pdf`}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
           >
@@ -98,7 +98,7 @@ export default function NotaPenjualanPembeliPage() {
       {selectedTransaksi && (
         <div className="lg:w-1/2 h-[600px] border border-gray-300 rounded">
           <PDFViewer width="100%" height="100%" className="rounded">
-            <NotaPDF transaksiList={[selectedTransaksi]} />
+            <NotaPDFPembeli transaksiList={[selectedTransaksi]} />
           </PDFViewer>
         </div>
       )}

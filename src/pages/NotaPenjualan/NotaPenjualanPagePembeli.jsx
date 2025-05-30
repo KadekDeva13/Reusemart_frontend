@@ -18,7 +18,10 @@ const styles = StyleSheet.create({
   },
   label: { width: 90 },
   value: { flex: 1 },
+  signatureSpace: { marginTop: 20 },
 });
+
+const safeText = (val) => typeof val === "string" ? val : String(val ?? "-");
 
 const formatRupiah = (number) => {
   if (!number && number !== 0) return '-';
@@ -47,7 +50,7 @@ const formatTanggal = (tanggal) => {
   return `${day}/${month}/${year}`;
 };
 
-const NotaPDF = ({ transaksiList }) => {
+const NotaPDFPembeli = ({ transaksiList }) => {
   if (!Array.isArray(transaksiList) || transaksiList.length === 0) {
     return (
       <Document>
@@ -65,7 +68,11 @@ const NotaPDF = ({ transaksiList }) => {
         const baseHeight = 430;
         const pageHeight = baseHeight + itemCount * 22;
 
-        if (!['selesai', 'sedang disiapkan', 'pengambilan mandiri'].includes(transaksi.status_transaksi)) {
+        const statusValid = ['selesai', 'sedang disiapkan', 'pengambilan mandiri'].includes(
+          String(transaksi.status_transaksi).toLowerCase()
+        );
+
+        if (!statusValid) {
           return (
             <Page key={index} size={[283.5, 100]} style={styles.page}>
               <Text style={styles.title}>Transaksi tidak valid untuk nota.</Text>
@@ -73,7 +80,6 @@ const NotaPDF = ({ transaksiList }) => {
           );
         }
 
-        // ✅ Hitung total ulang dari detailtransaksi
         const totalBarang = transaksi.detailtransaksi?.reduce(
           (sum, dt) => sum + (dt.barang?.harga_barang || 0),
           0
@@ -101,7 +107,7 @@ const NotaPDF = ({ transaksiList }) => {
               <View style={styles.section}>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>No Nota</Text>
-                  <Text style={styles.value}>: {transaksi.nomor_nota || '-'}</Text>
+                  <Text style={styles.value}>: {safeText(transaksi.nomor_nota)}</Text>
                 </View>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>Tanggal pesan</Text>
@@ -109,7 +115,7 @@ const NotaPDF = ({ transaksiList }) => {
                 </View>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>Lunas pada</Text>
-                  <Text style={styles.value}>: {transaksi.tanggal_pelunasan ? formatTanggalDenganJamLokal(transaksi.tanggal_pelunasan) : 'Belum dilunasi'}</Text>
+                  <Text style={styles.value}>: {transaksi.tanggal_pelunasan ? formatTanggalDenganJamLokal(transaksi.tanggal_pelunasan) : '-'}</Text>
                 </View>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>Tanggal ambil</Text>
@@ -119,19 +125,19 @@ const NotaPDF = ({ transaksiList }) => {
 
               <View style={styles.section}>
                 <Text style={styles.bold}>Pembeli :</Text>
-                <Text>{transaksi.pembeli?.email || '-'} / {transaksi.pembeli?.nama_lengkap || '-'}</Text>
+                <Text>{safeText(transaksi.pembeli?.email)} / {safeText(transaksi.pembeli?.nama_lengkap)}</Text>
                 <Text>
                   {(transaksi.pembeli && transaksi.pembeli.alamat)
-                    ? `${transaksi.pembeli.alamat.detail_alamat}, ${transaksi.pembeli.alamat.kelurahan}, ${transaksi.pembeli.alamat.kecamatan}, ${transaksi.pembeli.alamat.provinsi}, ${transaksi.pembeli.alamat.kode_pos}`
+                    ? safeText(`${transaksi.pembeli.alamat.detail_alamat}, ${transaksi.pembeli.alamat.kelurahan}, ${transaksi.pembeli.alamat.kecamatan}, ${transaksi.pembeli.alamat.provinsi}, ${transaksi.pembeli.alamat.kode_pos}`)
                     : 'Alamat tidak tersedia'}
                 </Text>
-                <Text>Delivery: - ({transaksi.jenis_pengiriman || '-'})</Text>
+                <Text>Delivery: - ({safeText(transaksi.jenis_pengiriman)})</Text>
               </View>
 
               <View style={styles.section}>
                 {transaksi.detailtransaksi?.length > 0 ? transaksi.detailtransaksi.map((dt, i) => (
                   <View key={i} style={styles.row}>
-                    <Text>{dt.barang?.nama_barang || '-'}</Text>
+                    <Text>{safeText(dt.barang?.nama_barang)}</Text>
                     <Text>{formatRupiah(dt.barang?.harga_barang)}</Text>
                   </View>
                 )) : <Text>-</Text>}
@@ -151,12 +157,12 @@ const NotaPDF = ({ transaksiList }) => {
               </View>
 
               <View style={styles.section}>
-                <Text>QC oleh: {getQcName()}</Text>
+                <Text>QC oleh: {safeText(getQcName())}</Text>
               </View>
 
               <View style={styles.section}>
                 <Text>Diterima oleh:</Text>
-                <Text style={{ marginTop: 20 }}>(........................................)</Text>
+                <Text style={styles.signatureSpace}>(........................................)</Text>
                 <Text>Tanggal: ............................</Text>
               </View>
             </View>
@@ -167,4 +173,4 @@ const NotaPDF = ({ transaksiList }) => {
   );
 };
 
-export default NotaPDF;
+export default NotaPDFPembeli;
