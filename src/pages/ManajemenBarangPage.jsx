@@ -61,12 +61,12 @@ const ManajemenBarangPage = () => {
         } else if (searchBy === "kategori_barang") {
             return regex.test(item.kategori_barang || "");
         } else if (searchBy === "penitip") {
-            return regex.test(item.penitip?.nama_lengkap || "");
+            return regex.test(item.penitipan?.[0]?.penitip?.nama_lengkap || "");
         } else {
             return (
                 regex.test(item.nama_barang || "") ||
                 regex.test(item.kategori_barang || "") ||
-                regex.test(item.penitip?.nama_lengkap || "")
+                regex.test(item.penitipan?.[0]?.penitip?.nama_lengkap || "")
             );
         }
     });
@@ -118,9 +118,6 @@ const ManajemenBarangPage = () => {
                     <tbody>
                         {filteredBarang.length > 0 ? (
                             filteredBarang.map((item, index) => {
-                                // console.log("Item barang:", item);
-                                // console.log("Item.penitipan:", item.penitipan); // DEBUG ⬅️ Tambahan log di sini
-
                                 return (
                                     <tr key={item.id_barang} className="hover:bg-gray-50">
                                         <td className="border border-gray-300 px-2 py-2">{index + 1}</td>
@@ -141,7 +138,7 @@ const ManajemenBarangPage = () => {
                                         </td>
                                         <td className="border border-gray-300 px-2 py-2">{item.kategori_barang}</td>
                                         <td className="border border-gray-300 px-2 py-2">
-                                            {item.penitip?.nama_lengkap || "-"}
+                                            {item.penitipan?.[0]?.penitip?.nama_lengkap || "-"}
                                         </td>
                                         <td className="border border-gray-300 px-2 py-2">
                                             <button

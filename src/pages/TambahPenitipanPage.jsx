@@ -3,14 +3,24 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const TambahPenitipanPage = () => {
-    const [step, setStep] = useState(1);
     const [penitipList, setPenitipList] = useState([]);
+    const [hunterList, setHunterList] = useState([]);
+    const [searchHunter, setSearchHunter] = useState("");
+    const [filteredHunter, setFilteredHunter] = useState([]);
+    const [showHunterDropdown, setShowHunterDropdown] = useState(false);
     const [barangList, setBarangList] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    const [step, setStep] = useState(() => {
+        const saved = localStorage.getItem("penitipan_step");
+        return saved ? parseInt(saved) : 1;
+    });
+
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
         id_penitip: "",
+        id_hunter: "",
         nama_qc: "",
         nama_barang: "",
         kategori_barang: "",
@@ -24,7 +34,33 @@ const TambahPenitipanPage = () => {
 
     useEffect(() => {
         fetchPenitip();
+        fetchHunter();
     }, []);
+
+    useEffect(() => {
+        localStorage.setItem("penitipan_step", step.toString());
+    }, [step]);
+
+    useEffect(() => {
+        // Pastikan step dan form di-load ulang
+        const savedStep = localStorage.getItem("penitipan_step");
+        if (savedStep) setStep(parseInt(savedStep));
+
+        const savedForm = localStorage.getItem("penitipan_form");
+        if (savedForm) {
+            setForm((prev) => ({
+                ...prev,
+                ...JSON.parse(savedForm),
+            }));
+        }
+
+        const tempBarang = JSON.parse(localStorage.getItem("temp_barang_list") || "[]");
+        setBarangList(tempBarang);
+
+        // ⬇️ Tambahkan ini di bawah:
+        window._fotoBarangCache = window._fotoBarangCache || [];
+    }, []);
+
 
     const fetchPenitip = async () => {
         const token = localStorage.getItem("token");
@@ -33,6 +69,15 @@ const TambahPenitipanPage = () => {
         });
         setPenitipList(res.data.data || []);
     };
+
+    const fetchHunter = async () => {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:8000/api/pegawai/hunter", {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        setHunterList(res.data.data || []);
+    };
+
 
     const handleBarangAdd = () => {
         if (!form.nama_barang) return alert("Isi nama barang");
@@ -55,7 +100,6 @@ const TambahPenitipanPage = () => {
             setLoading(true);
             const token = localStorage.getItem("token");
 
-            // 1. Buat penitipan
             const res = await axios.post(
                 "http://localhost:8000/api/penitipan/full-store",
                 {
@@ -67,20 +111,26 @@ const TambahPenitipanPage = () => {
 
             const id_penitipan = res.data.data.id_penitipan;
 
-            // 2. Simpan barang satu per satu
-            for (const barang of barangList) {
+            const fotoCache = window._fotoBarangCache || [];
+
+            for (let i = 0; i < barangList.length; i++) {
+                const barang = barangList[i];
                 const formData = new FormData();
                 formData.append("nama_barang", barang.nama_barang);
                 formData.append("kategori_barang", barang.kategori_barang);
                 formData.append("deskripsi", barang.deskripsi);
                 formData.append("harga_barang", barang.harga_barang);
+                formData.append("berat_barang", barang.berat_barang);
                 formData.append("stock", barang.stock);
                 formData.append("status_barang", barang.status_barang);
+
                 if (barang.tanggal_garansi)
                     formData.append("tanggal_garansi", barang.tanggal_garansi);
-                for (let foto of barang.foto_barang) {
-                    formData.append("foto_barang[]", foto);
-                }
+
+                const fileSet = fotoCache[i] || [];
+                fileSet.forEach((file) => {
+                    formData.append("foto_barang[]", file);
+                });
 
                 await axios.post(
                     `http://localhost:8000/api/penitipan/barang/${id_penitipan}`,
@@ -95,6 +145,12 @@ const TambahPenitipanPage = () => {
             }
 
             alert("Penitipan dan semua barang berhasil ditambahkan.");
+            localStorage.removeItem("penitipan_step");
+            localStorage.removeItem("penitipan_form");
+            localStorage.removeItem("penitipan_id_penitip");
+            localStorage.removeItem("penitipan_id_hunter");
+            localStorage.removeItem("temp_barang_list");
+            window._fotoBarangCache = []; // bersihkan cache file
             navigate("/user/gudang/penitipan-daftar");
         } catch (err) {
             console.error("Gagal submit penitipan:", err);
@@ -129,6 +185,47 @@ const TambahPenitipanPage = () => {
                             ))}
                         </select>
 
+                        <label className="block mb-2">Cari Hunter (Opsional):</label>
+                        <input
+                            type="text"
+                            className="w-full border rounded p-2 mb-4"
+                            placeholder="Ketik nama hunter..."
+                            value={searchHunter}
+                            onChange={(e) => {
+                                const keyword = e.target.value;
+                                setSearchHunter(keyword);
+                                if (!keyword.trim()) {
+                                    setFilteredHunter([]);
+                                    setShowHunterDropdown(false);
+                                    return;
+                                }
+                                const filtered = hunterList.filter((h) =>
+                                    h.nama_lengkap.toLowerCase().includes(keyword.toLowerCase())
+                                );
+                                setFilteredHunter(filtered);
+                                setShowHunterDropdown(true);
+                            }}
+                            autoComplete="off"
+                        />
+                        {showHunterDropdown && filteredHunter.length > 0 && (
+                            <div className="border rounded shadow bg-white max-h-40 overflow-auto mb-4">
+                                {filteredHunter.map((h) => (
+                                    <div
+                                        key={h.id_pegawai}
+                                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                                        onClick={() => {
+                                            setSearchHunter(h.nama_lengkap);
+                                            setFilteredHunter([]);
+                                            setShowHunterDropdown(false);
+                                            localStorage.setItem("penitipan_id_hunter", h.id_pegawai); // ⬅️ Simpan ke localStorage
+                                        }}
+                                    >
+                                        {h.nama_lengkap}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
                         <label className="block mb-2">Nama QC:</label>
                         <input
                             type="text"
@@ -138,8 +235,15 @@ const TambahPenitipanPage = () => {
                         />
 
                         <button
-                            onClick={() => setStep(2)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                            onClick={() => {
+                                // simpan sebelum lanjut
+                                localStorage.setItem("penitipan_form", JSON.stringify({
+                                    id_penitip: form.id_penitip,
+                                    id_hunter: form.id_hunter,
+                                    nama_qc: form.nama_qc,
+                                }));
+                                setStep(2);
+                            }}
                             disabled={!form.id_penitip || !form.nama_qc}
                         >
                             Lanjut ke Tambah Barang →
@@ -149,126 +253,67 @@ const TambahPenitipanPage = () => {
 
                 {step === 2 && (
                     <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Barang</label>
-                                <input
-                                    type="text"
-                                    placeholder="Nama Barang"
-                                    className="w-full border p-2 rounded"
-                                    value={form.nama_barang}
-                                    onChange={(e) => setForm({ ...form, nama_barang: e.target.value })}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Kategori Barang</label>
-                                <select
-                                    name="kategori_barang"
-                                    value={form.kategori_barang}
-                                    onChange={(e) => setForm({ ...form, kategori_barang: e.target.value })}
-                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                >
-                                    <option value="">Pilih Kategori</option>
-                                    <option value="Elektronik & Gadget">Elektronik & Gadget</option>
-                                    <option value="Pakaian & Aksesori">Pakaian & Aksesori</option>
-                                    <option value="Perabotan Rumah Tangga">Perabotan Rumah Tangga</option>
-                                    <option value="Buku, Alat Tulis, & Peralatan Sekolah">Buku, Alat Tulis, & Peralatan Sekolah</option>
-                                    <option value="Hobi, Mainan, & Koleksi">Hobi, Mainan, & Koleksi</option>
-                                    <option value="Perlengkapan Bayi & Anak">Perlengkapan Bayi & Anak</option>
-                                    <option value="Otomotif & Aksesori">Otomotif & Aksesori</option>
-                                    <option value="Perlengkapan Taman & Outdoor">Perlengkapan Taman & Outdoor</option>
-                                    <option value="Peralatan Kantor & Industri">Peralatan Kantor & Industri</option>
-                                    <option value="Kosmetik & Perawatan Diri">Kosmetik & Perawatan Diri</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                                <input
-                                    type="text"
-                                    placeholder="Deskripsi"
-                                    className="w-full border p-2 rounded"
-                                    value={form.deskripsi}
-                                    onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Harga</label>
-                                <input
-                                    type="number"
-                                    placeholder="Harga"
-                                    className="w-full border p-2 rounded"
-                                    value={form.harga_barang}
-                                    onChange={(e) => setForm({ ...form, harga_barang: e.target.value })}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Stok</label>
-                                <input
-                                    type="number"
-                                    placeholder="Stok"
-                                    className="w-full border p-2 rounded"
-                                    value={form.stock}
-                                    onChange={(e) => setForm({ ...form, stock: e.target.value })}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Garansi (opsional)</label>
-                                <input
-                                    type="date"
-                                    className="w-full border p-2 rounded"
-                                    value={form.tanggal_garansi}
-                                    onChange={(e) => setForm({ ...form, tanggal_garansi: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Foto Barang</label>
-                                <input
-                                    type="file"
-                                    multiple
-                                    className="w-full border p-2 rounded"
-                                    onChange={handleFotoChange}
-                                />
-                            </div>
-
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-semibold">Daftar Barang Titipan</h3>
+                            <button
+                                onClick={() => {
+                                    // Simpan ke localStorage
+                                    localStorage.setItem("penitipan_form", JSON.stringify({
+                                        id_penitip: form.id_penitip,
+                                        id_hunter: form.id_hunter,
+                                        nama_qc: form.nama_qc,
+                                    }));
+                                    navigate(`/user/gudang/tambah-barang?id_penitipan=temp`);
+                                }}
+                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                            >
+                                + Tambah Barang
+                            </button>
                         </div>
 
+                        <div className="bg-white rounded shadow overflow-x-auto">
+                            <table className="w-full text-sm text-center border">
+                                <thead className="bg-green-100 text-gray-800 font-semibold">
+                                    <tr>
+                                        <th className="py-3 border">No</th>
+                                        <th className="py-3 border">Nama Barang</th>
+                                        <th className="py-3 border">Kategori</th>
+                                        <th className="py-3 border">Harga</th>
+                                        <th className="py-3 border">Stok</th>
+                                        <th className="py-3 border">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {barangList.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" className="py-4 text-gray-500">
+                                                Belum ada barang ditambahkan.
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        barangList.map((barang, index) => (
+                                            <tr key={index} className="hover:bg-gray-50">
+                                                <td className="border py-2">{index + 1}</td>
+                                                <td className="border py-2">{barang.nama_barang}</td>
+                                                <td className="border py-2">{barang.kategori_barang}</td>
+                                                <td className="border py-2">Rp {Number(barang.harga_barang).toLocaleString("id-ID")}</td>
+                                                <td className="border py-2">{barang.stock}</td>
+                                                <td className="border py-2 capitalize">{barang.status_barang}</td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
 
-                        <div className="flex justify-between mt-4">
+                        <div className="mt-6 flex justify-between">
                             <button
                                 className="bg-gray-500 text-white px-4 py-2 rounded"
                                 onClick={() => setStep(1)}
                             >
                                 ← Kembali
                             </button>
-                            <button
-                                className="bg-green-600 text-white px-4 py-2 rounded"
-                                onClick={handleBarangAdd}
-                            >
-                                + Tambah Barang ke Daftar
-                            </button>
-                        </div>
 
-                        <div className="mt-6">
-                            <h4 className="font-bold mb-2">Daftar Barang Ditambahkan:</h4>
-                            {barangList.length === 0 ? (
-                                <p className="text-gray-500">Belum ada barang.</p>
-                            ) : (
-                                <ul className="list-disc pl-5">
-                                    {barangList.map((b, i) => (
-                                        <li key={i}>{b.nama_barang} - {b.kategori_barang}</li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-
-                        <div className="mt-6 text-right">
                             <button
                                 className="bg-blue-700 text-white px-6 py-2 rounded"
                                 onClick={handleSubmit}
