@@ -3,6 +3,14 @@ import axios from "axios";
 import NotaPDF from "../pages/NotaPenjualan/NotaPenjualanPageKurir";
 import { pdf, PDFViewer } from "@react-pdf/renderer";
 
+const generateNomorNotaFrontend = (trx) => {
+  const tanggal = new Date(trx.created_at || Date.now());
+  const tahun2Digit = String(tanggal.getFullYear()).slice(-2);
+  const bulan = String(tanggal.getMonth() + 1).padStart(2, '0');
+  const id = String(trx.id_transaksi).padStart(3, '0');
+  return `${tahun2Digit}.${bulan}.${id}`;
+};
+
 export default function NotaPenjualanKurirPage() {
   const [transaksiList, setTransaksiList] = useState([]);
   const [selectedTransaksi, setSelectedTransaksi] = useState(null);
@@ -31,7 +39,6 @@ export default function NotaPenjualanKurirPage() {
     }
   };
 
-  // Filter untuk dropdown unik berdasarkan nomor_nota + nama pembeli
   const uniqueNotaList = transaksiList.filter(
     (trx, index, self) =>
       index === self.findIndex(
@@ -108,10 +115,10 @@ export default function NotaPenjualanKurirPage() {
             <option value="">-- Pilih Transaksi --</option>
             {uniqueNotaList.map(trx => (
               <option
-                key={trx.nomor_nota + trx.pembeli?.nama_lengkap}
+                key={trx.id_transaksi}
                 value={trx.nomor_nota}
               >
-                {trx.nomor_nota} - {trx.pembeli?.nama_lengkap || "Pembeli"}
+                {generateNomorNotaFrontend(trx)} - {trx.pembeli?.nama_lengkap || "Pembeli"}
               </option>
             ))}
           </select>

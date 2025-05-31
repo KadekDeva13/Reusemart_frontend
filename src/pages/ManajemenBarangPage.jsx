@@ -29,14 +29,14 @@ const ManajemenBarangPage = () => {
                 autoClose: 2000,
             });
 
-            localStorage.removeItem("penitipanSuccess"); // supaya tidak muncul lagi
+            localStorage.removeItem("penitipanSuccess");
         }
     }, []);
 
     const fetchBarang = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:8000/api/barang/all", {
+            const res = await axios.get("http://localhost:8000/api/barang/all/barang", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -55,6 +55,8 @@ const ManajemenBarangPage = () => {
     const filteredBarang = barangList.filter((item) => {
         const keyword = searchQuery.toLowerCase();
         const regex = new RegExp(`\\b${keyword}`, 'i');
+
+        const namaPenitip = item.detailpenitipan?.[0]?.penitipan?.penitip?.nama_lengkap || "";
 
         if (searchBy === "nama_barang") {
             return regex.test(item.nama_barang || "");
@@ -118,6 +120,8 @@ const ManajemenBarangPage = () => {
                     <tbody>
                         {filteredBarang.length > 0 ? (
                             filteredBarang.map((item, index) => {
+                                console.log("Penitip dari detailpenitipan:", item.detailpenitipan?.[0]?.penitipan?.penitip);
+                                const namaPenitip = item.detailpenitipan?.[0]?.penitipan?.penitip?.nama_lengkap || "-";
                                 return (
                                     <tr key={item.id_barang} className="hover:bg-gray-50">
                                         <td className="border border-gray-300 px-2 py-2">{index + 1}</td>
@@ -159,7 +163,6 @@ const ManajemenBarangPage = () => {
                             </tr>
                         )}
                     </tbody>
-
                 </table>
             </div>
         </div>

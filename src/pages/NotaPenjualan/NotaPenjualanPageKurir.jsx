@@ -22,7 +22,12 @@ const styles = StyleSheet.create({
   value: {
     flex: 1,
   },
+  signatureSpace: {
+    marginTop: 20,
+  },
 });
+
+const safeText = (val) => typeof val === 'string' ? val : String(val ?? '-');
 
 const formatRupiah = (number) => {
   if (!number && number !== 0) return '-';
@@ -58,6 +63,15 @@ const getNamaKurir = (transaksi) => {
   return '-';
 };
 
+const generateNomorNota = (transaksi) => {
+  const tanggal = new Date(transaksi.created_at || Date.now());
+  const tahun = String(tanggal.getFullYear()).slice(-2); // ambil 2 digit akhir
+  const bulan = String(tanggal.getMonth() + 1).padStart(2, '0');
+  const urut = String(transaksi.id_transaksi).padStart(3, '0'); // << penting!
+  return `${tahun}.${bulan}.${urut}`;
+};
+
+
 const NotaPDF = ({ transaksiList }) => {
   if (!Array.isArray(transaksiList) || transaksiList.length === 0) {
     return (
@@ -79,12 +93,11 @@ const NotaPDF = ({ transaksiList }) => {
         if (!['selesai', 'sedang disiapkan', 'dikirim'].includes(transaksi.status_transaksi)) {
           return (
             <Page key={index} size={[283.5, 100]} style={styles.page}>
-              <Text style={styles.title}>Transaksi {transaksi.nomor_nota || index + 1} tidak valid untuk nota.</Text>
+              <Text style={styles.value}>: {generateNomorNota(transaksi)}</Text>
             </Page>
           );
         }
 
-        // ✅ Hitung ulang total harga barang
         const totalBarang = transaksi.detailtransaksi?.reduce(
           (sum, dt) => sum + (dt.barang?.harga_barang || 0),
           0
@@ -95,11 +108,12 @@ const NotaPDF = ({ transaksiList }) => {
 
         const getQcName = () => {
           for (const dt of transaksi.detailtransaksi || []) {
-            const qc = dt.barang?.penitipan?.nama_qc;
-            if (qc) return qc;
+            const namaQC = dt?.barang?.detailpenitipan?.penitipan?.pegawai_qc?.nama_lengkap;
+            if (namaQC) return namaQC;
           }
-          return '-';
+          return "-";
         };
+
 
         return (
           <Page key={index} size={[283.5, pageHeight]} style={styles.page}>
@@ -112,7 +126,7 @@ const NotaPDF = ({ transaksiList }) => {
               <View style={styles.section}>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>No Nota</Text>
-                  <Text style={styles.value}>: {transaksi.nomor_nota || '-'}</Text>
+                   <Text style={styles.value}>: {generateNomorNota(transaksi)}</Text>
                 </View>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>Tanggal pesan</Text>
@@ -120,7 +134,7 @@ const NotaPDF = ({ transaksiList }) => {
                 </View>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>Lunas pada</Text>
-                  <Text style={styles.value}>: {transaksi.tanggal_pelunasan ? formatTanggalDenganJamLokal(transaksi.tanggal_pelunasan) : 'Belum dilunasi'}</Text>
+                  <Text style={styles.value}>: {transaksi.tanggal_pelunasan ? formatTanggalDenganJamLokal(transaksi.tanggal_pelunasan) : '-'}</Text>
                 </View>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>Tanggal kirim</Text>
@@ -130,19 +144,32 @@ const NotaPDF = ({ transaksiList }) => {
 
               <View style={styles.section}>
                 <Text style={styles.bold}>Pembeli :</Text>
-                <Text>{transaksi.pembeli?.email || '-'} / {transaksi.pembeli?.nama_lengkap || '-'}</Text>
-                <Text>
-                  {(transaksi.pembeli && transaksi.pembeli.alamat)
-                    ? `${transaksi.pembeli.alamat.detail_alamat}, ${transaksi.pembeli.alamat.kelurahan}, ${transaksi.pembeli.alamat.kecamatan}, ${transaksi.pembeli.alamat.provinsi}, ${transaksi.pembeli.alamat.kode_pos}`
-                    : 'Alamat tidak tersedia'}
-                </Text>
-                <Text>Delivery: Kurir ReUseMart ({getNamaKurir(transaksi)})</Text>
+                <Text>{safeText(transaksi.pembeli?.email)} / {safeText(transaksi.pembeli?.nama_lengkap)}</Text>
+                {transaksi.pembeli?.alamat?.length > 0 ? (
+                  (() => {
+                    const alamat = transaksi.pembeli.alamat[0];
+                    return (
+                      <Text>
+                        {[
+                          alamat.detail_alamat || '-',
+                          alamat.kelurahan || '-',
+                          alamat.kecamatan || '-',
+                          alamat.provinsi || '-',
+                          alamat.kode_pos || '-',
+                        ].join(', ')}
+                      </Text>
+                    );
+                  })()
+                ) : (
+                  <Text>Alamat tidak tersedia</Text>
+                )}
+                <Text>Delivery: Kurir ReUseMart ({safeText(getNamaKurir(transaksi))})</Text>
               </View>
 
               <View style={styles.section}>
                 {transaksi.detailtransaksi?.length > 0 ? transaksi.detailtransaksi.map((dt, i) => (
                   <View key={i} style={styles.row}>
-                    <Text>{dt.barang?.nama_barang || '-'}</Text>
+                    <Text>{safeText(dt.barang?.nama_barang)}</Text>
                     <Text>{formatRupiah(dt.barang?.harga_barang)}</Text>
                   </View>
                 )) : <Text>-</Text>}
@@ -162,12 +189,13 @@ const NotaPDF = ({ transaksiList }) => {
               </View>
 
               <View style={styles.section}>
-                <Text>QC oleh: {getQcName()}</Text>
+                <Text>QC oleh: {safeText(getQcName())}</Text>
               </View>
+
 
               <View style={styles.section}>
                 <Text>Diterima oleh:</Text>
-                <Text style={{ marginTop: 20 }}>(........................................)</Text>
+                <Text style={styles.signatureSpace}>(........................................)</Text>
                 <Text>Tanggal: ............................</Text>
               </View>
             </View>

@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import NotaPDF from "../pages/NotaPenjualan/NotaPenjualanPagePembeli";
+import NotaPDFPembeli from "../pages/NotaPenjualan/NotaPenjualanPagePembeli";
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
+
+// Fungsi generate nomor nota frontend format YY.MM.id_transaksi
+const generateNomorNotaFrontend = (trx) => {
+  const tanggal = new Date(trx.created_at || Date.now());
+  const tahun2Digit = String(tanggal.getFullYear()).slice(-2);
+  const bulan = String(tanggal.getMonth() + 1).padStart(2, '0');
+  const id = String(trx.id_transaksi).padStart(3, '0');
+  return `${tahun2Digit}.${bulan}.${id}`;
+};
 
 export default function NotaPenjualanPembeliPage() {
   const [transaksiList, setTransaksiList] = useState([]);
@@ -30,7 +39,6 @@ export default function NotaPenjualanPembeliPage() {
     }
   };
 
-  // Menghindari duplikat nomor_nota + pembeli
   const uniqueTransaksiList = transaksiList.filter(
     (trx, index, self) =>
       index === self.findIndex(
@@ -77,7 +85,7 @@ export default function NotaPenjualanPembeliPage() {
                 key={trx.nomor_nota + trx.pembeli?.nama_lengkap}
                 value={trx.nomor_nota}
               >
-                {trx.nomor_nota} - {trx.pembeli?.nama_lengkap || "Pembeli"}
+                {generateNomorNotaFrontend(trx)} - {trx.pembeli?.nama_lengkap || "Pembeli"}
               </option>
             ))}
           </select>
@@ -85,8 +93,8 @@ export default function NotaPenjualanPembeliPage() {
 
         {selectedTransaksi && (
           <PDFDownloadLink
-            document={<NotaPDF transaksiList={[selectedTransaksi]} />}
-            fileName={`${selectedTransaksi.nomor_nota}.pdf`}
+            document={<NotaPDFPembeli transaksiList={[selectedTransaksi]} />}
+            fileName={`${generateNomorNotaFrontend(selectedTransaksi)}.pdf`}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
           >
             {({ loading }) => loading ? "Membuat Nota..." : "Download Nota Penjualan"}
@@ -98,7 +106,7 @@ export default function NotaPenjualanPembeliPage() {
       {selectedTransaksi && (
         <div className="lg:w-1/2 h-[600px] border border-gray-300 rounded">
           <PDFViewer width="100%" height="100%" className="rounded">
-            <NotaPDF transaksiList={[selectedTransaksi]} />
+            <NotaPDFPembeli transaksiList={[selectedTransaksi]} />
           </PDFViewer>
         </div>
       )}

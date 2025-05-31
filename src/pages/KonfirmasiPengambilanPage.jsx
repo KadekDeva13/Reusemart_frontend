@@ -54,13 +54,19 @@ const KonfirmasiPengambilanPage = () => {
 
   return (
     <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">Konfirmasi Pengambilan Barang oleh Penitip</h2>
+      <h2 className="text-xl font-bold mb-4">
+        Konfirmasi Pengambilan Barang oleh Penitip
+      </h2>
 
       {successMsg && (
-        <div className="mb-4 p-3 bg-green-100 text-green-800 rounded">{successMsg}</div>
+        <div className="mb-4 p-3 bg-green-100 text-green-800 rounded">
+          {successMsg}
+        </div>
       )}
       {errorMsg && (
-        <div className="mb-4 p-3 bg-red-100 text-red-800 rounded">{errorMsg}</div>
+        <div className="mb-4 p-3 bg-red-100 text-red-800 rounded">
+          {errorMsg}
+        </div>
       )}
 
       {loading ? (
@@ -76,33 +82,52 @@ const KonfirmasiPengambilanPage = () => {
                 <th className="w-[20%] border border-gray-300 px-3 py-3">Tanggal Masuk</th>
                 <th className="w-[20%] border border-gray-300 px-3 py-3">Batas Pengambilan</th>
                 <th className="w-[15%] border border-gray-300 px-3 py-3">Status</th>
-                <th className="w-[20%] border border-gray-300 px-3 py-3">Aksi</th>
+                <th className="w-[15%] border border-gray-300 px-3 py-3">Aksi</th>
               </tr>
             </thead>
             <tbody className="bg-white text-center">
               {penitipanList.length > 0 ? (
-                penitipanList.map((item, index) => (
-                  <tr key={item.id_penitipan}>
-                    <td className="border border-gray-300 px-3 py-2">{index + 1}</td>
-                    <td className="border border-gray-300 px-3 py-2">{item.barang?.nama_barang || item.id_barang}</td>
-                    <td className="border border-gray-300 px-3 py-2">{item.penitip?.nama_lengkap}</td>
-                    <td className="border border-gray-300 px-3 py-2">{item.tanggal_masuk}</td>
-                    <td className="border border-gray-300 px-3 py-2">{item.batas_pengambilan}</td>
-                    <td className="border border-gray-300 px-3 py-2">
-                      <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                        {item.status_perpanjangan}
-                      </span>
-                    </td>
-                    <td className="border border-gray-300 px-3 py-2">
-                      <button
-                        onClick={() => konfirmasiPengambilan(item.id_barang)}
-                        className="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold px-4 py-1 rounded"
-                      >
-                        Konfirmasi Diambil
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                penitipanList.flatMap((item, index) =>
+                  item.barang && item.barang.length > 0
+                    // eslint-disable-next-line no-unused-vars
+                    ? item.barang.map((b, idx) => (
+                        <tr key={`${item.id_penitipan}-${b.id_barang}`}>
+                          <td className="border border-gray-300 px-3 py-2">{index + 1}</td>
+                          <td className="border border-gray-300 px-3 py-2">{b.nama_barang}</td>
+                          <td className="border border-gray-300 px-3 py-2">{item.penitip?.nama_lengkap}</td>
+                          <td className="border border-gray-300 px-3 py-2">{item.tanggal_masuk}</td>
+                          <td className="border border-gray-300 px-3 py-2">{item.batas_pengambilan}</td>
+                          <td className="border border-gray-300 px-3 py-2">
+                            <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                              {item.status_perpanjangan}
+                            </span>
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2">
+                            <button
+                              onClick={() => konfirmasiPengambilan(b.id_barang)}
+                              className="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold px-4 py-1 rounded"
+                            >
+                              Konfirmasi Diambil
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    : [
+                        <tr key={`no-barang-${item.id_penitipan}`}>
+                          <td className="border border-gray-300 px-3 py-2">{index + 1}</td>
+                          <td className="border border-gray-300 px-3 py-2 italic text-red-500">Tidak ditemukan</td>
+                          <td className="border border-gray-300 px-3 py-2">{item.penitip?.nama_lengkap}</td>
+                          <td className="border border-gray-300 px-3 py-2">{item.tanggal_masuk}</td>
+                          <td className="border border-gray-300 px-3 py-2">{item.batas_pengambilan}</td>
+                          <td className="border border-gray-300 px-3 py-2">
+                            <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                              {item.status_perpanjangan}
+                            </span>
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2">-</td>
+                        </tr>
+                      ]
+                )
               ) : (
                 <tr>
                   <td colSpan="7" className="text-gray-500 text-sm py-4">

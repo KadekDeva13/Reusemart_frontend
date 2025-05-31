@@ -95,8 +95,8 @@ const GudangSidebar = () => {
                     Atur Pengiriman & Pengambilan
                 </div>
 
-                <div
-                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('pengiriman-pengambilan') ? 'bg-[#798248]' : ''}`}
+                 <div
+                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('pengambilan-barang-pemilik') ? 'bg-[#798248]' : ''}`}
                     onClick={() => navigate("/user/gudang/pengambilan-barang-pemilik")}
                 >
                     <FaCheck className="mr-3" />
@@ -104,7 +104,7 @@ const GudangSidebar = () => {
                 </div>
 
                 <div
-                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('konfirmasi-penerimaan') ? 'bg-[#798248]' : ''}`}
+                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('konfirmasi-barang-diterima') ? 'bg-[#798248]' : ''}`}
                     onClick={() => navigate("/user/gudang/konfirmasi-barang-diterima")}
                 >
                     <FaReceipt className="mr-3" />

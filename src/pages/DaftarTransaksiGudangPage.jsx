@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import axios from "axios";
 
 export default function DaftarTransaksiGudangPage() {
@@ -13,8 +16,7 @@ export default function DaftarTransaksiGudangPage() {
 
     const interval = setInterval(() => {
       handleHanguskanOtomatis();
-    }, 10 * 60 * 1000); // setiap 10 menit
-
+    }, 10 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -26,7 +28,7 @@ export default function DaftarTransaksiGudangPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTransaksiList(res.data || []);
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       setAlert({ show: true, message: "Gagal mengambil data transaksi.", variant: "danger" });
     } finally {
@@ -42,11 +44,11 @@ export default function DaftarTransaksiGudangPage() {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setAlert({
-        show: true,
-        message: "Transaksi berhasil dihanguskan otomatis.",
-        variant: "success",
+      toast.success("✅ Transaksi berhasil dihanguskan otomatis.", {
+        position: "top-right",
+        autoClose: 3000,
       });
+
       fetchTransaksiGudang();
     } catch (error) {
       const msg = error.response?.data?.message || "Gagal menghanguskan otomatis.";

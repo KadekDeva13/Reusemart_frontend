@@ -28,23 +28,26 @@ const HomePagePenitip = () => {
   const fetchBarang = async () => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        console.warn("Token tidak ditemukan di localStorage");
-        return;
-      }
+      if (!token) return;
 
       const res = await axios.get("http://localhost:8000/api/penitipan/barang", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      const barangData = res.data.map((penitipan) => ({
-        ...penitipan.barang,
-        id_penitipan: penitipan.id_penitipan,
-      }));
+      const allBarang = [];
 
-      setBarangList(barangData);
+      res.data.forEach((penitipan) => {
+        penitipan.detailpenitipan?.forEach((detail) => {
+          if (detail.barang) {
+            allBarang.push({
+              ...detail.barang,
+              id_penitipan: penitipan.id_penitipan,
+            });
+          }
+        });
+      });
+
+      setBarangList(allBarang);
     } catch (error) {
       console.error("Gagal mengambil data barang penitip:", error.response?.data || error.message);
     }
@@ -52,8 +55,8 @@ const HomePagePenitip = () => {
 
   const filteredList = searchQuery
     ? barangList.filter((barang) =>
-        barang.nama_barang.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      barang.nama_barang.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : barangList;
 
   return (
