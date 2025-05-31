@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import { pdf } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
+import NotaPenitipanBarang from "../component/NotaPenitipan/NotaPenitipanBarang";
 
 function DetailPenitipanPage() {
     const { id } = useParams();
@@ -37,6 +40,11 @@ function DetailPenitipanPage() {
             .padStart(2, "0")}/${d.getFullYear()}`;
     };
 
+    const handleDownload = async () => {
+        const blob = await pdf(<NotaPenitipanBarang data={penitipan} />).toBlob();
+        saveAs(blob, `Nota_Penitipan_${penitipan.id_penitipan}.pdf`);
+    };
+
     return (
         <div className="overflow-x-auto px-5">
             <div className="min-w-full">
@@ -56,11 +64,19 @@ function DetailPenitipanPage() {
                         <p className="text-red-500">Data penitipan tidak ditemukan.</p>
                     ) : (
                         <>
-                            <div className="bg-white rounded shadow p-4 mb-6">
+                            <div className="bg-white rounded shadow p-4 mb-6 relative">
                                 <p><span className="font-semibold">Nama Penitip:</span> {penitipan.penitip?.nama_lengkap || "-"}</p>
                                 <p><span className="font-semibold">Tanggal Masuk:</span> {formatTanggal(penitipan.tanggal_masuk)}</p>
                                 <p><span className="font-semibold">Tanggal Akhir:</span> {formatTanggal(penitipan.tanggal_akhir)}</p>
                                 <p><span className="font-semibold">Nama QC:</span> {penitipan.nama_qc}</p>
+                                <div className="absolute bottom-2 right-4">
+                                    <button
+                                        onClick={handleDownload}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded shadow"
+                                    >
+                                        Cetak Nota
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="bg-white rounded shadow overflow-x-auto">
