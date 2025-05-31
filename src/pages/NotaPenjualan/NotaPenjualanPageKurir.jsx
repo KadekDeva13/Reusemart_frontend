@@ -137,11 +137,24 @@ const NotaPDF = ({ transaksiList }) => {
               <View style={styles.section}>
                 <Text style={styles.bold}>Pembeli :</Text>
                 <Text>{safeText(transaksi.pembeli?.email)} / {safeText(transaksi.pembeli?.nama_lengkap)}</Text>
-                <Text>
-                  {(transaksi.pembeli && transaksi.pembeli.alamat)
-                    ? safeText(`${transaksi.pembeli.alamat.detail_alamat}, ${transaksi.pembeli.alamat.kelurahan}, ${transaksi.pembeli.alamat.kecamatan}, ${transaksi.pembeli.alamat.provinsi}, ${transaksi.pembeli.alamat.kode_pos}`)
-                    : 'Alamat tidak tersedia'}
-                </Text>
+                {transaksi.pembeli?.alamat?.length > 0 ? (
+                  (() => {
+                    const alamat = transaksi.pembeli.alamat[0];
+                    return (
+                      <Text>
+                        {[
+                          alamat.detail_alamat || '-',
+                          alamat.kelurahan || '-',
+                          alamat.kecamatan || '-',
+                          alamat.provinsi || '-',
+                          alamat.kode_pos || '-',
+                        ].join(', ')}
+                      </Text>
+                    );
+                  })()
+                ) : (
+                  <Text>Alamat tidak tersedia</Text>
+                )}
                 <Text>Delivery: Kurir ReUseMart ({safeText(getNamaKurir(transaksi))})</Text>
               </View>
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import NotaPDF from "../pages/NotaPenjualan/NotaPenjualanPagePembeli";
+import NotaPDFPembeli from "../pages/NotaPenjualan/NotaPenjualanPagePembeli";
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 
 export default function NotaPenjualanPembeliPage() {
