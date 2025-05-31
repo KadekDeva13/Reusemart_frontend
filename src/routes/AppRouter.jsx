@@ -91,7 +91,7 @@ import VerifikasiTransaksiPage from "../pages/VerifikasiTransaksiPage";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/login",
     element: <LoginPage />,
   },
   {

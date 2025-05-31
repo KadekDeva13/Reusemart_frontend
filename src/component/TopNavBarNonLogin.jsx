@@ -43,7 +43,7 @@ const TopNavbarNonLogin = () => {
         {/* Sign In button on the right */}
         <Button
           variant="outline-light"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/login")}
           className="rounded-pill"
         >
           Sign In
