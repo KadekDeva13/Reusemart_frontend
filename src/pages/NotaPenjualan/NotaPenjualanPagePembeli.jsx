@@ -95,11 +95,12 @@ const NotaPDFPembeli = ({ transaksiList }) => {
 
         const getQcName = () => {
           for (const dt of transaksi.detailtransaksi || []) {
-            const namaQC = dt?.barang?.detail_penitipan?.penitipan?.nama_qc;
+            const namaQC = dt?.barang?.detailpenitipan?.penitipan?.pegawai_qc?.nama_lengkap;
             if (namaQC) return namaQC;
           }
           return "-";
         };
+
 
         return (
           <Page key={index} size={[283.5, pageHeight]} style={styles.page}>
