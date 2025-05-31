@@ -63,6 +63,15 @@ const getNamaKurir = (transaksi) => {
   return '-';
 };
 
+const generateNomorNota = (transaksi) => {
+  const tanggal = new Date(transaksi.created_at || Date.now());
+  const tahun = String(tanggal.getFullYear()).slice(-2); // ambil 2 digit akhir
+  const bulan = String(tanggal.getMonth() + 1).padStart(2, '0');
+  const urut = String(transaksi.id_transaksi).padStart(3, '0'); // << penting!
+  return `${tahun}.${bulan}.${urut}`;
+};
+
+
 const NotaPDF = ({ transaksiList }) => {
   if (!Array.isArray(transaksiList) || transaksiList.length === 0) {
     return (
@@ -84,9 +93,7 @@ const NotaPDF = ({ transaksiList }) => {
         if (!['selesai', 'sedang disiapkan', 'dikirim'].includes(transaksi.status_transaksi)) {
           return (
             <Page key={index} size={[283.5, 100]} style={styles.page}>
-              <Text style={styles.title}>
-                Transaksi {safeText(transaksi.nomor_nota || index + 1)} tidak valid untuk nota.
-              </Text>
+              <Text style={styles.value}>: {generateNomorNota(transaksi)}</Text>
             </Page>
           );
         }
@@ -101,11 +108,12 @@ const NotaPDF = ({ transaksiList }) => {
 
         const getQcName = () => {
           for (const dt of transaksi.detailtransaksi || []) {
-            const namaQC = dt?.barang?.detail_penitipan?.penitipan?.nama_qc;
+            const namaQC = dt?.barang?.detailpenitipan?.penitipan?.pegawai_qc?.nama_lengkap;
             if (namaQC) return namaQC;
           }
           return "-";
         };
+
 
         return (
           <Page key={index} size={[283.5, pageHeight]} style={styles.page}>
@@ -118,7 +126,7 @@ const NotaPDF = ({ transaksiList }) => {
               <View style={styles.section}>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>No Nota</Text>
-                  <Text style={styles.value}>: {safeText(transaksi.nomor_nota)}</Text>
+                   <Text style={styles.value}>: {generateNomorNota(transaksi)}</Text>
                 </View>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>Tanggal pesan</Text>
@@ -183,6 +191,7 @@ const NotaPDF = ({ transaksiList }) => {
               <View style={styles.section}>
                 <Text>QC oleh: {safeText(getQcName())}</Text>
               </View>
+
 
               <View style={styles.section}>
                 <Text>Diterima oleh:</Text>

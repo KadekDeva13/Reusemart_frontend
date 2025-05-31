@@ -46,6 +46,15 @@ const formatTanggal = (tanggal) => {
   return `${day}/${month}/${year}`;
 };
 
+const generateNomorNota = (transaksi) => {
+  const tanggal = new Date(transaksi.created_at || Date.now());
+  const tahun = String(tanggal.getFullYear()).slice(-2); // ambil 2 digit akhir
+  const bulan = String(tanggal.getMonth() + 1).padStart(2, '0');
+  const urut = String(transaksi.id_transaksi).padStart(3, '0'); // << penting!
+  return `${tahun}.${bulan}.${urut}`;
+};
+
+
 const NotaPDFPembeli = ({ transaksiList }) => {
   if (!Array.isArray(transaksiList) || transaksiList.length === 0) {
     return (
@@ -103,7 +112,8 @@ const NotaPDFPembeli = ({ transaksiList }) => {
               <View style={styles.section}>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>No Nota</Text>
-                  <Text style={styles.value}>: {safeText(transaksi.nomor_nota)}</Text>
+                  <Text style={styles.value}>: {generateNomorNota(transaksi)}</Text>
+
                 </View>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>Tanggal pesan</Text>
