@@ -68,7 +68,7 @@ function DetailPenitipanPage() {
                                 <p><span className="font-semibold">Nama Penitip:</span> {penitipan.penitip?.nama_lengkap || "-"}</p>
                                 <p><span className="font-semibold">Tanggal Masuk:</span> {formatTanggal(penitipan.tanggal_masuk)}</p>
                                 <p><span className="font-semibold">Tanggal Akhir:</span> {formatTanggal(penitipan.tanggal_akhir)}</p>
-                                <p><span className="font-semibold">Nama QC:</span> {penitipan.nama_qc}</p>
+                                <p><span className="font-semibold">Pegawai QC:</span> P{penitipan.pegawaiqc?.id_pegawai} - {penitipan.pegawaiqc?.nama_lengkap || "-"}</p>
                                 <div className="absolute bottom-2 right-4">
                                     <button
                                         onClick={handleDownload}

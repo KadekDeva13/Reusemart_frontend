@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const TambahPenitipanPage = () => {
     const [penitipList, setPenitipList] = useState([]);
     const [hunterList, setHunterList] = useState([]);
+    const [qcList, setQcList] = useState([]);
     const [searchHunter, setSearchHunter] = useState("");
     const [filteredHunter, setFilteredHunter] = useState([]);
     const [showHunterDropdown, setShowHunterDropdown] = useState(false);
@@ -21,7 +22,7 @@ const TambahPenitipanPage = () => {
     const [form, setForm] = useState({
         id_penitip: "",
         id_hunter: "",
-        nama_qc: "",
+        id_qc: "",
         nama_barang: "",
         kategori_barang: "",
         deskripsi: "",
@@ -35,6 +36,7 @@ const TambahPenitipanPage = () => {
     useEffect(() => {
         fetchPenitip();
         fetchHunter();
+        fetchQcList();
     }, []);
 
     useEffect(() => {
@@ -78,6 +80,14 @@ const TambahPenitipanPage = () => {
         setHunterList(res.data.data || []);
     };
 
+    const fetchQcList = async () => {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:8000/api/pegawai/qc", {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        setQcList(res.data.data || []);
+    };
+
 
     const handleBarangAdd = () => {
         if (!form.nama_barang) return alert("Isi nama barang");
@@ -104,7 +114,7 @@ const TambahPenitipanPage = () => {
                 "http://localhost:8000/api/penitipan/full-store",
                 {
                     id_penitip: form.id_penitip,
-                    nama_qc: form.nama_qc,
+                    id_qc: form.id_qc,
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -226,13 +236,20 @@ const TambahPenitipanPage = () => {
                             </div>
                         )}
 
-                        <label className="block mb-2">Nama QC:</label>
-                        <input
-                            type="text"
+                        <label className="block mb-2">Pilih QC:</label>
+                        <select
                             className="w-full border rounded p-2 mb-4"
-                            value={form.nama_qc}
-                            onChange={(e) => setForm({ ...form, nama_qc: e.target.value })}
-                        />
+                            value={form.id_qc}
+                            onChange={(e) => setForm({ ...form, id_qc: e.target.value })}
+                        >
+                            <option value="">-- Pilih QC --</option>
+                            {qcList.map((qc) => (
+                                <option key={qc.id_pegawai} value={qc.id_pegawai}>
+                                    {qc.nama_lengkap}
+                                </option>
+                            ))}
+                        </select>
+
 
                         <button
                             onClick={() => {
@@ -240,11 +257,11 @@ const TambahPenitipanPage = () => {
                                 localStorage.setItem("penitipan_form", JSON.stringify({
                                     id_penitip: form.id_penitip,
                                     id_hunter: form.id_hunter,
-                                    nama_qc: form.nama_qc,
+                                    id_qc: form.id_qc,
                                 }));
                                 setStep(2);
                             }}
-                            disabled={!form.id_penitip || !form.nama_qc}
+                            disabled={!form.id_penitip || !form.id_qc}
                         >
                             Lanjut ke Tambah Barang →
                         </button>

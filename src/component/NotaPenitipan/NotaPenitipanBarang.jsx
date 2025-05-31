@@ -57,6 +57,15 @@ const formatTanggal = (tanggal) => {
     return `${day}/${month}/${year}`;
 };
 
+const formatNomorNota = (tanggalMasuk, id) => {
+    if (!tanggalMasuk || !id) return '-';
+    const date = new Date(tanggalMasuk);
+    const year = date.getFullYear().toString().slice(-2); // ambil 2 digit terakhir tahun
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    return `${year}.${month}.${id}`;
+};
+
+
 const NotaPenitipanBarang = ({ data }) => {
     const itemCount = data?.barang?.length || 1;
     const baseHeight = 230; // tinggi tetap untuk header+footer
@@ -78,8 +87,9 @@ const NotaPenitipanBarang = ({ data }) => {
                     <View style={styles.section}>
                         <View style={styles.labelRow}>
                             <Text style={styles.label}>No Nota</Text>
-                            <Text style={styles.value}>: {data.nomor_nota || '-'}</Text>
+                            <Text style={styles.value}>: {formatNomorNota(data.tanggal_masuk, data.id_penitipan)}</Text>
                         </View>
+
                         <View style={styles.labelRow}>
                             <Text style={styles.label}>Tanggal penitipan</Text>
                             <Text style={styles.value}>: {formatTanggalDenganJam(data.tanggal_masuk)}</Text>
@@ -93,7 +103,7 @@ const NotaPenitipanBarang = ({ data }) => {
                     {/* PENITIP */}
                     <View style={styles.section}>
                         <Text style={styles.bold}>
-                            Penitip : {data.penitip?.id_penitip} / {data.penitip?.nama_lengkap}
+                            Penitip : T{data.penitip?.id_penitip} / {data.penitip?.nama_lengkap}
                         </Text>
                         <Text>{data.penitip?.alamat_penitip || '-'}</Text>
                     </View>
@@ -117,8 +127,8 @@ const NotaPenitipanBarang = ({ data }) => {
                     {/* QC */}
                     <View style={styles.section}>
                         <Text>Diterima dan QC oleh:</Text>
-                        <Text style={{ marginTop: 18 }}>........................................</Text>
-                        <Text>{data.nama_qc || '-'}</Text>
+                        <Text style={{ marginTop: 50 }}>........................................</Text>
+                        <Text>P{data.pegawaiqc?.id_pegawai} - {data.pegawaiqc?.nama_lengkap || '-'}</Text>
                     </View>
                 </View>
             </Page>
