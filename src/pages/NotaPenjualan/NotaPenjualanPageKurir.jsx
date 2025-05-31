@@ -90,7 +90,7 @@ const NotaPDF = ({ transaksiList }) => {
         const baseHeight = 430;
         const pageHeight = baseHeight + itemCount * 22;
 
-        if (!['selesai', 'sedang disiapkan', 'dikirim'].includes(transaksi.status_transaksi)) {
+        if (!['selesai', 'disiapkan', 'dikirim'].includes(transaksi.status_transaksi)) {
           return (
             <Page key={index} size={[283.5, 100]} style={styles.page}>
               <Text style={styles.value}>: {generateNomorNota(transaksi)}</Text>

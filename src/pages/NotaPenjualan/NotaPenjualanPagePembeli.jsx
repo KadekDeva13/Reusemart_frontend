@@ -73,7 +73,7 @@ const NotaPDFPembeli = ({ transaksiList }) => {
         const baseHeight = 430;
         const pageHeight = baseHeight + itemCount * 22;
 
-        const statusValid = ['selesai', 'sedang disiapkan', 'pengambilan mandiri'].includes(
+        const statusValid = ['selesai', 'disiapkan', 'pengambilan mandiri'].includes(
           String(transaksi.status_transaksi).toLowerCase()
         );
 

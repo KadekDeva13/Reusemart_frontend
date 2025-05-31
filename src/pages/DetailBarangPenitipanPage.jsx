@@ -111,9 +111,9 @@ export default function DetailBarangPenitipanPage() {
   };
 
   const renderStatusTransaksi = () => {
-    const text = statusTransaksi === "pending" ? "sedang disiapkan" : statusTransaksi;
-    if (text === "sedang disiapkan")
-      return <button className="btn btn-sm btn-warning mt-2" disabled>📦 Sedang Disiapkan</button>;
+    const text = statusTransaksi === "pending" ? "disiapkan" : statusTransaksi;
+    if (text === "disiapkan")
+      return <button className="btn btn-sm btn-warning mt-2" disabled>📦 Disiapkan</button>;
     if (text === "dikirim")
       return <button className="btn btn-sm btn-primary mt-2" disabled>🚚 Dikirim</button>;
     if (text === "selesai")
@@ -197,7 +197,7 @@ export default function DetailBarangPenitipanPage() {
                 variant="outline-success"
                 disabled={
                   konfirmasiLoading ||
-                  !(statusTransaksi === "pending" || statusTransaksi === "sedang disiapkan")
+                  !(statusTransaksi === "pending" || statusTransaksi === "disiapkan")
                 }
                 onClick={handleKonfirmasiAmbil}
               >

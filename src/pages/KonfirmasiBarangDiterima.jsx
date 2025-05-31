@@ -20,7 +20,7 @@ export default function KonfirmasiBarangDiterimaPage() {
 
       const filter = res.data.filter(trx =>
         trx.jenis_pengiriman?.toLowerCase() === 'pengambilan mandiri' &&
-        trx.status_transaksi?.toLowerCase() === 'sedang disiapkan'
+        trx.status_transaksi?.toLowerCase() === 'disiapkan'
       );
       setTransaksiList(filter);
     // eslint-disable-next-line no-unused-vars
