@@ -89,8 +89,26 @@ export default function ProfilePagePembeli() {
         console.error("Gagal ambil data pembeli:", err);
         setLoading(false);
       });
+      
+    fetchRiwayat();
 
-    fetchRiwayat(); 
+    const interval = setInterval(async () => {
+      try {
+        const res = await axios.post(
+          "http://localhost:8000/api/transaksi/batalkan-otomatis",
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (res.data?.success) {
+          console.log("✅ Transaksi dibatalkan otomatis");
+          fetchRiwayat(); // refresh data transaksi
+        }
+      } catch (err) {
+        console.error("❌ Gagal batalkan transaksi otomatis:", err);
+      }
+    }, 60000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleBayar = (id_transaksi) => {
@@ -215,12 +233,14 @@ export default function ProfilePagePembeli() {
         return "success";
       case "dibayar":
         return "primary";
-      case "disiapkan":
+      case "belum bayar":
         return "warning";
       case "ditolak":
         return "secondary";
       case "batal":
         return "danger";
+      case "disiapkan":
+        return "info"
       default:
         return "dark";
     }
