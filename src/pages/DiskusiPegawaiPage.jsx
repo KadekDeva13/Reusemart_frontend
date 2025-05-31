@@ -14,8 +14,17 @@ export default function DiskusiPegawaiPage() {
   useEffect(() => {
     const fetchBarang = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/barang/${id_barang}`);
-        setNamaBarang(res.data.nama_barang);
+        const token = localStorage.getItem("token");
+        const res = await axios.get(
+          `http://localhost:8000/api/barang/${id_barang}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const nama = res.data.nama_barang || res.data.penitipan?.nama_barang;
+        setNamaBarang(nama ?? "Barang Tidak Diketahui");
       } catch (err) {
         console.error("Gagal mengambil barang:", err);
         setNamaBarang("Barang Tidak Ditemukan");
@@ -28,13 +37,16 @@ export default function DiskusiPegawaiPage() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/diskusi/${id_barang}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await axios.get(
+          `http://localhost:8000/api/diskusi/${id_barang}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-        const formatted = res.data.map(msg => ({
+        const formatted = res.data.map((msg) => ({
           text: msg.pesan_diskusi,
-          from: msg.id_pegawai ? "pegawai" : "pembeli"
+          from: msg.id_pegawai ? "pegawai" : "pembeli",
         }));
         setMessages(formatted);
       } catch (err) {
@@ -56,13 +68,13 @@ export default function DiskusiPegawaiPage() {
         "http://localhost:8000/api/diskusi/kirim",
         {
           id_barang: parseInt(id_barang),
-          pesan_diskusi: input
+          pesan_diskusi: input,
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            Role: "pegawai"
-          }
+            Role: "pegawai",
+          },
         }
       );
 
@@ -78,14 +90,25 @@ export default function DiskusiPegawaiPage() {
         Diskusi Pegawai untuk Barang: <strong>{namaBarang}</strong>
       </h4>
 
-      <Card className="p-3 mb-4" style={{ maxHeight: "400px", overflowY: "auto" }}>
+      <Card
+        className="p-3 mb-4"
+        style={{ maxHeight: "400px", overflowY: "auto" }}
+      >
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`d-flex mb-3 ${msg.from === "pegawai" ? "justify-content-end" : "justify-content-start"}`}
+            className={`d-flex mb-3 ${
+              msg.from === "pegawai"
+                ? "justify-content-end"
+                : "justify-content-start"
+            }`}
           >
             <div
-              className={`p-2 rounded ${msg.from === "pegawai" ? "bg-warning text-dark" : "bg-light border"}`}
+              className={`p-2 rounded ${
+                msg.from === "pegawai"
+                  ? "bg-warning text-dark"
+                  : "bg-light border"
+              }`}
               style={{ maxWidth: "70%" }}
             >
               <div className="fw-semibold mb-1">

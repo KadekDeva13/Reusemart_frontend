@@ -36,7 +36,7 @@ export default function AlamatPage() {
     detail_alamat: "",
     kode_pos: "",
   });
-
+  const [searchTerm, setSearchTerm] = useState("");
   const [editMode, setEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
 
@@ -149,7 +149,7 @@ export default function AlamatPage() {
       handleClose();
     } catch (err) {
       console.error("Gagal simpan alamat", err);
-      console.log(err.response?.data); 
+      console.log(err.response?.data);
     }
   };
 
@@ -161,58 +161,76 @@ export default function AlamatPage() {
           + Tambah Alamat
         </Button>
       </div>
+      <Form className="mb-3 w-100">
+        <Form.Control
+          type="text"
+          placeholder="Cari alamat berdasarkan detail, kelurahan, atau kecamatan..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </Form>
 
-      {alamatList.map((alamat) => (
-        <Card className="mb-3 shadow-sm" key={alamat.id_alamat}>
-          <Card.Body>
-            <Row className="justify-content-between align-items-center">
-              <Col md={8}>
-                <div className="fw-bold d-flex align-items-center gap-2">
-                  {alamat.detail_alamat}
-                  {alamat.utama && (
-                    <Badge bg="danger" className="text-uppercase">
-                      Utama
-                    </Badge>
+      {alamatList
+        .filter((alamat) => {
+          const keyword = searchTerm.toLowerCase();
+          return (
+            alamat.detail_alamat.toLowerCase().includes(keyword) ||
+            alamat.kelurahan.toLowerCase().includes(keyword) ||
+            alamat.kecamatan.toLowerCase().includes(keyword)
+          );
+        })
+
+        .map((alamat) => (
+          <Card className="mb-3 shadow-sm" key={alamat.id_alamat}>
+            <Card.Body>
+              <Row className="justify-content-between align-items-center">
+                <Col md={8}>
+                  <div className="fw-bold d-flex align-items-center gap-2">
+                    {alamat.detail_alamat}
+                    {alamat.utama && (
+                      <Badge bg="danger" className="text-uppercase">
+                        Utama
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="text-muted small">
+                    {alamat.kelurahan}, {alamat.kecamatan}, DIY Yogyakarta,{" "}
+                    {alamat.kode_pos}
+                  </div>
+                </Col>
+                <Col md="auto" className="text-end">
+                  <div className="mb-2">
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="p-0 me-2"
+                      onClick={() => handleUbah(alamat.id_alamat)}
+                    >
+                      Ubah
+                    </Button>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="text-danger p-0"
+                      onClick={() => handleHapus(alamat.id_alamat)}
+                    >
+                      Hapus
+                    </Button>
+                  </div>
+                  {!alamat.utama && (
+                    <Button
+                      size="sm"
+                      variant="outline-secondary"
+                      onClick={() => aturSebagaiUtama(alamat.id_alamat)}
+                    >
+                      Atur sebagai utama
+                    </Button>
                   )}
-                </div>
-                <div className="text-muted small">
-                  {alamat.kelurahan}, {alamat.kecamatan}, DIY Yogyakarta,{" "}
-                  {alamat.kode_pos}
-                </div>
-              </Col>
-              <Col md="auto" className="text-end">
-                <div className="mb-2">
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="p-0 me-2"
-                    onClick={() => handleUbah(alamat.id_alamat)}
-                  >
-                    Ubah
-                  </Button>
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="text-danger p-0"
-                    onClick={() => handleHapus(alamat.id_alamat)}
-                  >
-                    Hapus
-                  </Button>
-                </div>
-                {!alamat.utama && (
-                  <Button
-                    size="sm"
-                    variant="outline-secondary"
-                    onClick={() => aturSebagaiUtama(alamat.id_alamat)}
-                  >
-                    Atur sebagai utama
-                  </Button>
-                )}
-              </Col>
-            </Row>
-          </Card.Body>
-        </Card>
-      ))}
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        ))}
 
       <Modal show={showModal} onHide={handleClose} centered>
         <Modal.Header closeButton>

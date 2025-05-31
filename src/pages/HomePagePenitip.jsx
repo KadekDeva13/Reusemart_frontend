@@ -4,16 +4,46 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 
 const categories = [
-  { label: "Elektronik & Gadget", icon: "https://cdn-icons-png.flaticon.com/512/1041/1041880.png" },
-  { label: "Pakaian & Aksesori", icon: "https://cdn-icons-png.flaticon.com/512/892/892458.png" },
-  { label: "Perabotan Rumah Tangga", icon: "https://cdn-icons-png.flaticon.com/512/2513/2513791.png" },
-  { label: "Buku, Alat Tulis, & Peralatan Sekolah", icon: "https://cdn-icons-png.flaticon.com/512/3004/3004613.png" },
-  { label: "Hobi, Mainan, & Koleksi", icon: "https://cdn-icons-png.flaticon.com/512/3370/3370102.png" },
-  { label: "Perlengkapan Bayi & Anak", icon: "https://cdn-icons-png.flaticon.com/512/1642/1642702.png" },
-  { label: "Otomotif & Aksesori", icon: "https://cdn-icons-png.flaticon.com/512/859/859270.png" },
-  { label: "Perlengkapan Taman & Outdoor", icon: "https://cdn-icons-png.flaticon.com/512/2635/2635714.png" },
-  { label: "Peralatan Kantor & Industri", icon: "https://cdn-icons-png.flaticon.com/512/4729/4729432.png" },
-  { label: "Kosmetik & Perawatan Diri", icon: "https://cdn-icons-png.flaticon.com/512/2947/2947990.png" },
+  {
+    label: "Elektronik & Gadget",
+    icon: "https://cdn-icons-png.flaticon.com/512/1041/1041880.png",
+  },
+  {
+    label: "Pakaian & Aksesori",
+    icon: "https://cdn-icons-png.flaticon.com/512/892/892458.png",
+  },
+  {
+    label: "Perabotan Rumah Tangga",
+    icon: "https://cdn-icons-png.flaticon.com/512/2513/2513791.png",
+  },
+  {
+    label: "Buku, Alat Tulis, & Peralatan Sekolah",
+    icon: "https://cdn-icons-png.flaticon.com/512/3004/3004613.png",
+  },
+  {
+    label: "Hobi, Mainan, & Koleksi",
+    icon: "https://cdn-icons-png.flaticon.com/512/3370/3370102.png",
+  },
+  {
+    label: "Perlengkapan Bayi & Anak",
+    icon: "https://cdn-icons-png.flaticon.com/512/1642/1642702.png",
+  },
+  {
+    label: "Otomotif & Aksesori",
+    icon: "https://cdn-icons-png.flaticon.com/512/859/859270.png",
+  },
+  {
+    label: "Perlengkapan Taman & Outdoor",
+    icon: "https://cdn-icons-png.flaticon.com/512/2635/2635714.png",
+  },
+  {
+    label: "Peralatan Kantor & Industri",
+    icon: "https://cdn-icons-png.flaticon.com/512/4729/4729432.png",
+  },
+  {
+    label: "Kosmetik & Perawatan Diri",
+    icon: "https://cdn-icons-png.flaticon.com/512/2947/2947990.png",
+  },
 ];
 
 const HomePagePenitip = () => {
@@ -69,14 +99,24 @@ const HomePagePenitip = () => {
             <Col xs={4} sm={3} md={2} key={idx} className="text-center">
               <div
                 style={{ cursor: "pointer" }}
-                onClick={() => navigate(`kategori/${encodeURIComponent(cat.label)}`)}
+                onClick={() =>
+                  navigate(
+                    `/user/pembeli/kategori/${encodeURIComponent(cat.label)}`
+                  )
+                }
               >
-                <img
-                  src={cat.icon}
-                  alt={cat.label}
-                  className="mb-2"
-                  style={{ width: "48px", height: "48px", objectFit: "contain" }}
-                />
+                <div className="flex justify-center">
+                  <img
+                    src={cat.icon}
+                    alt={cat.label}
+                    className="mb-2"
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      objectFit: "contain",
+                    }}
+                  />
+                </div>
                 <div className="small text-truncate">{cat.label}</div>
               </div>
             </Col>
@@ -103,8 +143,12 @@ const HomePagePenitip = () => {
                     style={{ height: "180px", objectFit: "cover" }}
                   />
                   <Card.Body>
-                    <div className="small text-muted mb-1">{barang.kategori_barang}</div>
-                    <Card.Title className="fs-6">{barang.nama_barang}</Card.Title>
+                    <div className="small text-muted mb-1">
+                      {barang.kategori_barang}
+                    </div>
+                    <Card.Title className="fs-6">
+                      {barang.nama_barang}
+                    </Card.Title>
                     <Card.Text className="fw-bold text-success">
                       Rp{parseInt(barang.harga_barang).toLocaleString("id-ID")}
                     </Card.Text>

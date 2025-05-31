@@ -3,10 +3,9 @@ import axios from "axios";
 import ModalKonfirmasiDonasi from "../components/ModalKonfirmasiDonasi"; // sesuaikan path sesuai proyekmu
 
 export default function HistoryDonasiPage() {
-    const [historyList, setHistoryList] = useState([]);
-    const [barangList, setBarangList] = useState([]);
-    const [search, setSearch] = useState("");
-    const [loading, setLoading] = useState(true);
+  const [historyList, setHistoryList] = useState([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
     const [showModal, setShowModal] = useState(false);
     const [selectedDonasi, setSelectedDonasi] = useState(null);

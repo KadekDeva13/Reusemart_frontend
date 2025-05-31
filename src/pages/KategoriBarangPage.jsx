@@ -35,7 +35,7 @@ export default function KategoriBarangPage() {
   }, [kategori]);
 
   return (
-    <Container className="mt-5">
+    <Container className="mt-4" style={{ paddingTop: "100px" }}>
       <h4 className="fw-bold mb-4">Kategori: {kategori}</h4>
       {loading ? (
         <div className="text-center my-5">

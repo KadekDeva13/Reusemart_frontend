@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from "react";
-import {Form,Button,Row,Col,Card,Nav,Modal,Spinner,Table,Badge,} from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Row,
+  Col,
+  Card,
+  Nav,
+  Modal,
+  Spinner,
+  Table,
+  Badge,
+} from "react-bootstrap";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -29,6 +40,25 @@ export default function ProfilePagePembeli() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedTransaksiId, setSelectedTransaksiId] = useState(null);
   const [detailList, setDetailList] = useState([]);
+  const [buktiFile, setBuktiFile] = useState(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+
+  const fetchRiwayat = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/riwayat-pembelian",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (res.data && Array.isArray(res.data.data)) {
+        setTransaksiList(res.data.data);
+      }
+    } catch (err) {
+      console.error("Gagal ambil riwayat transaksi:", err);
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -59,20 +89,58 @@ export default function ProfilePagePembeli() {
         console.error("Gagal ambil data pembeli:", err);
         setLoading(false);
       });
+      
+    fetchRiwayat();
 
-    axios
-      .get("http://localhost:8000/api/riwayat-pembelian", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data && Array.isArray(res.data.data)) {
-          setTransaksiList(res.data.data);
+    const interval = setInterval(async () => {
+      try {
+        const res = await axios.post(
+          "http://localhost:8000/api/transaksi/batalkan-otomatis",
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (res.data?.success) {
+          console.log("✅ Transaksi dibatalkan otomatis");
+          fetchRiwayat(); // refresh data transaksi
         }
-      })
-      .catch((err) => {
-        console.error("Gagal ambil riwayat transaksi:", err);
-      });
+      } catch (err) {
+        console.error("❌ Gagal batalkan transaksi otomatis:", err);
+      }
+    }, 60000);
+    return () => clearInterval(interval);
   }, []);
+
+  const handleBayar = (id_transaksi) => {
+    setSelectedTransaksiId(id_transaksi);
+    setShowUploadModal(true);
+  };
+
+  const handleSubmitPembayaran = async () => {
+    if (!buktiFile || !selectedTransaksiId) return;
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("bukti_pembayaran", buktiFile);
+
+    try {
+      await axios.post(
+        `http://localhost:8000/api/transaksi/upload-bukti/${selectedTransaksiId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      alert("Bukti pembayaran berhasil diunggah!");
+      setShowUploadModal(false);
+      fetchRiwayat();
+    } catch (err) {
+      console.error("Upload bukti gagal:", err);
+      alert("Gagal mengunggah bukti pembayaran.");
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -165,12 +233,14 @@ export default function ProfilePagePembeli() {
         return "success";
       case "dibayar":
         return "primary";
-      case "diproses":
+      case "belum bayar":
         return "warning";
-      case "pending":
+      case "ditolak":
         return "secondary";
-      case "gagal":
+      case "batal":
         return "danger";
+      case "disiapkan":
+        return "info"
       default:
         return "dark";
     }
@@ -281,14 +351,6 @@ export default function ProfilePagePembeli() {
                 readOnly
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Saldo</Form.Label>
-              <Form.Control
-                type="text"
-                value={`Rp${parseInt(formData.saldo).toLocaleString()}`}
-                readOnly
-              />
-            </Form.Group>
             <Button
               variant="outline-secondary"
               className="mb-3"
@@ -324,7 +386,7 @@ export default function ProfilePagePembeli() {
             transaksiList.map((item) => (
               <tr key={item.id_transaksi}>
                 <td>{item.id_transaksi}</td>
-                <td>{new Date(item.tanggal_pelunasan).toLocaleDateString()}</td>
+                <td>{new Date(item.created_at).toLocaleDateString()}</td>
                 <td>Rp{parseInt(item.total_pembayaran).toLocaleString()}</td>
                 <td>
                   <Badge bg={getBadgeVariant(item.status_transaksi)}>
@@ -339,6 +401,16 @@ export default function ProfilePagePembeli() {
                   >
                     Detail
                   </Button>
+
+                  {item.status_transaksi === "belum bayar" && (
+                    <Button
+                      variant="success"
+                      size="sm"
+                      onClick={() => handleBayar(item.id_transaksi)}
+                    >
+                      Bayar
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))
@@ -352,6 +424,38 @@ export default function ProfilePagePembeli() {
         </tbody>
       </Table>
     </Card>
+  );
+
+  const renderUploadModal = () => (
+    <Modal
+      show={showUploadModal}
+      onHide={() => setShowUploadModal(false)}
+      centered
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>Upload Bukti Pembayaran</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <input
+          type="file"
+          className="form-control"
+          accept="image/*,application/pdf"
+          onChange={(e) => setBuktiFile(e.target.files[0])}
+        />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => setShowUploadModal(false)}>
+          Batal
+        </Button>
+        <Button
+          variant="primary"
+          onClick={handleSubmitPembayaran}
+          disabled={!buktiFile}
+        >
+          Simpan Pembayaran
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 
   return (
@@ -373,8 +477,10 @@ export default function ProfilePagePembeli() {
       <div className="mt-4">
         {activeTab === "biodata" && renderBiodata()}
         {activeTab === "history" && renderHistory()}
+        {activeTab === "detail" && renderDetail()}
       </div>
 
+      {/* ✅ Modal Detail Transaksi */}
       <Modal
         show={showDetailModal}
         onHide={() => setShowDetailModal(false)}
@@ -416,6 +522,9 @@ export default function ProfilePagePembeli() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* ✅ Modal Upload Bukti Pembayaran */}
+      {renderUploadModal()}
     </div>
   );
 }

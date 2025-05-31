@@ -40,6 +40,7 @@ import AlamatPage from "../pages/AlamatPage";
 import KategoriBarangPage from "../pages/KategoriBarangPage";
 import DetailBarangPage from "../pages/DetailBarangPage";
 import DiskusiPage from "../pages/DiskusiPage";
+import KeranjangPagePembeli from "../pages/KeranjangPagePembeli";
 
 // Pegawai Pages
 import PenitipPageCS from "../pages/PagePenitipCS";
@@ -57,6 +58,7 @@ import AdminLayout from "../layouts/AdminLayout";
 import DaftarPegawaiPage from '../pages/DaftarPegawaiPage';
 import TambahPegawaiPage from '../pages/TambahPegawaiPage';
 import DaftarOrganisasiPage from '../pages/DaftarOrganisasiPage';
+import DaftarOrganisasiBelum from '../pages/organisasiBelum';
 
 //Penitipan
 import KategoriBarangPenitipanPage from "../pages/KategoriBarangPenitipanPage";
@@ -85,10 +87,11 @@ import NotaPenjualanPembeliPage from "../pages/NotaPenjualanPembeliPage";
 import KonfirmasiPengambilanPage from "../pages/KonfirmasiPengambilanPage";
 
 
+import VerifikasiTransaksiPage from "../pages/VerifikasiTransaksiPage";
 
 const router = createBrowserRouter([
   {
-    path: "/login",
+    path: "/",
     element: <LoginPage />,
   },
   {
@@ -120,6 +123,7 @@ const router = createBrowserRouter([
     path: "/user/profile/pembeli/alamat",
     element: <Navigate to="/user/pembeli/alamat" replace />,
   },
+  
   {
     path: "/",
     element: <PublicLayout />,
@@ -165,6 +169,7 @@ const router = createBrowserRouter([
       { path: "kategori/:kategori", element: <KategoriBarangPage /> },
       { path: "barang/:id", element: <DetailBarangPage /> },
       { path: "diskusi/:id_barang", element: <DiskusiPage /> },
+      { path: "keranjang", element: <KeranjangPagePembeli /> }
 
     ],
   },
@@ -196,7 +201,8 @@ const router = createBrowserRouter([
     children: [
       { path: "barang", element: <BarangPegawaiPage /> },
       { path: "diskusi/:id_barang", element: <DiskusiPegawaiPage /> },
-      { path: "penitip", element: <PenitipPageCS /> }
+      { path: "penitip", element: <PenitipPageCS /> },
+      {path:"/user/pegawai/verifikasi-transaksi", element:<VerifikasiTransaksiPage />}
 
     ],
   },
@@ -225,6 +231,7 @@ const router = createBrowserRouter([
       { path: "daftar-pegawai", element: <DaftarPegawaiPage /> },
       { path: "tambah-pegawai", element: <TambahPegawaiPage /> },
       { path: "daftar-organisasi", element: <DaftarOrganisasiPage /> },
+      { path: "daftar-belum", element: <DaftarOrganisasiBelum/>},
     ],
   },
 
