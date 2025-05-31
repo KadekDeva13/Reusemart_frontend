@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 12, marginBottom: 10, textAlign: 'center', fontWeight: 'bold' },
   section: { marginBottom: 4 },
   bold: { fontWeight: 'bold' },
-  row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1.5 },
+  row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2.5 },
   outlineBox: {
     border: '1pt solid black',
     padding: 8,

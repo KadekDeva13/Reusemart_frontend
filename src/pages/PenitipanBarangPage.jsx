@@ -158,7 +158,7 @@ export default function PenitipanBarangPage() {
                 });
 
                 localStorage.setItem("penitipanSuccess", "Barang berhasil diperbarui!");
-                navigate("/user/gudang/manajemen-barang");
+                navigate(-1);
             } else {
                 const token = localStorage.getItem("token");
                 const id_penitip = localStorage.getItem("penitipan_id_penitip");
@@ -190,7 +190,7 @@ export default function PenitipanBarangPage() {
                 });
 
                 localStorage.setItem("penitipanSuccess", "Barang berhasil dititipkan!");
-                navigate("/user/gudang/manajemen-barang");
+                navigate(-1)
             }
         } catch (err) {
             console.error(err);

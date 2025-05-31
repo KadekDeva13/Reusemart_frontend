@@ -278,7 +278,7 @@ const TambahPenitipanPage = () => {
                                     localStorage.setItem("penitipan_form", JSON.stringify({
                                         id_penitip: form.id_penitip,
                                         id_hunter: form.id_hunter,
-                                        nama_qc: form.nama_qc,
+                                        id_qc: form.id_qc,
                                     }));
                                     navigate(`/user/gudang/tambah-barang?id_penitipan=temp`);
                                 }}
