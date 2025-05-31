@@ -8,6 +8,8 @@ export default function PenitipanBarangPage() {
     const navigate = useNavigate();
     const { id_barang } = useParams();
     const [searchParams] = useSearchParams();
+    const readonly = searchParams.get("readonly") === "true";
+    const [editModeAktif, setEditModeAktif] = useState(!readonly);
     const idPenitipanQuery = searchParams.get("id_penitipan");
     const isEditMode = Boolean(id_barang);
     const isTempMode = idPenitipanQuery === "temp";
@@ -201,9 +203,30 @@ export default function PenitipanBarangPage() {
     return (
         <div className="max-w-5xl mx-auto mt-10 p-6 bg-white shadow rounded">
             <div className="flex justify-between items-center mb-4">
+                {readonly && (
+                    <Button variant="secondary" onClick={() => navigate(-1)}>
+                        Kembali ke Detail Penitipan
+                    </Button>
+                )}
+            </div>
+            <div className="flex justify-between items-center mb-4">
+
                 <h3 className="text-2xl font-semibold">
-                    {isEditMode ? "Edit Barang Titipan" : "Tambah Barang Titipan"}
+                    {!editModeAktif ? "Detail Barang Titipan" : "Edit Barang Titipan"}
                 </h3>
+                {readonly && (
+                    <div className="text-right">
+                        {editModeAktif ? (
+                            <Button variant="outline-danger" onClick={() => setEditModeAktif(false)}>
+                                Batal Edit
+                            </Button>
+                        ) : (
+                            <Button variant="secondary" onClick={() => setEditModeAktif(true)}>
+                                Edit Data Barang
+                            </Button>
+                        )}
+                    </div>
+                )}
             </div>
 
             <Form onSubmit={handleSubmit}>
@@ -246,53 +269,60 @@ export default function PenitipanBarangPage() {
                                     alt={`Preview ${currentSlide + 1}`}
                                     className="max-h-full max-w-full object-contain"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveImage(currentSlide)}
-                                    className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1"
-                                >
-                                    <X size={16} />
-                                </button>
+                                {(editModeAktif || !readonly) && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveImage(currentSlide)}
+                                        className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                )}
                             </div>
 
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                id="fotoInput"
-                                onChange={handleImageChange}
-                                className="hidden"
-                            />
-                            <label
-                                htmlFor="fotoInput"
-                                className="absolute bottom-2 right-2 bg-green-600 text-white rounded-sm w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-green-700 text-lg"
-                                title="Tambah Foto"
-                            >
-                                +
-                            </label>
+                            {(editModeAktif || !readonly) && (
+                                <>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        id="fotoInput"
+                                        onChange={handleImageChange}
+                                        className="hidden"
+                                    />
+                                    <label
+                                        htmlFor="fotoInput"
+                                        className="absolute bottom-2 right-2 bg-green-600 text-white rounded-sm w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-green-700 text-lg"
+                                        title="Tambah Foto"
+                                    >
+                                        +
+                                    </label>
+                                </>
+                            )}
                         </div>
                     ) : (
                         <div className="w-full h-48 flex items-center justify-center border rounded bg-gray-100 text-gray-400 relative">
                             Preview
-                            <div className="absolute bottom-2 right-2">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    multiple
-                                    id="fotoInput"
-                                    onChange={handleImageChange}
-                                    className="hidden"
-                                />
-                                <label
-                                    htmlFor="fotoInput"
-                                    className="bg-green-600 text-white rounded-sm w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-green-700 text-lg"
-                                >
-                                    +
-                                </label>
-                            </div>
+                            {(editModeAktif || !readonly) && (
+                                <div className="absolute bottom-2 right-2">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        id="fotoInput"
+                                        onChange={handleImageChange}
+                                        className="hidden"
+                                    />
+                                    <label
+                                        htmlFor="fotoInput"
+                                        className="bg-green-600 text-white rounded-sm w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-green-700 text-lg"
+                                    >
+                                        +
+                                    </label>
+                                </div>
+                            )}
                         </div>
                     )}
-
                     {previewImage.length > 0 && (
                         <div className="text-center text-muted mt-1">
                             {currentSlide + 1} / {previewImage.length}
@@ -309,6 +339,7 @@ export default function PenitipanBarangPage() {
                             name="nama_barang"
                             value={form.nama_barang}
                             onChange={handleChange}
+                            readOnly={readonly && !editModeAktif}
                             required
                         />
                     </Form.Group>
@@ -319,6 +350,7 @@ export default function PenitipanBarangPage() {
                             name="kategori_barang"
                             value={form.kategori_barang}
                             onChange={handleChange}
+                            disabled={readonly && !editModeAktif}
                             required
                         >
                             <option value="">Pilih Kategori</option>
@@ -345,6 +377,7 @@ export default function PenitipanBarangPage() {
                                     onChange={(e) =>
                                         setForm({ ...form, punya_garansi: e.target.checked })
                                     }
+                                    disabled={readonly && !editModeAktif}
                                 />
                             </Form.Group>
                             {form.punya_garansi && (
@@ -355,6 +388,7 @@ export default function PenitipanBarangPage() {
                                         name="tanggal_garansi"
                                         value={form.tanggal_garansi}
                                         onChange={handleChange}
+                                        readOnly={readonly && !editModeAktif}
                                     />
                                 </Form.Group>
                             )}
@@ -368,6 +402,7 @@ export default function PenitipanBarangPage() {
                             name="deskripsi"
                             value={form.deskripsi}
                             onChange={handleChange}
+                            readOnly={readonly && !editModeAktif}
                             rows={3}
                             required
                         />
@@ -380,6 +415,7 @@ export default function PenitipanBarangPage() {
                             name="harga_barang"
                             value={form.harga_barang}
                             onChange={handleChange}
+                            readOnly={readonly && !editModeAktif}
                             required
                         />
                     </Form.Group>
@@ -391,22 +427,26 @@ export default function PenitipanBarangPage() {
                             name="berat_barang"
                             value={form.berat_barang}
                             onChange={handleChange}
+                            readOnly={readonly && !editModeAktif}
                             required
                         />
                     </Form.Group>
                 </div>
 
-                <div className="text-center mt-5">
-                    <Button type="submit" disabled={loading}>
-                        {loading ? (
-                            <Spinner size="sm" animation="border" />
-                        ) : isEditMode ? (
-                            "Update Barang"
-                        ) : (
-                            "Simpan & Titipkan"
-                        )}
-                    </Button>
-                </div>
+                {(!readonly || editModeAktif) && (
+                    <div className="text-center mt-5">
+                        <Button type="submit" disabled={loading}>
+                            {loading ? (
+                                <Spinner size="sm" animation="border" />
+                            ) : isEditMode ? (
+                                "Update Barang"
+                            ) : (
+                                "Simpan & Titipkan"
+                            )}
+                        </Button>
+                    </div>
+                )}
+
             </Form>
         </div>
     );

@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 function DaftarPenitipanPage() {
     const [penitipanList, setPenitipanList] = useState([]);
-    const [search, setSearch] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchBy, setSearchBy] = useState("all");
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
@@ -29,9 +30,25 @@ function DaftarPenitipanPage() {
         }
     };
 
-    const filteredList = penitipanList.filter((item) =>
-        item.penitip?.nama_lengkap?.toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredList = penitipanList.filter((item) => {
+        const keyword = searchQuery.toLowerCase();
+        const regex = new RegExp(`\\b${keyword}`, "i");
+
+        const namaPenitip = item.penitip?.nama_lengkap || "";
+        const daftarNamaBarang = item.barang?.map((b) => b.nama_barang).join(" ") || "";
+
+        if (searchBy === "penitip") {
+            return regex.test(namaPenitip);
+        } else if (searchBy === "barang") {
+            return regex.test(daftarNamaBarang);
+        } else {
+            return (
+                regex.test(namaPenitip) ||
+                regex.test(daftarNamaBarang)
+            );
+        }
+    });
+
 
     function formatTanggal(tanggal) {
         if (!tanggal) return "-";
@@ -46,28 +63,25 @@ function DaftarPenitipanPage() {
             <div className="min-w-full">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                     <h3 className="text-4xl font-semibold">Daftar Penitipan</h3>
-                    <button
-                        onClick={() => navigate("/user/gudang/penitipan/tambah")}
-                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                    >
-                        + Tambah Penitipan
-                    </button>
                 </div>
 
-                <div className="flex justify-between items-center mb-3">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
                     <input
                         type="text"
-                        placeholder="Cari nama penitip..."
-                        className="w-1/3 px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        className="form-control border px-3 py-2 rounded w-full md:w-1/2"
+                        placeholder="Cari penitipan..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    <button
-                        onClick={fetchPenitipan}
-                        className="ml-4 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                    <select
+                        className="form-select border px-3 py-2 rounded w-full md:w-1/3"
+                        value={searchBy}
+                        onChange={(e) => setSearchBy(e.target.value)}
                     >
-                        🔄 Refresh
-                    </button>
+                        <option value="all">Semua Field</option>
+                        <option value="penitip">Nama Penitip</option>
+                        <option value="barang">Nama Barang</option>
+                    </select>
                 </div>
 
                 <div className="bg-white rounded-lg shadow overflow-x-auto">
@@ -77,8 +91,8 @@ function DaftarPenitipanPage() {
                                 <th className="py-3 border">No</th>
                                 <th className="py-3 border">Nama Penitip</th>
                                 <th className="py-3 border">Tanggal Masuk</th>
-                                <th className="py-3 border">Jumlah Barang</th>
-                                <th className="py-3 border">Aksi</th>
+                                <th className="py-3 border">Barang</th>
+                                <th className="py-3 border"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -100,15 +114,20 @@ function DaftarPenitipanPage() {
                                         <td className="py-2 border">{index + 1}</td>
                                         <td className="py-2 border">{item.penitip?.nama_lengkap || "-"}</td>
                                         <td className="py-2 border">{formatTanggal(item.tanggal_masuk)}</td>
-                                        <td className="py-2 border">
+                                        <td className="py-2 border text-left">
                                             {item.barang?.length > 0 ? (
-                                                `${item.barang.length} barang`
+                                                <ul className="list-disc list-inside text-sm text-gray-700">
+                                                    {item.barang.map((b, i) => (
+                                                        <li key={i}>{b.nama_barang}</li>
+                                                    ))}
+                                                </ul>
                                             ) : (
                                                 <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
                                                     Belum ada barang
                                                 </span>
                                             )}
                                         </td>
+
                                         <td className="py-2 border">
                                             <button
                                                 onClick={() =>

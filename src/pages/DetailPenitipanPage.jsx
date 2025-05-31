@@ -89,6 +89,7 @@ function DetailPenitipanPage() {
                                             <th className="py-3 border">Harga</th>
                                             <th className="py-3 border">Status</th>
                                             <th className="py-3 border">Foto</th>
+                                            <th className="py-3 border"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -119,6 +120,15 @@ function DetailPenitipanPage() {
                                                             <span className="text-gray-400 text-sm italic">Tidak ada foto</span>
                                                         )}
                                                     </td>
+                                                    <td className="py-2 border">
+                                                        <button
+                                                            onClick={() => navigate(`/user/gudang/edit-barang/${barang.id_barang}?readonly=true`)}
+                                                            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                                                        >
+                                                            Detail
+                                                        </button>
+                                                    </td>
+
                                                 </tr>
                                             ))
                                         )}
