@@ -1,6 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import "swiper/css";
+import "swiper/css/pagination";
 
 export default function DetailBarangPenitipanPage() {
   const { id } = useParams();
@@ -12,28 +17,29 @@ export default function DetailBarangPenitipanPage() {
   const [statusBarang, setStatusBarang] = useState("");
   const [konfirmasiLoading, setKonfirmasiLoading] = useState(false);
   const [perpanjangLoading, setPerpanjangLoading] = useState(false);
-
-  const fetchDetail = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:8000/api/penitipan/show/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setPenitipan(res.data.penitipan);
-      setBarang(res.data.barang);
-      setStatusTransaksi(res.data.status_transaksi || "tidak diketahui");
-      setStatusBarang(res.data.status_barang || "tidak diketahui");
-    } catch (error) {
-      console.error("Gagal memuat detail penitipan:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const swiperRef = useRef(null);
 
   useEffect(() => {
+    const fetchDetail = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`http://localhost:8000/api/penitipan/show/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setPenitipan(res.data.penitipan);
+        setBarang(res.data.barang);
+        setStatusTransaksi(res.data.status_transaksi);
+        setStatusBarang(res.data.status_barang);
+      } catch (error) {
+        console.error("Gagal memuat detail penitipan:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchDetail();
   }, [id]);
 
@@ -96,12 +102,10 @@ export default function DetailBarangPenitipanPage() {
       return <span className="px-3 py-1 bg-green-500 text-white rounded text-sm">Tersedia</span>;
     if (text === "terjual" || text === "soldout")
       return <span className="px-3 py-1 bg-red-500 text-white rounded text-sm">Terjual</span>;
-    return <span className="px-3 py-1 bg-gray-400 text-white rounded text-sm">Tidak diketahui</span>;
   };
 
   const renderStatusTransaksi = () => {
     const text = statusTransaksi?.toLowerCase();
-
     if (text === "pending" || text === "disiapkan")
       return <span className="px-3 py-1 bg-yellow-500 text-white rounded text-sm">📦 Disiapkan</span>;
     if (text === "dikirim")
@@ -110,8 +114,6 @@ export default function DetailBarangPenitipanPage() {
       return <span className="px-3 py-1 bg-green-600 text-white rounded text-sm">✅ Selesai</span>;
     if (text === "hangus")
       return <span className="px-3 py-1 bg-red-700 text-white rounded text-sm">🔥 Hangus</span>;
-
-    return <span className="px-3 py-1 bg-gray-400 text-white rounded text-sm">Tidak diketahui</span>;
   };
 
   if (loading) {
@@ -129,27 +131,65 @@ export default function DetailBarangPenitipanPage() {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
-        {/* Gambar Barang */}
-        <div>
-          <img
-            src={
-              barang.foto_barang?.[selectedImage]?.url_foto
-                ? `http://localhost:8000/storage/foto_barang/${barang.foto_barang[selectedImage].url_foto}`
-                : "https://via.placeholder.com/500x500?text=No+Image"
-            }
-            alt={barang.nama_barang}
-            className="w-full h-[500px] object-cover rounded border"
-          />
-          <div className="flex gap-2 mt-3">
-            {barang.foto_barang?.map((foto, i) => (
+        {/* Gambar Swiper */}
+        <div className="relative">
+          <div className="relative bg-black rounded max-h-[480px] overflow-hidden">
+            {barang.foto_barang?.length > 1 && (
+              <>
+                <button
+                  onClick={() => swiperRef.current?.slidePrev()}
+                  className="absolute top-1/2 left-0 -translate-y-1/2 z-10 bg-black/0 px-2 py-1 border-0"
+                >
+                  <FaChevronLeft className="text-white w-6 h-6" />
+                </button>
+                <button
+                  onClick={() => swiperRef.current?.slideNext()}
+                  className="absolute top-1/2 right-0 -translate-y-1/2 z-10 bg-black/0 px-2 py-1 border-0"
+                >
+                  <FaChevronRight className="text-white w-6 h-6" />
+                </button>
+              </>
+            )}
+
+            <Swiper
+              modules={[Pagination]}
+              loop={true}
+              pagination={{ clickable: true }}
+              spaceBetween={10}
+              slidesPerView={1}
+              onSwiper={(swiper) => (swiperRef.current = swiper)}
+              onSlideChange={(swiper) => setSelectedImage(swiper.realIndex)}
+              className="rounded"
+            >
+              {barang.foto_barang.map((foto, i) => (
+                <SwiperSlide key={i}>
+                  <div className="flex justify-center items-center h-[450px] bg-black-100">
+                    <img
+                      src={`http://localhost:8000/storage/${foto.foto_barang}`}
+                      alt={`Foto ${i + 1}`}
+                      className="rounded max-h-full max-w-full object-contain"
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+
+          <div className="text-center text-muted mt-2 mb-3">
+            {selectedImage + 1} / {barang.foto_barang.length}
+          </div>
+
+          <div className="flex justify-center flex-wrap gap-2">
+            {barang.foto_barang.map((foto, i) => (
               <img
                 key={i}
-                src={`http://localhost:8000/storage/foto_barang/${foto.url_foto}`}
-                alt={`Foto ${i + 1}`}
-                onClick={() => setSelectedImage(i)}
-                className={`w-16 h-16 object-cover cursor-pointer border rounded ${
-                  i === selectedImage ? "border-green-500" : ""
-                }`}
+                src={`http://localhost:8000/storage/${foto.foto_barang}`}
+                alt={`Thumb ${i + 1}`}
+                onClick={() => swiperRef.current.slideToLoop(i)}
+                className={`w-[70px] h-[70px] object-cover cursor-pointer rounded border ${i === selectedImage
+                  ? "border-blue-600 border-2"
+                  : "border-gray-300"
+                  }`}
               />
             ))}
           </div>
@@ -178,10 +218,7 @@ export default function DetailBarangPenitipanPage() {
             <div className="mt-4 flex gap-3 flex-wrap">
               <button
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-                disabled={
-                  perpanjangLoading ||
-                  penitipan.status_perpanjangan.toLowerCase() !== "diperpanjang"
-                }
+                disabled={perpanjangLoading || penitipan.status_perpanjangan.toLowerCase() !== "diperpanjang"}
                 onClick={handlePerpanjang}
               >
                 {perpanjangLoading ? "Memproses..." : "Perpanjang Penitipan 30 Hari"}
@@ -189,10 +226,7 @@ export default function DetailBarangPenitipanPage() {
 
               <button
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
-                disabled={
-                  konfirmasiLoading ||
-                  !(statusTransaksi === "pending" || statusTransaksi === "disiapkan")
-                }
+                disabled={konfirmasiLoading || !(statusTransaksi === "pending" || statusTransaksi === "disiapkan")}
                 onClick={handleKonfirmasiAmbil}
               >
                 {konfirmasiLoading ? "Memproses..." : "Konfirmasi Barang Sudah Diambil"}

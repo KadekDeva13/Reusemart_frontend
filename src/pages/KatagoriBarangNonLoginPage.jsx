@@ -36,7 +36,7 @@ export default function KategoriBarangNonLoginPage() {
       <TopNavbarNonLogin />
 
       {/* Main content */}
-      <Container className="mt-4">
+      <Container className="mt-20">
         <h4 className="fw-bold mb-4">Kategori: {kategori}</h4>
 
         {/* Menampilkan Spinner saat loading */}
