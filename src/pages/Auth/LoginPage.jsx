@@ -99,6 +99,7 @@ export default function LoginPage() {
       }
 
       fetchUser(token);
+    // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setError("Gagal masuk. Periksa email dan password Anda.");
       toast.error("Login gagal!");
