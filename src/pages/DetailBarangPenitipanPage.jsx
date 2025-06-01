@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Container, Row, Col, Spinner, Button } from "react-bootstrap";
 import axios from "axios";
 
 export default function DetailBarangPenitipanPage() {
@@ -53,7 +52,7 @@ export default function DetailBarangPenitipanPage() {
       );
 
       alert("Barang berhasil dikonfirmasi telah diambil.");
-      fetchDetail(); // refresh data
+      fetchDetail();
     } catch (error) {
       alert(
         error.response?.data?.message || "Gagal mengonfirmasi pengambilan barang."
@@ -79,7 +78,7 @@ export default function DetailBarangPenitipanPage() {
       );
 
       alert(res.data.message || "Perpanjangan berhasil.");
-      fetchDetail(); // refresh data
+      fetchDetail();
     } catch (error) {
       alert(
         error.response?.data?.message || "Gagal memperpanjang masa penitipan."
@@ -89,43 +88,49 @@ export default function DetailBarangPenitipanPage() {
     }
   };
 
-  if (loading)
-    return (
-      <div className="text-center mt-5">
-        <Spinner animation="border" />
-      </div>
-    );
-
-  if (!penitipan || !barang)
-    return <div className="text-center mt-5">Data tidak ditemukan.</div>;
-
   const renderStatusBarang = () => {
-    const text = statusBarang;
+    const text = statusBarang?.toLowerCase();
     if (text === "donasi")
-      return <button className="btn btn-sm btn-info mt-2" disabled>Donasi</button>;
+      return <span className="px-3 py-1 bg-blue-500 text-white rounded text-sm">Donasi</span>;
     if (text === "tersedia")
-      return <button className="btn btn-sm btn-success mt-2" disabled>Tersedia</button>;
+      return <span className="px-3 py-1 bg-green-500 text-white rounded text-sm">Tersedia</span>;
     if (text === "terjual" || text === "soldout")
-      return <button className="btn btn-sm btn-danger mt-2" disabled>Terjual</button>;
-    return null;
+      return <span className="px-3 py-1 bg-red-500 text-white rounded text-sm">Terjual</span>;
+    return <span className="px-3 py-1 bg-gray-400 text-white rounded text-sm">Tidak diketahui</span>;
   };
 
   const renderStatusTransaksi = () => {
-    const text = statusTransaksi === "pending" ? "disiapkan" : statusTransaksi;
-    if (text === "disiapkan")
-      return <button className="btn btn-sm btn-warning mt-2" disabled>📦 Disiapkan</button>;
+    const text = statusTransaksi?.toLowerCase();
+
+    if (text === "pending" || text === "disiapkan")
+      return <span className="px-3 py-1 bg-yellow-500 text-white rounded text-sm">📦 Disiapkan</span>;
     if (text === "dikirim")
-      return <button className="btn btn-sm btn-primary mt-2" disabled>🚚 Dikirim</button>;
+      return <span className="px-3 py-1 bg-blue-600 text-white rounded text-sm">🚚 Dikirim</span>;
     if (text === "selesai")
-      return <button className="btn btn-sm btn-success mt-2" disabled>✅ Selesai</button>;
-    return null;
+      return <span className="px-3 py-1 bg-green-600 text-white rounded text-sm">✅ Selesai</span>;
+    if (text === "hangus")
+      return <span className="px-3 py-1 bg-red-700 text-white rounded text-sm">🔥 Hangus</span>;
+
+    return <span className="px-3 py-1 bg-gray-400 text-white rounded text-sm">Tidak diketahui</span>;
   };
 
+  if (loading) {
+    return (
+      <div className="text-center mt-10">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 mx-auto"></div>
+      </div>
+    );
+  }
+
+  if (!penitipan || !barang) {
+    return <div className="text-center mt-10 text-gray-500">Data tidak ditemukan.</div>;
+  }
+
   return (
-    <Container className="my-4">
-      <Row className="g-4 mt-5 px-3">
+    <div className="max-w-6xl mx-auto p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
         {/* Gambar Barang */}
-        <Col md={6}>
+        <div>
           <img
             src={
               barang.foto_barang?.[selectedImage]?.url_foto
@@ -133,48 +138,46 @@ export default function DetailBarangPenitipanPage() {
                 : "https://via.placeholder.com/500x500?text=No+Image"
             }
             alt={barang.nama_barang}
-            className="w-100 rounded border"
-            style={{ objectFit: "cover", maxHeight: "500px" }}
+            className="w-full h-[500px] object-cover rounded border"
           />
-
-          <div className="d-flex gap-2 mt-3">
+          <div className="flex gap-2 mt-3">
             {barang.foto_barang?.map((foto, i) => (
               <img
                 key={i}
                 src={`http://localhost:8000/storage/foto_barang/${foto.url_foto}`}
                 alt={`Foto ${i + 1}`}
                 onClick={() => setSelectedImage(i)}
-                className={`border rounded ${i === selectedImage ? "border-success" : ""}`}
-                style={{
-                  width: "60px",
-                  height: "60px",
-                  objectFit: "cover",
-                  cursor: "pointer",
-                }}
+                className={`w-16 h-16 object-cover cursor-pointer border rounded ${
+                  i === selectedImage ? "border-green-500" : ""
+                }`}
               />
             ))}
           </div>
-        </Col>
+        </div>
 
-        {/* Detail Barang dan Penitipan */}
-        <Col md={6} className="mt-4 ps-3 pe-3">
-          <h4>{barang.nama_barang}</h4>
-          <h3 className="text-success mb-4">
+        {/* Detail Barang & Penitipan */}
+        <div>
+          <h2 className="text-2xl font-semibold mb-2">{barang.nama_barang}</h2>
+          <h3 className="text-xl text-green-600 font-bold mb-4">
             Rp{parseInt(barang.harga_barang).toLocaleString("id-ID")}
           </h3>
 
-          <div className="border rounded p-3 shadow-sm mb-4">
-            <h6 className="fw-bold mb-3">Informasi Penitipan</h6>
+          <div className="border p-4 rounded shadow mb-5 bg-white">
+            <h4 className="font-semibold mb-3 text-gray-700">Informasi Penitipan</h4>
             <p><strong>Kategori:</strong> {barang.kategori_barang}</p>
             <p><strong>Tanggal Masuk:</strong> {penitipan.tanggal_masuk}</p>
             <p><strong>Tanggal Akhir:</strong> {penitipan.tanggal_akhir}</p>
             <p><strong>Batas Pengambilan:</strong> {penitipan.batas_pengambilan}</p>
             <p><strong>Status Perpanjangan:</strong> {penitipan.status_perpanjangan}</p>
 
-            {/* Tombol Perpanjang */}
-            <div className="mt-2 mb-3">
-              <Button
-                variant="outline-primary"
+            <div className="mt-4 space-x-2">
+              {renderStatusBarang()}
+              {renderStatusTransaksi()}
+            </div>
+
+            <div className="mt-4 flex gap-3 flex-wrap">
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
                 disabled={
                   perpanjangLoading ||
                   penitipan.status_perpanjangan.toLowerCase() !== "diperpanjang"
@@ -182,19 +185,10 @@ export default function DetailBarangPenitipanPage() {
                 onClick={handlePerpanjang}
               >
                 {perpanjangLoading ? "Memproses..." : "Perpanjang Penitipan 30 Hari"}
-              </Button>
-            </div>
+              </button>
 
-            {/* Status Barang dan Transaksi */}
-            <div className="d-flex gap-2 mb-2">
-              {renderStatusBarang()}
-              {renderStatusTransaksi()}
-            </div>
-
-            {/* Tombol Konfirmasi */}
-            <div className="mt-3">
-              <Button
-                variant="outline-success"
+              <button
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
                 disabled={
                   konfirmasiLoading ||
                   !(statusTransaksi === "pending" || statusTransaksi === "disiapkan")
@@ -202,14 +196,14 @@ export default function DetailBarangPenitipanPage() {
                 onClick={handleKonfirmasiAmbil}
               >
                 {konfirmasiLoading ? "Memproses..." : "Konfirmasi Barang Sudah Diambil"}
-              </Button>
+              </button>
             </div>
           </div>
 
-          <h6>Detail Barang</h6>
-          <p>{barang.deskripsi || "Tidak ada deskripsi."}</p>
-        </Col>
-      </Row>
-    </Container>
+          <h4 className="font-semibold">Detail Barang</h4>
+          <p className="text-gray-600">{barang.deskripsi || "Tidak ada deskripsi."}</p>
+        </div>
+      </div>
+    </div>
   );
 }
