@@ -26,6 +26,7 @@ import PegawaiGudangLayout from "../layouts/PegawaiGudangLayout";
 import PublicLayout from "../layouts/PublicLayout";
 
 // Auth Pages
+import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/Auth/LoginPage";
 import RegisterPage from "../pages/Auth/RegisterPage";
 import RegisterOrganisasiPage from "../pages/Auth/OrganisasiPageRegister";
@@ -80,7 +81,7 @@ import KonfirmasiBarangDiterimaPage from "../pages/KonfirmasiBarangDiterima";
 import NotaPenjualanKurirPage from "../pages/NotaPenjualanKurirPage";
 import NotaPenjualanPembeliPage from "../pages/NotaPenjualanPembeliPage";
 import KonfirmasiPengambilanPage from "../pages/KonfirmasiPengambilanPage";
-
+import VerifikasiTransaksiPage from "../pages/VerifikasiTransaksiPage";
 
 const router = createBrowserRouter([
   {
@@ -118,6 +119,10 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
+    element: <LandingPage />,
+  },
+  {
+    path: "/home",
     element: <PublicLayout />,
     children: [
       {
@@ -134,6 +139,7 @@ const router = createBrowserRouter([
       },
     ],
   },
+
 
 
   {
@@ -192,7 +198,8 @@ const router = createBrowserRouter([
     children: [
       { path: "barang", element: <BarangPegawaiPage /> },
       { path: "diskusi/:id_barang", element: <DiskusiPegawaiPage /> },
-      { path: "penitip", element: <PenitipPageCS /> }
+      { path: "penitip", element: <PenitipPageCS /> },
+      { path: "/user/pegawai/verifikasi-transaksi", element: <VerifikasiTransaksiPage /> }
 
     ],
   },
@@ -221,6 +228,7 @@ const router = createBrowserRouter([
       { path: "daftar-pegawai", element: <DaftarPegawaiPage /> },
       { path: "tambah-pegawai", element: <TambahPegawaiPage /> },
       { path: "daftar-organisasi", element: <DaftarOrganisasiPage /> },
+      { path: "daftar-belum", element: <DaftarOrganisasiBelum /> },
     ],
   },
 
