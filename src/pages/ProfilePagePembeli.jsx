@@ -555,23 +555,21 @@ export default function ProfilePagePembeli() {
         </Modal.Header>
         <Modal.Body>
           {detailList.length > 0 ? (
-            <Table bordered>
+            <Table bordered className="text-center">
               <thead>
-                <tr className="text-center">
+                <tr>
                   <th>Nama Barang</th>
                   <th>Kategori</th>
                   <th>Harga</th>
-                  <th>Jumlah</th>
                   <th>Rating Barang</th>
                 </tr>
               </thead>
               <tbody>
                 {detailList.map((item, index) => (
-                  <tr key={index} className="text-center">
+                  <tr key={index}>
                     <td>{item.nama_barang}</td>
                     <td>{item.kategori_barang}</td>
                     <td>Rp{parseInt(item.harga).toLocaleString()}</td>
-                    <td>{item.jumlah}</td>
                     <td>
                       {Number(item.rating_barang) > 0 ? (
                         <div className="text-warning text-lg">
