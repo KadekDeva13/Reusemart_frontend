@@ -42,6 +42,10 @@ export default function ProfilePagePembeli() {
   const [detailList, setDetailList] = useState([]);
   const [buktiFile, setBuktiFile] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [selectedBarang, setSelectedBarang] = useState(null);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
 
   const fetchRiwayat = async () => {
     const token = localStorage.getItem("token");
@@ -89,7 +93,7 @@ export default function ProfilePagePembeli() {
         console.error("Gagal ambil data pembeli:", err);
         setLoading(false);
       });
-      
+
     fetchRiwayat();
 
     const interval = setInterval(async () => {
@@ -225,6 +229,36 @@ export default function ProfilePagePembeli() {
     }
   };
 
+  const handleSubmitRating = async () => {
+    if (!selectedBarang) return;
+
+    try {
+      setSubmitting(true);
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `http://localhost:8000/api/barang/rating/${selectedBarang.id_barang}`,
+        { rating_barang: selectedRating },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setDetailList((prev) =>
+        prev.map((item) =>
+          item.id_barang === selectedBarang.id_barang
+            ? { ...item, rating_barang: selectedRating }
+            : item
+        )
+      );
+
+      alert("Rating berhasil dikirim.");
+      setShowRatingModal(false);
+    } catch (err) {
+      console.error(err);
+      alert("Gagal mengirim rating.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleCloseModal = () => setShowModal(false);
 
   const getBadgeVariant = (status) => {
@@ -307,8 +341,8 @@ export default function ProfilePagePembeli() {
                       field === "tanggal_lahir"
                         ? "date"
                         : field === "email"
-                        ? "email"
-                        : "text"
+                          ? "email"
+                          : "text"
                     }
                     name={field}
                     value={formData[field]}
@@ -458,6 +492,35 @@ export default function ProfilePagePembeli() {
     </Modal>
   );
 
+  const renderRatingModal = () => (
+    <Modal show={showRatingModal} onHide={() => setShowRatingModal(false)} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Beri Rating Barang</Modal.Title>
+      </Modal.Header>
+      <Modal.Body className="text-center">
+        <p className="mb-2 font-semibold">{selectedBarang?.nama_barang}</p>
+        <div className="text-3xl mb-3">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <span
+              key={star}
+              style={{ cursor: "pointer", color: star <= selectedRating ? "gold" : "#ccc" }}
+              onClick={() => setSelectedRating(star)}
+            >
+              ★
+            </span>
+          ))}
+        </div>
+        <Button
+          variant="success"
+          onClick={handleSubmitRating}
+          disabled={submitting || selectedRating === 0}
+        >
+          {submitting ? "Mengirim..." : "Kirim Rating"}
+        </Button>
+      </Modal.Body>
+    </Modal>
+  );
+
   return (
     <div className="p-4" style={{ marginTop: "80px" }}>
       <h4 className="fw-bold mb-4">Halaman Profil</h4>
@@ -494,20 +557,45 @@ export default function ProfilePagePembeli() {
           {detailList.length > 0 ? (
             <Table bordered>
               <thead>
-                <tr>
+                <tr className="text-center">
                   <th>Nama Barang</th>
                   <th>Kategori</th>
                   <th>Harga</th>
                   <th>Jumlah</th>
+                  <th>Rating Barang</th>
                 </tr>
               </thead>
               <tbody>
                 {detailList.map((item, index) => (
-                  <tr key={index}>
+                  <tr key={index} className="text-center">
                     <td>{item.nama_barang}</td>
                     <td>{item.kategori_barang}</td>
                     <td>Rp{parseInt(item.harga).toLocaleString()}</td>
                     <td>{item.jumlah}</td>
+                    <td>
+                      {Number(item.rating_barang) > 0 ? (
+                        <div className="text-warning text-lg">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <span key={star} style={{ color: star <= item.rating_barang ? "gold" : "#ccc" }}>
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <Button
+                          variant="warning"
+                          size="sm"
+                          onClick={() => {
+                            console.log("📦 Barang diklik untuk rating:", item);
+                            setSelectedBarang(item);
+                            setSelectedRating(0);
+                            setShowRatingModal(true);
+                          }}
+                        >
+                          Beri Rating
+                        </Button>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -525,6 +613,9 @@ export default function ProfilePagePembeli() {
 
       {/* ✅ Modal Upload Bukti Pembayaran */}
       {renderUploadModal()}
+
+      {/* ✅ Modal Beri Rating */}
+      {renderRatingModal()}
     </div>
   );
 }
