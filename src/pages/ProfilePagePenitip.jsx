@@ -1,4 +1,3 @@
-// ProfilePagePenitip.js
 import React, { useState, useEffect } from "react";
 import {
   Form,
@@ -22,6 +21,7 @@ export default function ProfilePagePenitip() {
     no_telepon: "",
     tanggal_lahir: "",
     password: "",
+    rating_penitip: 0,
     poin_sosial: 0,
     komisi: 0,
     bonus: 0,
@@ -39,6 +39,7 @@ export default function ProfilePagePenitip() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedTransaksiId, setSelectedTransaksiId] = useState(null);
   const [detailList, setDetailList] = useState([]);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -153,6 +154,7 @@ export default function ProfilePagePenitip() {
 
       setModalType("success");
       setModalMessage("Profil berhasil diperbarui!");
+      setIsEditMode(false);
     } catch (err) {
       setModalType("error");
       const firstError = err.response?.data?.errors
@@ -163,6 +165,17 @@ export default function ProfilePagePenitip() {
       setImageUploading(false);
       setShowModal(true);
     }
+  };
+
+  const fetchDetailTransaksi = (id) => {
+    const selected = transaksiList.find((t) => t.id_transaksi === id);
+    if (selected && Array.isArray(selected.detail)) {
+      setDetailList(selected.detail);
+    } else {
+      setDetailList([]);
+    }
+    setSelectedTransaksiId(id);
+    setShowDetailModal(true);
   };
 
   const getBadgeVariant = (status) => {
@@ -182,40 +195,111 @@ export default function ProfilePagePenitip() {
     }
   };
 
-  const fetchDetailTransaksi = (id) => {
-    const selected = transaksiList.find((t) => t.id_transaksi === id);
-    if (selected && Array.isArray(selected.detail)) {
-      setDetailList(selected.detail);
-    } else {
-      setDetailList([]);
-    }
-    setSelectedTransaksiId(id);
-    setShowDetailModal(true);
-  };
+  const renderBiodata = () => {
+    if (!isEditMode) {
+      return (
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Foto Profil */}
+          <div className="w-full md:w-1/3">
+            <div className="bg-white rounded-xl shadow p-4 text-center">
+              <img
+                src={formData.imagePreview}
+                alt="Foto Profil"
+                className="w-32 h-32 rounded-full mx-auto object-cover border border-gray-300"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+                }}
+              />
+              <h5 className="mt-3 font-semibold">{formData.nama_lengkap}</h5>
+              <p className="text-sm text-gray-500">{formData.email}</p>
 
-  const renderBiodata = () => (
-    <Form onSubmit={handleSubmit}>
-      <Row>
-        <Col md={4}>
-          <Card className="p-3 text-center shadow-sm position-relative">
+              {/* Bintang Rating */}
+              <div className="mt-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={
+                      star <= (formData.rating_penitip || 0)
+                        ? "text-yellow-400 text-lg"
+                        : "text-gray-300 text-lg"
+                    }
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+
+          {/* Info Biodata */}
+          <div className="w-full md:w-2/3">
+            <div className="bg-white rounded-xl shadow p-6">
+              <h6 className="text-lg font-bold mb-4 border-b pb-2 text-gray-700">Informasi Biodata</h6>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-600 font-medium">Nomor Telepon</span>
+                  <span>{formData.no_telepon || "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 font-medium">Tanggal Lahir</span>
+                  <span>
+                    {formData.tanggal_lahir
+                      ? new Date(formData.tanggal_lahir).toLocaleDateString("id-ID", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })
+                      : "-"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 font-medium">Poin Sosial</span>
+                  <span>{formData.poin_sosial} poin</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 font-medium">Saldo</span>
+                  <span>Rp{formData.komisi.toLocaleString("id-ID")}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 font-medium">Bonus</span>
+                  <span>Rp{formData.bonus.toLocaleString("id-ID")}</span>
+                </div>
+              </div>
+
+              <div className="mt-5">
+                <Button variant="warning" className="w-full" onClick={() => setIsEditMode(true)}>
+                  Edit Profil
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <Form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-6">
+        {/* Foto Upload */}
+        <div className="w-full md:w-1/3">
+          <div className="bg-white rounded-xl shadow p-4 text-center relative">
             {imageUploading && (
-              <div className="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex align-items-center justify-content-center z-3">
+              <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-xl">
                 <Spinner animation="border" variant="success" />
               </div>
             )}
             <img
               src={formData.imagePreview}
-              alt="Avatar"
-              className="rounded"
-              style={{ width: "100%", height: "auto", objectFit: "cover" }}
+              alt="Foto Profil"
+              className="w-32 h-32 rounded-full mx-auto object-cover border border-gray-300"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src =
-                  "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+                e.target.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
               }}
             />
-            <Form.Group controlId="formFile" className="mt-3">
-              <Form.Label className="btn btn-outline-secondary w-100">
+            <Form.Group controlId="formFile" className="mt-4">
+              <Form.Label className="btn btn-outline-secondary w-full">
                 Pilih Foto
                 <Form.Control
                   type="file"
@@ -226,91 +310,83 @@ export default function ProfilePagePenitip() {
                 />
               </Form.Label>
             </Form.Group>
-          </Card>
-        </Col>
-        <Col md={8}>
-          <Card className="p-4 shadow-sm">
-            {["nama_lengkap", "no_telepon", "tanggal_lahir", "email"].map(
-              (field, index) => (
-                <Form.Group className="mb-3" key={index}>
-                  <Form.Label>
-                    {field
-                      .replace("_", " ")
-                      .replace(/\b\w/g, (c) => c.toUpperCase())}
-                  </Form.Label>
-                  <Form.Control
-                    type={
-                      field === "tanggal_lahir"
-                        ? "date"
-                        : field === "email"
-                        ? "email"
-                        : "text"
-                    }
-                    name={field}
-                    value={formData[field]}
-                    onChange={handleChange}
-                    readOnly={field === "email"}
-                  />
-                </Form.Group>
-              )
-            )}
-            <Form.Group className="mb-3">
-              <Form.Label>Password (opsional)</Form.Label>
-              <div className="position-relative">
+          </div>
+        </div>
+        {/* Form Input */}
+        <div className="w-full md:w-2/3">
+          <div className="bg-white rounded-xl shadow p-6">
+            <h6 className="text-lg font-bold mb-4 border-b pb-2 text-gray-700">
+              Edit Biodata
+            </h6>
+            <div className="grid grid-cols-1 gap-4">
+              <Form.Group>
+                <Form.Label className="text-sm text-gray-600">Nama Lengkap</Form.Label>
                 <Form.Control
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
+                  type="text"
+                  name="nama_lengkap"
+                  value={formData.nama_lengkap}
                   onChange={handleChange}
-                  className="pe-5"
+                  className="bg-white"
                 />
-                <span
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: "absolute",
-                    right: "12px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    cursor: "pointer",
-                    color: "#888",
-                  }}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </span>
-              </div>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Poin Sosial</Form.Label>
-              <Form.Control
-                type="text"
-                value={`${formData.poin_sosial} poin`}
-                readOnly
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Saldo</Form.Label>
-              <Form.Control
-                type="text"
-                value={`Rp${formData.komisi.toLocaleString()}`}
-                readOnly
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Bonus</Form.Label>
-              <Form.Control
-                type="text"
-                value={`Rp${formData.bonus.toLocaleString()}`}
-                readOnly
-              />
-            </Form.Group>
-            <Button type="submit" variant="success" className="w-100">
-              Simpan Perubahan
-            </Button>
-          </Card>
-        </Col>
-      </Row>
-    </Form>
-  );
+              </Form.Group>
+              <Form.Group>
+                <Form.Label className="text-sm text-gray-600">Nomor Telepon</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="no_telepon"
+                  value={formData.no_telepon}
+                  onChange={handleChange}
+                  className="bg-white"
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label className="text-sm text-gray-600">Tanggal Lahir</Form.Label>
+                <Form.Control
+                  type="date"
+                  name="tanggal_lahir"
+                  value={formData.tanggal_lahir}
+                  onChange={handleChange}
+                  className="bg-white"
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label className="text-sm text-gray-600">Password (opsional)</Form.Label>
+                <div className="relative">
+                  <Form.Control
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Kosongkan jika tidak ingin mengganti password"
+                    className="pr-10 bg-white"
+                  />
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute top-1/2 right-3 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </span>
+                </div>
+              </Form.Group>
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <Button type="submit" variant="success" className="w-full">
+                Simpan
+              </Button>
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={() => setIsEditMode(false)}
+              >
+                Batal
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Form>
+    );
+  };
 
   const renderHistory = () => (
     <Card className="p-4 shadow-sm rounded-3 bg-white">
@@ -330,14 +406,8 @@ export default function ProfilePagePenitip() {
             transaksiList.map((item) => (
               <tr key={item.id_transaksi} className="text-center">
                 <td>{item.id_transaksi}</td>
-                <td>
-                  {item.created_at
-                    ? new Date(item.created_at).toLocaleDateString("id-ID")
-                    : "-"}
-                </td>
-                <td>
-                  Rp{parseInt(item.total_pembayaran).toLocaleString("id-ID")}
-                </td>
+                <td>{new Date(item.created_at).toLocaleDateString("id-ID")}</td>
+                <td>Rp{parseInt(item.total_pembayaran).toLocaleString("id-ID")}</td>
                 <td>
                   <Badge bg={getBadgeVariant(item.status_transaksi)}>
                     {item.status_transaksi}
@@ -368,20 +438,9 @@ export default function ProfilePagePenitip() {
   );
 
   return (
-    <div
-      className="p-4"
-      style={{
-        marginTop: "80px",
-        backgroundColor: "#ede9e8",
-        minHeight: "100vh",
-      }}
-    >
-      <h4 className="fw-bold mb-4">Profil Penitip</h4>
-      <Nav
-        variant="tabs"
-        activeKey={activeTab}
-        onSelect={(key) => setActiveTab(key)}
-      >
+    <div className="p-4 mt-20 min-h-screen bg-neutral-100">
+      <h4 className="font-bold mb-4">Profil Penitip</h4>
+      <Nav variant="tabs" activeKey={activeTab} onSelect={(key) => setActiveTab(key)}>
         <Nav.Item>
           <Nav.Link eventKey="biodata">Biodata Diri</Nav.Link>
         </Nav.Item>
@@ -406,13 +465,13 @@ export default function ProfilePagePenitip() {
         </Modal.Header>
         <Modal.Body>
           {detailList.length > 0 ? (
-            <Table bordered>
+            <Table bordered className="text-center">
               <thead>
                 <tr>
                   <th>Nama Barang</th>
                   <th>Kategori</th>
                   <th>Harga</th>
-                  <th>Jumlah</th>
+                  <th>Rating Barang</th>
                 </tr>
               </thead>
               <tbody>
@@ -422,18 +481,21 @@ export default function ProfilePagePenitip() {
                     <td>{item.kategori_barang}</td>
                     <td>
                       Rp
-                      {isNaN(parseFloat(item.harga))
-                        ? "0"
-                        : parseFloat(item.harga).toLocaleString(
-                            "id-ID",
-                            {
-                              minimumFractionDigits: 0,
-                              maximumFractionDigits: 0,
-                            }
-                          )}
+                      {parseFloat(item.harga || 0).toLocaleString("id-ID")}
                     </td>
-
-                    <td>{item.jumlah}</td>
+                    <td>
+                      {Number(item.rating_barang) > 0 ? (
+                        <div className="text-warning text-lg">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <span key={star} style={{ color: star <= item.rating_barang ? "gold" : "#ccc" }}>
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span>Barang belum diberi rating</span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>

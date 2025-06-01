@@ -50,7 +50,12 @@ const TopNavbarPenitip = ({ onLogout, searchQuery, setSearchQuery }) => {
   return (
     <Navbar fixed="top" className="navbar-custom shadow-sm border-bottom py-2" style={{ backgroundColor: "#a9bf6b" }}>
       <Container fluid className="d-flex justify-content-between align-items-center">
-        <img src="/images/Logo.png" alt="Logo" style={{ width: "40px", height: "40px", objectFit: "contain" }} />
+        <img
+          src="/images/Logo.png"
+          alt="Logo"
+          style={{ width: "40px", height: "40px", objectFit: "contain" }}
+          onClick={() => navigate("/user/penitip")}
+        />
 
         <Form className="mx-auto w-100 px-3" style={{ maxWidth: "600px", position: "relative" }}>
           <Form.Control
@@ -106,12 +111,16 @@ const TopNavbarPenitip = ({ onLogout, searchQuery, setSearchQuery }) => {
                 padding: "0.5rem",
                 minWidth: "180px"
               }}>
-                <button className="dropdown-item" onClick={() => navigate("/user/penitip/profile")}>
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    setShowDropdown(false);
+                    navigate("/user/penitip/profile");
+                  }}
+                >
                   Akun Saya
                 </button>
-                <button className="dropdown-item" onClick={() => navigate("/user/penitip")}>
-                  Home
-                </button>
+
                 <button className="dropdown-item text-danger" onClick={onLogout}>
                   Logout
                 </button>
