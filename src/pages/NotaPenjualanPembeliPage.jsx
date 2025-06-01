@@ -29,7 +29,7 @@ export default function NotaPenjualanPembeliPage() {
       if (Array.isArray(res.data)) {
         const filtered = res.data.filter(
           trx =>
-            ["selesai", "sedang disiapkan"].includes(trx.status_transaksi) &&
+            ["selesai", "disiapkan"].includes(trx.status_transaksi) &&
             trx.jenis_pengiriman?.toLowerCase() === "pengambilan mandiri"
         );
         setTransaksiList(filtered);

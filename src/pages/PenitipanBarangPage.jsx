@@ -1,50 +1,37 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Form, Button, Spinner } from "react-bootstrap";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { X } from "lucide-react";
 
 export default function PenitipanBarangPage() {
     const navigate = useNavigate();
     const { id_barang } = useParams();
+    const [searchParams] = useSearchParams();
+    const readonly = searchParams.get("readonly") === "true";
+    const [editModeAktif, setEditModeAktif] = useState(!readonly);
+    const idPenitipanQuery = searchParams.get("id_penitipan");
     const isEditMode = Boolean(id_barang);
+    const isTempMode = idPenitipanQuery === "temp";
 
-    // Tambahan: kontrol mode edit
-    const [isEditable, setIsEditable] = useState(!isEditMode);
-
-    const [penitipList, setPenitipList] = useState([]);
     const [form, setForm] = useState({
-        id_penitip: "",
         nama_barang: "",
         kategori_barang: "",
         deskripsi: "",
         harga_barang: "",
-        nama_qc: "",
         punya_garansi: false,
         tanggal_garansi: "",
     });
 
-    const [fotoBarang, setFotoBarang] = useState([]); // new uploads
-    const [previewImage, setPreviewImage] = useState([]); // {id, url} or {file, url}
+    const [fotoBarang, setFotoBarang] = useState([]);
+    const [previewImage, setPreviewImage] = useState([]);
     const [fotoHapus, setFotoHapus] = useState([]);
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [searchPenitip, setSearchPenitip] = useState("");
-    const [filteredPenitip, setFilteredPenitip] = useState([]);
-    const [showDropdown, setShowDropdown] = useState(false);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        fetchPenitip();
         if (isEditMode) fetchBarangDetail(id_barang);
     }, []);
-
-    const fetchPenitip = async () => {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/api/penitip/all", {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        setPenitipList(res.data.data || []);
-    };
 
     const fetchBarangDetail = async (id) => {
         try {
@@ -55,17 +42,15 @@ export default function PenitipanBarangPage() {
             const b = res.data.data;
 
             setForm({
-                id_penitip: b.id_penitip,
                 nama_barang: b.nama_barang,
                 kategori_barang: b.kategori_barang,
                 deskripsi: b.deskripsi,
                 harga_barang: b.harga_barang,
-                nama_qc: b.detailpenitipan?.penitipan?.nama_qc || "",
+                berat_barang: b.berat_barang,
                 punya_garansi: Boolean(b.tanggal_garansi),
                 tanggal_garansi: b.tanggal_garansi || "",
             });
 
-            setSearchPenitip(b.penitip?.nama_lengkap || "");
             setPreviewImage(
                 b.foto_barang.map((f) => ({
                     id: f.id_foto,
@@ -82,29 +67,7 @@ export default function PenitipanBarangPage() {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handlePenitipSearch = (e) => {
-        const keyword = e.target.value;
-        setSearchPenitip(keyword);
-        if (!keyword.trim()) {
-            setFilteredPenitip([]);
-            setShowDropdown(false);
-            return;
-        }
-        const filtered = penitipList.filter((p) =>
-            p.nama_lengkap.toLowerCase().startsWith(keyword.toLowerCase())
-        );
-        setFilteredPenitip(filtered);
-        setShowDropdown(true);
-    };
-
-    const handleSelectPenitip = (p) => {
-        setForm((prev) => ({ ...prev, id_penitip: p.id_penitip }));
-        setSearchPenitip(p.nama_lengkap);
-        setShowDropdown(false);
-    };
-
     const handleImageChange = (e) => {
-        if (!isEditable) return;
         const files = Array.from(e.target.files);
         const previews = files.map((file) => ({
             file,
@@ -115,8 +78,6 @@ export default function PenitipanBarangPage() {
     };
 
     const handleRemoveImage = (index) => {
-        if (!isEditable) return;
-
         const image = previewImage[index];
         if (image?.id) setFotoHapus((prev) => [...prev, image.id]);
         setPreviewImage((prev) => prev.filter((_, i) => i !== index));
@@ -141,54 +102,96 @@ export default function PenitipanBarangPage() {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem("token");
-            const data = new FormData();
-            data.append("id_penitip", form.id_penitip);
-            data.append("nama_barang", form.nama_barang);
-            data.append("kategori_barang", form.kategori_barang);
-            data.append("deskripsi", form.deskripsi);
-            data.append("harga_barang", form.harga_barang);
-            data.append("stock", 1);
-            data.append("status_barang", "tersedia");
-            data.append("tanggal_garansi", form.punya_garansi ? form.tanggal_garansi : "");
-            data.append("nama_qc", form.nama_qc);
-            fotoBarang.forEach((file) => data.append("foto_barang[]", file));
-            fotoHapus.forEach((id) => data.append("foto_hapus[]", id));
+            const data = {
+                ...form,
+                stock: 1,
+                status_barang: "tersedia",
+                tanggal_garansi: form.punya_garansi ? form.tanggal_garansi : "",
+            };
 
-            if (isEditMode) {
-                await axios.post(`http://localhost:8000/api/barang/update/${id_barang}`, data, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "multipart/form-data",
-                    },
-                });
-            } else {
-                const barangRes = await axios.post("http://localhost:8000/api/barang/store", data, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "multipart/form-data",
-                    },
-                });
-                const idBarangBaru = barangRes.data?.data?.id_barang;
-                await axios.post(
-                    "http://localhost:8000/api/penitipan/store",
-                    {
-                        id_penitip: form.id_penitip,
-                        id_barang: idBarangBaru,
-                        nama_qc: form.nama_qc,
-                    },
-                    {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }
-                );
+            const fotoPreviews = fotoBarang.map((file) => ({
+                url: URL.createObjectURL(file),
+                fileName: file.name,
+            }));
+
+            if (isTempMode) {
+                const prev = JSON.parse(localStorage.getItem("temp_barang_list") || "[]");
+
+                const fotoPreviews = fotoBarang.map((file) => ({
+                    url: URL.createObjectURL(file),
+                    fileName: file.name,
+                }));
+
+                const newBarang = { ...data, foto_preview: fotoPreviews };
+
+                // simpan untuk tampilan
+                localStorage.setItem("temp_barang_list", JSON.stringify([...prev, newBarang]));
+
+                // simpan file asli ke cache global sementara
+                window._fotoBarangCache = window._fotoBarangCache || [];
+                window._fotoBarangCache.push(fotoBarang); // array of File[]
+
+                localStorage.setItem("penitipan_step", "2");
+                alert("Barang berhasil ditambahkan ke daftar sementara.");
+                navigate("/user/gudang/penitipan-tambah");
+                return;
             }
+            else if (isEditMode) {
+                const token = localStorage.getItem("token");
+                const formData = new FormData();
+                formData.append("nama_barang", form.nama_barang);
+                formData.append("kategori_barang", form.kategori_barang);
+                formData.append("deskripsi", form.deskripsi);
+                formData.append("harga_barang", form.harga_barang);
+                formData.append("berat_barang", form.berat_barang);
+                formData.append("stock", 1);
+                formData.append("status_barang", "tersedia");
+                formData.append("tanggal_garansi", form.punya_garansi ? form.tanggal_garansi : "");
+                fotoBarang.forEach((file) => formData.append("foto_barang[]", file));
+                fotoHapus.forEach((id) => formData.append("foto_hapus[]", id));
 
-            localStorage.setItem(
-                "penitipanSuccess",
-                isEditMode ? "Barang berhasil diperbarui!" : "Barang berhasil dititipkan!"
-            );
+                await axios.post(`http://localhost:8000/api/barang/update/${id_barang}`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
 
-            navigate("/user/gudang/manajemen-barang");
+                localStorage.setItem("penitipanSuccess", "Barang berhasil diperbarui!");
+                navigate(-1);
+            } else {
+                const token = localStorage.getItem("token");
+                const id_penitip = localStorage.getItem("penitipan_id_penitip");
+                const id_hunter = localStorage.getItem("penitipan_id_hunter");
+                if (!id_penitip || !id_hunter) {
+                    alert("Data penitipan belum lengkap. Silakan ulangi dari awal.");
+                    setLoading(false);
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append("id_penitip", id_penitip);
+                formData.append("id_pegawai", id_hunter); // Hunter masuk ke id_pegawai
+                formData.append("nama_barang", form.nama_barang);
+                formData.append("kategori_barang", form.kategori_barang);
+                formData.append("deskripsi", form.deskripsi);
+                formData.append("harga_barang", form.harga_barang);
+                formData.append("berat_barang", form.berat_barang);
+                formData.append("stock", 1);
+                formData.append("status_barang", "tersedia");
+                formData.append("tanggal_garansi", form.punya_garansi ? form.tanggal_garansi : "");
+                fotoBarang.forEach((file) => formData.append("foto_barang[]", file));
+
+                await axios.post("http://localhost:8000/api/barang/store", formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+
+                localStorage.setItem("penitipanSuccess", "Barang berhasil dititipkan!");
+                navigate(-1)
+            }
         } catch (err) {
             console.error(err);
             alert("Gagal menyimpan data.");
@@ -200,13 +203,29 @@ export default function PenitipanBarangPage() {
     return (
         <div className="max-w-5xl mx-auto mt-10 p-6 bg-white shadow rounded">
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-2xl font-semibold">
-                    {isEditMode ? "Edit Barang Titipan" : "Tambah Barang Titipan"}
-                </h3>
-                {isEditMode && !isEditable && (
-                    <Button variant="warning" onClick={() => setIsEditable(true)}>
-                        Edit Data
+                {readonly && (
+                    <Button variant="secondary" onClick={() => navigate(-1)}>
+                        Kembali ke Detail Penitipan
                     </Button>
+                )}
+            </div>
+            <div className="flex justify-between items-center mb-4">
+
+                <h3 className="text-2xl font-semibold">
+                    {!editModeAktif ? "Detail Barang Titipan" : "Edit Barang Titipan"}
+                </h3>
+                {readonly && (
+                    <div className="text-right">
+                        {editModeAktif ? (
+                            <Button variant="outline-danger" onClick={() => setEditModeAktif(false)}>
+                                Batal Edit
+                            </Button>
+                        ) : (
+                            <Button variant="secondary" onClick={() => setEditModeAktif(true)}>
+                                Edit Data Barang
+                            </Button>
+                        )}
+                    </div>
                 )}
             </div>
 
@@ -250,7 +269,7 @@ export default function PenitipanBarangPage() {
                                     alt={`Preview ${currentSlide + 1}`}
                                     className="max-h-full max-w-full object-contain"
                                 />
-                                {isEditable && (
+                                {(editModeAktif || !readonly) && (
                                     <button
                                         type="button"
                                         onClick={() => handleRemoveImage(currentSlide)}
@@ -261,7 +280,7 @@ export default function PenitipanBarangPage() {
                                 )}
                             </div>
 
-                            {isEditable && (
+                            {(editModeAktif || !readonly) && (
                                 <>
                                     <input
                                         type="file"
@@ -284,7 +303,7 @@ export default function PenitipanBarangPage() {
                     ) : (
                         <div className="w-full h-48 flex items-center justify-center border rounded bg-gray-100 text-gray-400 relative">
                             Preview
-                            {isEditable && (
+                            {(editModeAktif || !readonly) && (
                                 <div className="absolute bottom-2 right-2">
                                     <input
                                         type="file"
@@ -304,7 +323,6 @@ export default function PenitipanBarangPage() {
                             )}
                         </div>
                     )}
-
                     {previewImage.length > 0 && (
                         <div className="text-center text-muted mt-1">
                             {currentSlide + 1} / {previewImage.length}
@@ -312,36 +330,8 @@ export default function PenitipanBarangPage() {
                     )}
                 </Form.Group>
 
-                {/* FORM */}
+                {/* FORM FIELD */}
                 <div className="grid grid-cols-1 gap-4">
-                    {/* Search penitip */}
-                    <Form.Group className="mb-3 position-relative">
-                        <Form.Label>Penitip</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Cari nama penitip..."
-                            value={searchPenitip}
-                            onChange={handlePenitipSearch}
-                            autoComplete="off"
-                            required
-                            disabled={!isEditable}
-                        />
-                        {showDropdown && filteredPenitip.length > 0 && (
-                            <div className="position-absolute bg-white border rounded shadow w-100 z-10 max-h-60 overflow-auto">
-                                {filteredPenitip.map((p) => (
-                                    <div
-                                        key={p.id_penitip}
-                                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                                        onClick={() => handleSelectPenitip(p)}
-                                    >
-                                        {p.nama_lengkap}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </Form.Group>
-
-                    {/* Field lainnya */}
                     <Form.Group>
                         <Form.Label>Nama Barang</Form.Label>
                         <Form.Control
@@ -349,8 +339,8 @@ export default function PenitipanBarangPage() {
                             name="nama_barang"
                             value={form.nama_barang}
                             onChange={handleChange}
+                            readOnly={readonly && !editModeAktif}
                             required
-                            disabled={!isEditable}
                         />
                     </Form.Group>
 
@@ -360,8 +350,8 @@ export default function PenitipanBarangPage() {
                             name="kategori_barang"
                             value={form.kategori_barang}
                             onChange={handleChange}
+                            disabled={readonly && !editModeAktif}
                             required
-                            disabled={!isEditable}
                         >
                             <option value="">Pilih Kategori</option>
                             <option value="Elektronik & Gadget">Elektronik & Gadget</option>
@@ -387,7 +377,7 @@ export default function PenitipanBarangPage() {
                                     onChange={(e) =>
                                         setForm({ ...form, punya_garansi: e.target.checked })
                                     }
-                                    disabled={!isEditable}
+                                    disabled={readonly && !editModeAktif}
                                 />
                             </Form.Group>
                             {form.punya_garansi && (
@@ -398,7 +388,7 @@ export default function PenitipanBarangPage() {
                                         name="tanggal_garansi"
                                         value={form.tanggal_garansi}
                                         onChange={handleChange}
-                                        disabled={!isEditable}
+                                        readOnly={readonly && !editModeAktif}
                                     />
                                 </Form.Group>
                             )}
@@ -412,9 +402,9 @@ export default function PenitipanBarangPage() {
                             name="deskripsi"
                             value={form.deskripsi}
                             onChange={handleChange}
+                            readOnly={readonly && !editModeAktif}
                             rows={3}
                             required
-                            disabled={!isEditable}
                         />
                     </Form.Group>
 
@@ -425,25 +415,25 @@ export default function PenitipanBarangPage() {
                             name="harga_barang"
                             value={form.harga_barang}
                             onChange={handleChange}
+                            readOnly={readonly && !editModeAktif}
                             required
-                            disabled={!isEditable}
                         />
                     </Form.Group>
 
                     <Form.Group>
-                        <Form.Label>Nama QC</Form.Label>
+                        <Form.Label>Berat Barang (kg)</Form.Label>
                         <Form.Control
-                            type="text"
-                            name="nama_qc"
-                            value={form.nama_qc}
+                            type="number"
+                            name="berat_barang"
+                            value={form.berat_barang}
                             onChange={handleChange}
+                            readOnly={readonly && !editModeAktif}
                             required
-                            disabled={!isEditable}
                         />
                     </Form.Group>
                 </div>
 
-                {isEditable && (
+                {(!readonly || editModeAktif) && (
                     <div className="text-center mt-5">
                         <Button type="submit" disabled={loading}>
                             {loading ? (
@@ -456,8 +446,8 @@ export default function PenitipanBarangPage() {
                         </Button>
                     </div>
                 )}
+
             </Form>
         </div>
     );
-
 }

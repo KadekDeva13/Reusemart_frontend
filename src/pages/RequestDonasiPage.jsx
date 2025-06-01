@@ -68,20 +68,7 @@ export default function RequestDonasiPage() {
     setEditModalShow(true);
   };
 
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * Updates an existing donation request with the current form data.
- * 
- * This function sends a PUT request to the server to update the donation request
- * identified by `editingId` with the data contained in `formData`. If the update
- * is successful, a success message is displayed, the list of donations is refreshed,
- * and the edit modal is closed. If the update fails, an error message is displayed.
- * 
- * @async
- * @throws Will display an error message if the update request fails.
- */
-
-/*******  0cd7e94e-deb6-4b40-9690-6523adc9c0d8  *******/  const handleUpdate = async () => {
+  const handleUpdate = async () => {
     const token = localStorage.getItem("token");
     try {
       await axios.put(`http://localhost:8000/api/donasi/update/${editingId}`, formData, {
@@ -160,6 +147,23 @@ export default function RequestDonasiPage() {
                     </Form.Group>
                   </Col>
                   <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Organisasi</Form.Label>
+                      <Form.Select
+                        name="id_organisasi"
+                        value={formData.id_organisasi}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        <option value="">-- Pilih Organisasi --</option>
+                        {organisasiList.map((org) => (
+                          <option key={org.id_organisasi} value={org.id_organisasi}>
+                            {org.nama_organisasi}
+                          </option>
+                        ))}
+                      </Form.Select>
+
+                    </Form.Group>
                   </Col>
                 </Row>
                 <Button type="submit" variant="success" className="mt-2">
@@ -266,7 +270,7 @@ export default function RequestDonasiPage() {
               <Form.Label>Status Donasi</Form.Label>
               <Form.Control type="text" value={formData.status_donasi} disabled />
             </Form.Group>
-            {/* <Form.Group className="mb-3">
+            <Form.Group className="mb-3">
               <Form.Label>Organisasi</Form.Label>
               <Form.Select
                 name="id_organisasi"
@@ -282,7 +286,7 @@ export default function RequestDonasiPage() {
                 ))}
               </Form.Select>
 
-            </Form.Group> */}
+            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>

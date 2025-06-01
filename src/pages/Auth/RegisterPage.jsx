@@ -214,7 +214,7 @@ export default function RegisterPage() {
                   </Row>
 
                   <Row>
-                    <Col md={6} className="mb-3">
+                    <Col md={6} className="mb-3" >
                       <Form.Group>
                         <Form.Label>Email</Form.Label>
                         <Form.Control
@@ -224,7 +224,8 @@ export default function RegisterPage() {
                           value={formData.email}
                           onChange={handleChange}
                           disabled={isLoading}
-                        />
+                          className="bg-light text-dark"
+                        />  
                       </Form.Group>
                     </Col>
                     <Col md={6} className="mb-3">

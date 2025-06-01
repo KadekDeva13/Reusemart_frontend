@@ -3,15 +3,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
 import axios from "axios";
 import { MessageCircle, Heart, Share2 } from "lucide-react";
-import TopNavbarNonLogin from "../component/TopNavBarNonLogin";
+import TopNavbarNonLogin from "../component/TopNavBarNonLogin"; // Mengimpor TopNavbarNonLogin
 
 export default function DetailBarangNonLoginPage() {
-  const { id } = useParams();
+  const { id } = useParams(); // Mendapatkan id barang dari parameter URL
   const navigate = useNavigate();
-  const [barang, setBarang] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(0);
+  const [barang, setBarang] = useState(null); // Menyimpan data barang
+  const [loading, setLoading] = useState(true); // Menyimpan status loading
+  const [selectedImage, setSelectedImage] = useState(0); // Menyimpan gambar yang dipilih
 
+  // Fungsi untuk mengambil data barang berdasarkan id
   useEffect(() => {
     const fetchBarang = async () => {
       try {
@@ -20,34 +21,25 @@ export default function DetailBarangNonLoginPage() {
       } catch (error) {
         console.error("Gagal memuat detail barang:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Mengubah status loading menjadi false setelah data selesai diambil
       }
     };
 
-    fetchBarang();
+    fetchBarang(); // Memanggil fungsi fetchBarang ketika id berubah
   }, [id]);
 
   const handleChatClick = () => {
+    // Navigasi ke halaman chat dengan id barang
     navigate(`/user/nonlogin/diskusi/${barang.id_barang}`);
   };
 
   if (loading) return <div className="text-center mt-5"><Spinner animation="border" variant="primary" /></div>;
   if (!barang) return <div className="text-center mt-5">Barang tidak ditemukan.</div>;
 
-  const now = new Date();
-  const tanggalGaransi = new Date(barang.tanggal_garansi);
-
-  const diffInMs = tanggalGaransi - now;
-  const diffInDays = diffInMs / (1000 * 3600 * 24);
-
-  const garansiStatus = diffInDays > 0
-    ? `Garansi masih berlaku ${Math.ceil(diffInDays)} hari lagi.`
-    : "Garansi sudah expired.";
-
   return (
     <>
       {/* Navbar untuk non-login */}
-      <TopNavbarNonLogin />
+      <TopNavbarNonLogin /> 
 
       {/* Main content */}
       <Container className="my-4 mt-8">
@@ -80,7 +72,7 @@ export default function DetailBarangNonLoginPage() {
           </Col>
 
           {/* Kolom Kanan: Detail dan Aksi */}
-          <Col md={6} mt={4}>
+          <Col md={6}>
             <h4>{barang.nama_barang}</h4>
             <h3 className="text-danger mb-4">Rp{parseInt(barang.harga_barang).toLocaleString("id-ID")}</h3>
 
@@ -125,10 +117,9 @@ export default function DetailBarangNonLoginPage() {
             {/* Detail Tambahan */}
             <h6>Detail Barang</h6>
             <p><strong>Kategori:</strong> {barang.kategori_barang}</p>
-
-            <p>
-              <strong>Tanggal akhir garansi:</strong> {barang.tanggal_garansi}
-            </p>
+            {barang.tanggal_garansi && (
+              <p><strong>Garansi:</strong> {barang.tanggal_garansi}</p>
+            )}
             <p>{barang.deskripsi}</p>
           </Col>
         </Row>

@@ -41,6 +41,7 @@ import AlamatPage from "../pages/AlamatPage";
 import KategoriBarangPage from "../pages/KategoriBarangPage";
 import DetailBarangPage from "../pages/DetailBarangPage";
 import DiskusiPage from "../pages/DiskusiPage";
+import KeranjangPagePembeli from "../pages/KeranjangPagePembeli";
 
 // Pegawai Pages
 import PenitipPageCS from "../pages/PagePenitipCS";
@@ -58,6 +59,7 @@ import AdminLayout from "../layouts/AdminLayout";
 import DaftarPegawaiPage from '../pages/DaftarPegawaiPage';
 import TambahPegawaiPage from '../pages/TambahPegawaiPage';
 import DaftarOrganisasiPage from '../pages/DaftarOrganisasiPage';
+import DaftarOrganisasiBelum from '../pages/organisasiBelum';
 
 //Penitipan
 import KategoriBarangPenitipanPage from "../pages/KategoriBarangPenitipanPage";
@@ -72,6 +74,9 @@ import LaporanBarangHabis from "../pages/Laporan/LaporanMasaPenitipanHabis";
 import LaporanPenjualanBulananPage from "../pages/Laporan/LaporanPenjualanBulananPage";
 
 //Pegawai Gudang Pages
+import DaftarPenitipanPage from "../pages/DaftarPenitipanPage";
+import DetailPenitipanPage from "../pages/DetailPenitipanPage";
+import TambahPenitipanPage from "../pages/TambahPenitipanPage";
 import ManajemenBarangPage from "../pages/ManajemenBarangPage";
 import HistoryPenitipanPage from "../pages/HistoryPenitipanPage";
 import PenitipanBarangPage from "../pages/PenitipanBarangPage";
@@ -82,6 +87,8 @@ import NotaPenjualanKurirPage from "../pages/NotaPenjualanKurirPage";
 import NotaPenjualanPembeliPage from "../pages/NotaPenjualanPembeliPage";
 import KonfirmasiPengambilanPage from "../pages/KonfirmasiPengambilanPage";
 // import VerifikasiTransaksiPage from "../pages/VerifikasiTransaksiPage";
+
+import VerifikasiTransaksiPage from "../pages/VerifikasiTransaksiPage";
 
 const router = createBrowserRouter([
   {
@@ -117,6 +124,7 @@ const router = createBrowserRouter([
     path: "/user/profile/pembeli/alamat",
     element: <Navigate to="/user/pembeli/alamat" replace />,
   },
+  
   {
     path: "/",
     element: <LandingPage />,
@@ -167,6 +175,7 @@ const router = createBrowserRouter([
       { path: "kategori/:kategori", element: <KategoriBarangPage /> },
       { path: "barang/:id", element: <DetailBarangPage /> },
       { path: "diskusi/:id_barang", element: <DiskusiPage /> },
+      { path: "keranjang", element: <KeranjangPagePembeli /> }
 
     ],
   },
@@ -199,7 +208,7 @@ const router = createBrowserRouter([
       { path: "barang", element: <BarangPegawaiPage /> },
       { path: "diskusi/:id_barang", element: <DiskusiPegawaiPage /> },
       { path: "penitip", element: <PenitipPageCS /> },
-      // { path: "/user/pegawai/verifikasi-transaksi", element: <VerifikasiTransaksiPage /> }
+      {path:"/user/pegawai/verifikasi-transaksi", element:<VerifikasiTransaksiPage />}
 
     ],
   },
@@ -228,7 +237,7 @@ const router = createBrowserRouter([
       { path: "daftar-pegawai", element: <DaftarPegawaiPage /> },
       { path: "tambah-pegawai", element: <TambahPegawaiPage /> },
       { path: "daftar-organisasi", element: <DaftarOrganisasiPage /> },
-      // { path: "daftar-belum", element: <DaftarOrganisasiBelum /> },
+      { path: "daftar-belum", element: <DaftarOrganisasiBelum/>},
     ],
   },
 
@@ -245,8 +254,8 @@ const router = createBrowserRouter([
       { path: "request-donasi", element: <OwnerRequestDonasiPage /> },
       { path: "history-donasi", element: <HistoryDonasiPage /> },
       { path: "laporan/laporan-penjualan-kategori", element: <LaporanKategoriPage /> },
-      {path: "laporan/laporan-masa-penitipan-habis", element: <LaporanBarangHabis />},
-      {path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPage />}
+      { path: "laporan/laporan-masa-penitipan-habis", element: <LaporanBarangHabis /> },
+      { path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPage /> }
     ],
   },
 
@@ -260,6 +269,9 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: "", element: <h2 className="p-3">Selamat Datang di Dashboard</h2> },
+      { path: "penitipan-daftar", element: <DaftarPenitipanPage /> },
+      { path: "penitipan-detail/:id", element: <DetailPenitipanPage /> },
+      { path: "penitipan-tambah", element: <TambahPenitipanPage /> },
       { path: "manajemen-barang", element: <ManajemenBarangPage /> },
       { path: "tambah-barang", element: <PenitipanBarangPage /> },
       { path: "history-penitipan", element: <HistoryPenitipanPage /> },

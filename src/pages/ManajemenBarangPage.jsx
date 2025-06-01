@@ -63,12 +63,12 @@ const ManajemenBarangPage = () => {
         } else if (searchBy === "kategori_barang") {
             return regex.test(item.kategori_barang || "");
         } else if (searchBy === "penitip") {
-            return regex.test(namaPenitip);
+            return regex.test(item.penitipan?.[0]?.penitip?.nama_lengkap || "");
         } else {
             return (
                 regex.test(item.nama_barang || "") ||
                 regex.test(item.kategori_barang || "") ||
-                regex.test(namaPenitip)
+                regex.test(item.penitipan?.[0]?.penitip?.nama_lengkap || "")
             );
         }
     });
@@ -141,7 +141,9 @@ const ManajemenBarangPage = () => {
                                             <div className="text-sm text-gray-500">{item.deskripsi}</div>
                                         </td>
                                         <td className="border border-gray-300 px-2 py-2">{item.kategori_barang}</td>
-                                        <td className="border border-gray-300 px-2 py-2">{namaPenitip}</td>
+                                        <td className="border border-gray-300 px-2 py-2">
+                                            {item.penitipan?.[0]?.penitip?.nama_lengkap || "-"}
+                                        </td>
                                         <td className="border border-gray-300 px-2 py-2">
                                             <button
                                                 onClick={() => handleEdit(item)}

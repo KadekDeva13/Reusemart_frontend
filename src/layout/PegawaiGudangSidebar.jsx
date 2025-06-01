@@ -9,6 +9,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const GudangSidebar = () => {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [notaMenuOpen, setNotaMenuOpen] = useState(false);
+    const [penitipanMenuOpen, setPenitipanMenuOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -32,6 +33,35 @@ const GudangSidebar = () => {
                     <FaTachometerAlt className="mr-3" />
                     Dashboard
                 </div>
+
+                {/* MENU PENITIPAN */}
+                <div
+                    className={`flex items-center justify-between px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('/penitipan') ? 'bg-[#798248]' : ''}`}
+                    onClick={() => setPenitipanMenuOpen(!penitipanMenuOpen)}
+                >
+                    <div className="flex items-center">
+                        <FaBoxOpen className="mr-3" />
+                        Manajemen Penitipan
+                    </div>
+                    <FaChevronDown className={`transition-transform ${penitipanMenuOpen ? '-rotate-90' : ''}`} />
+                </div>
+
+                {penitipanMenuOpen && (
+                    <>
+                        <div
+                            className={`pl-12 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('/penitipan/tambah') ? 'bg-[#798248]' : ''}`}
+                            onClick={() => navigate("/user/gudang/penitipan-tambah")}
+                        >
+                            Tambah Penitipan
+                        </div>
+                        <div
+                            className={`pl-12 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('/penitipan/daftar') ? 'bg-[#798248]' : ''}`}
+                            onClick={() => navigate("/user/gudang/penitipan-daftar")}
+                        >
+                            Daftar Penitipan
+                        </div>
+                    </>
+                )}
 
                 <div
                     className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('manajemen-barang') ? 'bg-[#798248]' : ''}`}
