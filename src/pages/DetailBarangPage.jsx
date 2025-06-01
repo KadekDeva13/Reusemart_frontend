@@ -46,29 +46,30 @@ export default function DetailBarangPage() {
 
   const handleTambahKeranjang = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) { navigate("/login") }
+    else {
+      setAdding(true);
+      try {
+        await axios.post(
+          "http://localhost:8000/api/keranjang/tambah",
+          { id_barang: barang.id_barang },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-    setAdding(true);
-    try {
-      await axios.post(
-        "http://localhost:8000/api/keranjang/tambah",
-        { id_barang: barang.id_barang },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        localStorage.setItem("cart_updated", Date.now());
+        window.dispatchEvent(new Event("storage"));
 
-      localStorage.setItem("cart_updated", Date.now());
-      window.dispatchEvent(new Event("storage"));
-
-      alert("Barang berhasil ditambahkan ke keranjang!");
-    } catch (err) {
-      console.error("Gagal menambahkan ke keranjang:", err);
-      alert("Gagal menambahkan barang.");
-    } finally {
-      setAdding(false);
+        alert("Barang berhasil ditambahkan ke keranjang!");
+      } catch (err) {
+        console.error("Gagal menambahkan ke keranjang:", err);
+        alert("Gagal menambahkan barang.");
+      } finally {
+        setAdding(false);
+      }
     }
   };
 
@@ -142,11 +143,10 @@ export default function DetailBarangPage() {
                   src={`http://localhost:8000/storage/${foto.foto_barang}`}
                   alt={`Thumb ${i + 1}`}
                   onClick={() => swiperRef.current.slideToLoop(i)}
-                  className={`w-[70px] h-[70px] object-cover cursor-pointer rounded border ${
-                    i === selectedImage
-                      ? "border-blue-600 border-2"
-                      : "border-gray-300"
-                  }`}
+                  className={`w-[70px] h-[70px] object-cover cursor-pointer rounded border ${i === selectedImage
+                    ? "border-blue-600 border-2"
+                    : "border-gray-300"
+                    }`}
                 />
               ))}
             </div>
@@ -164,14 +164,7 @@ export default function DetailBarangPage() {
               <div className="fw-semibold mb-2">Atur jumlah dan catatan</div>
 
               <div className="d-flex align-items-center mb-3">
-                <Button variant="outline-secondary" size="sm" disabled>
-                  -
-                </Button>
-                <span className="mx-3">1</span>
-                <Button variant="outline-secondary" size="sm" disabled>
-                  +
-                </Button>
-                <span className="ms-3 text-warning fw-semibold">
+                <span className="fw-semibold">
                   Stok Total: Sisa {barang.stock}
                 </span>
               </div>

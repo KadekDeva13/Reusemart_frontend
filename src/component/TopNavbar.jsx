@@ -96,6 +96,7 @@ const TopNavbar = ({ onLogout }) => {
           src="/images/Logo.png"
           alt="Logo"
           style={{ width: "40px", height: "40px", objectFit: "contain" }}
+          onClick={() => navigate("/user/pembeli")}
         />
 
         <Form
@@ -184,15 +185,13 @@ const TopNavbar = ({ onLogout }) => {
               >
                 <button
                   className="dropdown-item"
-                  onClick={() => navigate("/user/profile/pembeli")}
+                  onClick={() => {
+                    setShowDropdown(false);
+                    navigate("/user/profile/pembeli")
+                  }}
                 >
                   Akun Saya
-                </button>
-                <button
-                  className="dropdown-item"
-                  onClick={() => navigate("/user/pembeli")}
-                >
-                  Home
+
                 </button>
                 <button
                   className="dropdown-item text-danger"
