@@ -20,7 +20,7 @@ const PegawaiGudangLayout = () => {
         .catch((err) => {
           console.error("❌ Gagal hanguskan otomatis:", err?.response?.data?.message || err.message);
         });
-    }, 10 * 60 * 1000); // setiap 10 detik
+    }, 10 * 60 * 1000); // setiap 10 menit
     return () => clearInterval(interval);
   }, []);
 
