@@ -9,6 +9,8 @@ const PenitipLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
     navigate("/");
   };
 

@@ -199,6 +199,34 @@ export default function DetailBarangPage() {
                   <Share2 size={16} /> Share
                 </div>
               </div>
+              {/* Info Penitip */}
+              <div className="mt-4 p-3 rounded bg-transparent">
+                <h6 className="mb-3">Penitip</h6>
+                <div className="flex items-center gap-4">
+                  <img
+                    src={`http://localhost:8000/storage/foto_penitip/${barang?.detailpenitipan?.penitipan?.penitip?.image_user}`}
+                    alt="Foto Penitip"
+                    className="w-16 h-16 rounded-full object-cover border border-gray-300"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+                    }}
+                  />
+                  <div>
+                    <p
+                      className="font-semibold mb-1">
+                      {barang?.detailpenitipan?.penitipan?.penitip?.nama_lengkap || "Nama tidak tersedia"}
+                    </p>
+                    <div className="text-yellow-400 text-lg">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span key={star}>
+                          {star <= barang?.detailpenitipan?.penitipan?.penitip?.rating_penitip ? "★" : "☆"}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Detail Tambahan */}
