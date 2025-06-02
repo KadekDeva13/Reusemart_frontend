@@ -7,11 +7,17 @@ function DaftarPenitipanPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchBy, setSearchBy] = useState("all");
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchPenitipan();
     }, []);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, searchBy]);
 
     const fetchPenitipan = async () => {
         setLoading(true);
@@ -36,18 +42,28 @@ function DaftarPenitipanPage() {
 
         const namaPenitip = item.penitip?.nama_lengkap || "";
         const daftarNamaBarang = item.barang?.map((b) => b.nama_barang).join(" ") || "";
+        const tanggalMasuk = item.tanggal_masuk || "";
 
         if (searchBy === "penitip") {
             return regex.test(namaPenitip);
         } else if (searchBy === "barang") {
             return regex.test(daftarNamaBarang);
+        } else if (searchBy === "tanggal") {
+            return regex.test(tanggalMasuk);
         } else {
             return (
                 regex.test(namaPenitip) ||
-                regex.test(daftarNamaBarang)
+                regex.test(daftarNamaBarang) ||
+                regex.test(tanggalMasuk)
             );
         }
     });
+
+
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredList.slice(indexOfFirstItem, indexOfLastItem);
 
 
     function formatTanggal(tanggal) {
@@ -81,6 +97,7 @@ function DaftarPenitipanPage() {
                         <option value="all">Semua Field</option>
                         <option value="penitip">Nama Penitip</option>
                         <option value="barang">Nama Barang</option>
+                        <option value="tanggal">Tanggal Masuk</option>
                     </select>
                 </div>
 
@@ -109,11 +126,17 @@ function DaftarPenitipanPage() {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredList.map((item, index) => (
+                                currentItems.map((item, index) => (
                                     <tr key={item.id_penitipan} className="hover:bg-gray-50">
-                                        <td className="py-2 border">{index + 1}</td>
-                                        <td className="py-2 border">{item.penitip?.nama_lengkap || "-"}</td>
-                                        <td className="py-2 border">{formatTanggal(item.tanggal_masuk)}</td>
+                                        <td className="py-2 border">
+                                            {indexOfFirstItem + index + 1}
+                                        </td>
+                                        <td className="py-2 border">
+                                            {item.penitip?.nama_lengkap || "-"}
+                                        </td>
+                                        <td className="py-2 border">
+                                            {formatTanggal(item.tanggal_masuk)}
+                                        </td>
                                         <td className="py-2 border text-left">
                                             {item.barang?.length > 0 ? (
                                                 <ul className="list-disc list-inside text-sm text-gray-700">
@@ -127,11 +150,12 @@ function DaftarPenitipanPage() {
                                                 </span>
                                             )}
                                         </td>
-
                                         <td className="py-2 border">
                                             <button
                                                 onClick={() =>
-                                                    navigate(`/user/gudang/penitipan-detail/${item.id_penitipan}`)
+                                                    navigate(
+                                                        `/user/gudang/penitipan-detail/${item.id_penitipan}`
+                                                    )
                                                 }
                                                 className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded"
                                             >
@@ -143,6 +167,52 @@ function DaftarPenitipanPage() {
                             )}
                         </tbody>
                     </table>
+                    <div className="mt-4 mb-4 flex justify-center items-center gap-2 text-sm">
+                        {/* Tombol ke halaman pertama */}
+                        <button
+                            onClick={() => setCurrentPage(1)}
+                            disabled={currentPage === 1}
+                            className="px-2 py-1 border rounded disabled:opacity-50"
+                        >
+                            ≪
+                        </button>
+
+                        {/* Tombol ke halaman sebelumnya */}
+                        <button
+                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="px-2 py-1 border rounded disabled:opacity-50"
+                        >
+                            ‹
+                        </button>
+
+                        {/* Info halaman saat ini */}
+                        <span className="px-2 py-1 text-gray-700">
+                            Halaman {currentPage} dari {Math.ceil(filteredList.length / itemsPerPage)}
+                        </span>
+
+                        {/* Tombol ke halaman berikutnya */}
+                        <button
+                            onClick={() =>
+                                setCurrentPage((prev) =>
+                                    Math.min(prev + 1, Math.ceil(filteredList.length / itemsPerPage))
+                                )
+                            }
+                            disabled={currentPage === Math.ceil(filteredList.length / itemsPerPage)}
+                            className="px-2 py-1 border rounded disabled:opacity-50"
+                        >
+                            ›
+                        </button>
+
+                        {/* Tombol ke halaman terakhir */}
+                        <button
+                            onClick={() => setCurrentPage(Math.ceil(filteredList.length / itemsPerPage))}
+                            disabled={currentPage === Math.ceil(filteredList.length / itemsPerPage)}
+                            className="px-2 py-1 border rounded disabled:opacity-50"
+                        >
+                            ≫
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

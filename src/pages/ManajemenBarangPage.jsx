@@ -36,7 +36,7 @@ const ManajemenBarangPage = () => {
     const fetchBarang = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:8000/api/barang/all/barang", {
+            const res = await axios.get("http://localhost:8000/api/barang", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -78,12 +78,12 @@ const ManajemenBarangPage = () => {
             <div className="min-w-full">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                     <h2 className="text-4xl font-semibold">Manajemen Barang</h2>
-                    <button
+                    {/* <button
                         onClick={() => navigate("/user/gudang/tambah-barang")}
                         className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm mt-2 md:mt-0"
                     >
                         + Tambah Barang
-                    </button>
+                    </button> */}
                 </div>
 
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">

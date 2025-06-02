@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import axios from "axios";
 import { MessageCircle, Heart, Share2 } from "lucide-react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaStar, FaRegStar } from "react-icons/fa";
 import TopNavbar from "../component/TopNavbar";
 import TopNavbarNonLogin from "../component/TopNavBarNonLogin";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -158,9 +158,8 @@ export default function DetailBarangPage() {
                   src={`http://localhost:8000/storage/${foto.foto_barang}`}
                   alt={`Thumb ${i + 1}`}
                   onClick={() => swiperRef.current.slideToLoop(i)}
-                  className={`w-[70px] h-[70px] object-cover cursor-pointer rounded border ${
-                    i === selectedImage ? "border-blue-600 border-2" : "border-gray-300"
-                  }`}
+                  className={`w-[70px] h-[70px] object-cover cursor-pointer rounded border ${i === selectedImage ? "border-blue-600 border-2" : "border-gray-300"
+                    }`}
                 />
               ))}
             </div>
@@ -173,11 +172,16 @@ export default function DetailBarangPage() {
             </h3>
 
             <div className="border rounded p-3 shadow-sm mb-4">
-              <div className="fw-semibold mb-2">Atur jumlah dan catatan</div>
-
               <div className="d-flex align-items-center mb-3">
-                <span className="fw-semibold">Stok Total: Sisa {barang.stock}</span>
+                <span className="fw-semibold">
+                  {barang.stock > 0 ? (
+                    <span className="text-success">Barang tersedia</span>
+                  ) : (
+                    <span className="text-danger">Barang habis</span>
+                  )}
+                </span>
               </div>
+
 
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <span className="text-muted">Subtotal</span>
@@ -227,15 +231,16 @@ export default function DetailBarangPage() {
                     <p className="font-semibold mb-1">
                       {barang?.detailpenitipan?.penitipan?.penitip?.nama_lengkap || "Nama tidak tersedia"}
                     </p>
-                    <div className="text-yellow-400 text-lg">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span key={star}>
-                          {star <= (barang?.detailpenitipan?.penitipan?.penitip?.rating_penitip || 0)
-                            ? "★"
-                            : "☆"}
-                        </span>
-                      ))}
+                    <div className="flex items-center gap-1 text-yellow-500 text-xl">
+                      {[1, 2, 3, 4, 5].map((star) =>
+                        star <= Math.round(barang?.detailpenitipan?.penitipan?.penitip?.rating_penitip) ? (
+                          <FaStar key={star} />
+                        ) : (
+                          <FaRegStar key={star} />
+                        )
+                      )}
                     </div>
+
                   </div>
                 </div>
               </div>

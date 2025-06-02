@@ -27,7 +27,7 @@ const HomeNonLogin = () => {
 
   const fetchBarang = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/non/all", {
+      const res = await axios.get("http://localhost:8000/api/barang/rekomendasi", {
         withCredentials: false,
       });
 

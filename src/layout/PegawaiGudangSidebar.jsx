@@ -63,21 +63,21 @@ const GudangSidebar = () => {
                     </>
                 )}
 
-                <div
+                {/* <div
                     className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('manajemen-barang') ? 'bg-[#798248]' : ''}`}
                     onClick={() => navigate("/user/gudang/manajemen-barang")}
                 >
                     <FaBoxOpen className="mr-3" />
                     Manajemen Barang
-                </div>
+                </div> */}
 
-                <div
+                {/* <div
                     className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('history-penitipan') ? 'bg-[#798248]' : ''}`}
                     onClick={() => navigate("/user/gudang/history-penitipan")}
                 >
                     <FaHistory className="mr-3" />
                     Riwayat Penitipan
-                </div>
+                </div> */}
 
                 <div
                     className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('daftar-transaksi-dikirim-diambil') ? 'bg-[#798248]' : ''}`}

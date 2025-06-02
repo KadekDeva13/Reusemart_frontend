@@ -57,12 +57,12 @@ const HomePagePembeli = () => {
   const fetchBarang = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/barang/", {
+      const res = await axios.get("http://localhost:8000/api/barang/rekomendasi", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setBarangList(res.data);
+      setBarangList(res.data.barang);
     } catch (error) {
       console.error("Gagal mengambil data barang:", error);
     }

@@ -80,7 +80,7 @@ function DetailPenitipanPage() {
                             </div>
 
                             <div className="bg-white rounded shadow overflow-x-auto">
-                                <table className="w-full text-sm text-center border">
+                                <table className="w-full text-base text-center border">
                                     <thead className="bg-green-100 text-gray-800 font-semibold">
                                         <tr>
                                             <th className="py-3 border">No</th>
@@ -88,7 +88,7 @@ function DetailPenitipanPage() {
                                             <th className="py-3 border">Kategori</th>
                                             <th className="py-3 border">Harga</th>
                                             <th className="py-3 border">Status</th>
-                                            <th className="py-3 border">Foto</th>
+                                            <th className="py-3 border">Foto Utama</th>
                                             <th className="py-3 border"></th>
                                         </tr>
                                     </thead>
@@ -110,12 +110,17 @@ function DetailPenitipanPage() {
                                                     </td>
                                                     <td className="py-2 border capitalize">{barang.status_barang}</td>
                                                     <td className="py-2 border">
-                                                        {barang.foto_barang?.[0] ? (
-                                                            <img
-                                                                src={`http://localhost:8000/storage/${barang.foto_barang[0].foto_barang}`}
-                                                                alt="foto"
-                                                                className="w-16 h-16 object-cover rounded mx-auto"
-                                                            />
+                                                        {barang.foto_barang?.length > 0 ? (
+                                                            <div className="flex flex-wrap justify-center gap-2">
+                                                                {barang.foto_barang.map((foto, i) => (
+                                                                    <img
+                                                                        key={i}
+                                                                        src={`http://localhost:8000/storage/${foto.foto_barang}`}
+                                                                        alt={`foto-${i}`}
+                                                                        className="w-24 h-24 object-cover rounded"
+                                                                    />
+                                                                ))}
+                                                            </div>
                                                         ) : (
                                                             <span className="text-gray-400 text-sm italic">Tidak ada foto</span>
                                                         )}
