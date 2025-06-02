@@ -108,11 +108,15 @@ const NotaPDF = ({ transaksiList }) => {
 
         const getQcName = () => {
           for (const dt of transaksi.detailtransaksi || []) {
-            const namaQC = dt?.barang?.detailpenitipan?.penitipan?.pegawai_qc?.nama_lengkap;
-            if (namaQC) return namaQC;
+            const detailList = dt?.barang?.detailpenitipan || [];
+            for (const detail of detailList) {
+              const namaQC = detail?.penitipan?.pegawaiqc?.nama_lengkap;
+              if (namaQC) return namaQC;
+            }
           }
           return "-";
         };
+
 
 
         return (
@@ -126,7 +130,7 @@ const NotaPDF = ({ transaksiList }) => {
               <View style={styles.section}>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>No Nota</Text>
-                   <Text style={styles.value}>: {generateNomorNota(transaksi)}</Text>
+                  <Text style={styles.value}>: {generateNomorNota(transaksi)}</Text>
                 </View>
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>Tanggal pesan</Text>

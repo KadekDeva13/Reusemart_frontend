@@ -45,31 +45,15 @@ const OwnerRequestDonasiPage = () => {
     setShowModalKonfirmasi(true);
   };
 
-  const handleKirimDonasi = async ({ barang, request, tanggal }) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `http://127.0.0.1:8000/api/kirim/{id_donasi}`,
-        {
-          id_donasi: request.id_donasi,
-          id_barang: barang.id_barang,
-          tanggal_donasi: tanggal,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      fetchDonasiDiminta(); // Refresh data setelah donasi berhasil
-    } catch (error) {
-      console.error("Gagal mengirim donasi", error);
-    } finally {
-      setSelectedRequest(null);
-      setBarangDipilih(null);
-      setShowModalKonfirmasi(false);
-    }
-  };
+  // ...kode lainnya tetap
+
+const handleKirimDonasi = ({ barang, request, tanggal }) => {
+  fetchDonasiDiminta(); 
+  setSelectedRequest(null);
+  setBarangDipilih(null);
+  setShowModalKonfirmasi(false);
+};
+
 
   return (
     <div className="overflow-x-auto px-5">

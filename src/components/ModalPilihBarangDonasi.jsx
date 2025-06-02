@@ -12,21 +12,26 @@ function ModalPilihBarangDonasi({ show, handleClose, onBarangSelected }) {
     }
   }, [show]);
 
-  const fetchBarangDonasi = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/barang/donasi", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setBarangDonasiList(res.data);
-    } catch (error) {
-      console.error("Gagal mengambil data barang donasi", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchBarangDonasi = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.get("http://localhost:8000/api/barang/donasi", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // ✅ Langsung tampilkan semua barang yang diberikan backend
+    setBarangDonasiList(res.data);
+
+  } catch (error) {
+    console.error("Gagal mengambil data barang donasi", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   return (
     <Modal show={show} onHide={handleClose} centered size="lg">
