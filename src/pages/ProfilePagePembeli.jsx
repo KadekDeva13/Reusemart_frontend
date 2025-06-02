@@ -274,7 +274,7 @@ export default function ProfilePagePembeli() {
       case "batal":
         return "danger";
       case "disiapkan":
-        return "info"
+        return "info";
       default:
         return "dark";
     }
@@ -341,8 +341,8 @@ export default function ProfilePagePembeli() {
                       field === "tanggal_lahir"
                         ? "date"
                         : field === "email"
-                          ? "email"
-                          : "text"
+                        ? "email"
+                        : "text"
                     }
                     name={field}
                     value={formData[field]}
@@ -417,37 +417,45 @@ export default function ProfilePagePembeli() {
         </thead>
         <tbody>
           {transaksiList.length > 0 ? (
-            transaksiList.map((item) => (
-              <tr key={item.id_transaksi}>
-                <td>{item.id_transaksi}</td>
-                <td>{new Date(item.created_at).toLocaleDateString()}</td>
-                <td>Rp{parseInt(item.total_pembayaran).toLocaleString()}</td>
-                <td>
-                  <Badge bg={getBadgeVariant(item.status_transaksi)}>
-                    {item.status_transaksi}
-                  </Badge>
-                </td>
-                <td>
-                  <Button
-                    variant="info"
-                    size="sm"
-                    onClick={() => fetchDetailTransaksi(item.id_transaksi)}
-                  >
-                    Detail
-                  </Button>
-
-                  {item.status_transaksi === "belum bayar" && (
+            transaksiList.map((item) => {
+              return (
+                <tr key={item.id_transaksi}>
+                  <td>{item.id_transaksi}</td>
+                  <td>
+                    {item.created_at
+                      ? new Date(
+                          item.created_at.replace(" ", "T")
+                        ).toLocaleDateString()
+                      : "-"}
+                  </td>
+                  <td>Rp{parseInt(item.total_pembayaran).toLocaleString()}</td>
+                  <td>
+                    <Badge bg={getBadgeVariant(item.status_transaksi)}>
+                      {item.status_transaksi}
+                    </Badge>
+                  </td>
+                  <td>
                     <Button
-                      variant="success"
+                      variant="info"
                       size="sm"
-                      onClick={() => handleBayar(item.id_transaksi)}
+                      onClick={() => fetchDetailTransaksi(item.id_transaksi)}
                     >
-                      Bayar
+                      Detail
                     </Button>
-                  )}
-                </td>
-              </tr>
-            ))
+
+                    {item.status_transaksi === "belum bayar" && (
+                      <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() => handleBayar(item.id_transaksi)}
+                      >
+                        Bayar
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })
           ) : (
             <tr>
               <td colSpan="5" className="text-center text-muted">
@@ -493,7 +501,11 @@ export default function ProfilePagePembeli() {
   );
 
   const renderRatingModal = () => (
-    <Modal show={showRatingModal} onHide={() => setShowRatingModal(false)} centered>
+    <Modal
+      show={showRatingModal}
+      onHide={() => setShowRatingModal(false)}
+      centered
+    >
       <Modal.Header closeButton>
         <Modal.Title>Beri Rating Barang</Modal.Title>
       </Modal.Header>
@@ -503,7 +515,10 @@ export default function ProfilePagePembeli() {
           {[1, 2, 3, 4, 5].map((star) => (
             <span
               key={star}
-              style={{ cursor: "pointer", color: star <= selectedRating ? "gold" : "#ccc" }}
+              style={{
+                cursor: "pointer",
+                color: star <= selectedRating ? "gold" : "#ccc",
+              }}
               onClick={() => setSelectedRating(star)}
             >
               ★
@@ -574,7 +589,13 @@ export default function ProfilePagePembeli() {
                       {Number(item.rating_barang) > 0 ? (
                         <div className="text-warning text-lg">
                           {[1, 2, 3, 4, 5].map((star) => (
-                            <span key={star} style={{ color: star <= item.rating_barang ? "gold" : "#ccc" }}>
+                            <span
+                              key={star}
+                              style={{
+                                color:
+                                  star <= item.rating_barang ? "gold" : "#ccc",
+                              }}
+                            >
                               ★
                             </span>
                           ))}
