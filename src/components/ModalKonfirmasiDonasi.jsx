@@ -12,11 +12,10 @@ function ModalKonfirmasiDonasi({
   onUpdateTanggal,
 }) {
   const [tanggalDonasi, setTanggalDonasi] = useState(request?.tanggal_donasi || "");
-  const [namaPenerima, setNamaPenerima] = useState(request?.nama_penerima || "");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!tanggalDonasi || !namaPenerima) {
+    if (!tanggalDonasi) {
       alert("Tanggal dan Nama Penerima harus diisi.");
       return;
     }
@@ -32,20 +31,18 @@ function ModalKonfirmasiDonasi({
           {
             id_barang: barang.id_barang,
             tanggal_donasi: tanggalDonasi,
-            nama_penerima: namaPenerima,
           },
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        onKirim?.({ barang, request, tanggal: tanggalDonasi, nama_penerima: namaPenerima });
+        onKirim?.({ barang, request, tanggal: tanggalDonasi});
 
       } else if (mode === "update") {
         await axios.put(
           `http://localhost:8000/api/donasi/update-donasi/${request.id_donasi}`,
           {
             tanggal_donasi: tanggalDonasi,
-            nama_penerima: namaPenerima,
           },
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -54,7 +51,6 @@ function ModalKonfirmasiDonasi({
         onUpdateTanggal?.({
           id_donasi: request.id_donasi,
           tanggal_donasi: tanggalDonasi,
-          nama_penerima: namaPenerima,
         });
       }
 
@@ -81,7 +77,7 @@ function ModalKonfirmasiDonasi({
           <p><strong>Barang:</strong> {barang.nama_barang}</p>
         )}
 
-        <Form.Group className="mt-3">
+        {/* <Form.Group className="mt-3">
           <Form.Label>Nama Penerima</Form.Label>
           <Form.Control
             type="text"
@@ -89,7 +85,7 @@ function ModalKonfirmasiDonasi({
             value={namaPenerima}
             onChange={(e) => setNamaPenerima(e.target.value)}
           />
-        </Form.Group>
+        </Form.Group> */}
 
         <Form.Group className="mt-3">
           <Form.Label>Tanggal Donasi</Form.Label>

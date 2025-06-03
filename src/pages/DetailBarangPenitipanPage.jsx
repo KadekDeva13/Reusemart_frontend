@@ -44,11 +44,11 @@ export default function DetailBarangPenitipanPage() {
   }, [id]);
 
   const handleKonfirmasiAmbil = async () => {
-    if (!window.confirm("Yakin ingin mengambil barang ini?")) return;
+    // if (!window.confirm("Yakin ingin mengambil barang ini?")) return;
     try {
       setKonfirmasiLoading(true);
       const token = localStorage.getItem("token");
-
+      // const konfirmasi = window.confirm("Yakin ingin mengambil barang ini?");
       await axios.post(
         `http://localhost:8000/api/transaksi/konfirmasi-ambil/${id}`,
         {},
@@ -58,6 +58,7 @@ export default function DetailBarangPenitipanPage() {
       );
 
       alert("Barang berhasil dikonfirmasi telah diambil.");
+      // eslint-disable-next-line no-undef
       fetchDetail();
     } catch (error) {
       alert(
@@ -84,6 +85,7 @@ export default function DetailBarangPenitipanPage() {
       );
 
       alert(res.data.message || "Perpanjangan berhasil.");
+      // eslint-disable-next-line no-undef
       fetchDetail();
     } catch (error) {
       alert(
