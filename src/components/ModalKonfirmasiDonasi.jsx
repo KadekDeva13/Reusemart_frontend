@@ -77,6 +77,16 @@ function ModalKonfirmasiDonasi({
           <p><strong>Barang:</strong> {barang.nama_barang}</p>
         )}
 
+        {/* <Form.Group className="mt-3">
+          <Form.Label>Nama Penerima</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Masukkan nama penerima"
+            value={namaPenerima}
+            onChange={(e) => setNamaPenerima(e.target.value)}
+          />
+        </Form.Group> */}
+
         <Form.Group className="mt-3">
           <Form.Label>Tanggal Donasi</Form.Label>
           <Form.Control

@@ -160,6 +160,7 @@ const TambahPenitipanPage = () => {
             localStorage.removeItem("penitipan_id_penitip");
             localStorage.removeItem("penitipan_id_hunter");
             localStorage.removeItem("temp_barang_list");
+            localStorage.removeItem("edit_barang_index");
             window._fotoBarangCache = []; // bersihkan cache file
             navigate("/user/gudang/penitipan-daftar");
         } catch (err) {
@@ -205,7 +206,7 @@ const TambahPenitipanPage = () => {
                                 const keyword = e.target.value;
                                 setSearchHunter(keyword);
                                 if (!keyword.trim()) {
-                                    setFilteredHunter([]);
+                                    setFilteredHunter(hunterList);
                                     setShowHunterDropdown(false);
                                     return;
                                 }
@@ -213,6 +214,17 @@ const TambahPenitipanPage = () => {
                                     h.nama_lengkap.toLowerCase().includes(keyword.toLowerCase())
                                 );
                                 setFilteredHunter(filtered);
+                                setShowHunterDropdown(true);
+                            }}
+                            onFocus={() => {
+                                if (!searchHunter.trim()) {
+                                    setFilteredHunter(hunterList); // ← langsung tampilkan semua saat klik
+                                } else {
+                                    const filtered = hunterList.filter((h) =>
+                                        h.nama_lengkap.toLowerCase().includes(searchHunter.toLowerCase())
+                                    );
+                                    setFilteredHunter(filtered);
+                                }
                                 setShowHunterDropdown(true);
                             }}
                             autoComplete="off"
@@ -280,6 +292,7 @@ const TambahPenitipanPage = () => {
                                         id_hunter: form.id_hunter,
                                         id_qc: form.id_qc,
                                     }));
+                                    localStorage.removeItem("edit_barang_index");
                                     navigate(`/user/gudang/tambah-barang?id_penitipan=temp`);
                                 }}
                                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
@@ -298,12 +311,13 @@ const TambahPenitipanPage = () => {
                                         <th className="py-3 border">Harga</th>
                                         <th className="py-3 border">Stok</th>
                                         <th className="py-3 border">Status</th>
+                                        <th className="py-3 border">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {barangList.length === 0 ? (
                                         <tr>
-                                            <td colSpan="6" className="py-4 text-gray-500">
+                                            <td colSpan="7" className="py-4 text-gray-500">
                                                 Belum ada barang ditambahkan.
                                             </td>
                                         </tr>
@@ -316,6 +330,34 @@ const TambahPenitipanPage = () => {
                                                 <td className="border py-2">Rp {Number(barang.harga_barang).toLocaleString("id-ID")}</td>
                                                 <td className="border py-2">{barang.stock}</td>
                                                 <td className="border py-2 capitalize">{barang.status_barang}</td>
+                                                <td className="border py-2 flex justify-center gap-2">
+                                                    {/* Tombol Edit */}
+                                                    <button
+                                                        className="bg-yellow-500 text-white px-3 py-1 rounded text-xs"
+                                                        onClick={() => {
+                                                            // Simpan index ke localStorage agar bisa dipakai saat load halaman edit
+                                                            localStorage.setItem("edit_barang_index", index);
+                                                            navigate(`/user/gudang/tambah-barang?id_penitipan=temp`);
+                                                        }}
+                                                    >
+                                                        Edit
+                                                    </button>
+
+                                                    {/* Tombol Hapus */}
+                                                    <button
+                                                        className="bg-red-600 text-white px-3 py-1 rounded text-xs"
+                                                        onClick={() => {
+                                                            const confirmHapus = window.confirm("Yakin ingin menghapus barang ini?");
+                                                            if (!confirmHapus) return;
+
+                                                            const updatedList = barangList.filter((_, i) => i !== index);
+                                                            setBarangList(updatedList);
+                                                            localStorage.setItem("temp_barang_list", JSON.stringify(updatedList));
+                                                        }}
+                                                    >
+                                                        Hapus
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))
                                     )}
@@ -336,7 +378,7 @@ const TambahPenitipanPage = () => {
                                 onClick={handleSubmit}
                                 disabled={barangList.length === 0 || loading}
                             >
-                                {loading ? "Menyimpan..." : "✅ Submit Semua"}
+                                {loading ? "Menyimpan..." : "Submit Semua Barang"}
                             </button>
                         </div>
                     </>

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { Navbar, Container, Form, Button } from "react-bootstrap";
+import SearchBar from "./SearchBar";
 
 const TopNavbarNonLogin = () => {
   const navigate = useNavigate();
@@ -21,24 +22,9 @@ const TopNavbarNonLogin = () => {
         />
 
         {/* Search bar in the middle */}
-        <Form className="mx-auto w-100 px-3" style={{ maxWidth: "600px", position: "relative" }}>
-          <Form.Control
-            type="search"
-            placeholder="Cari di ReuseMart"
-            className="ps-5 py-2 rounded-pill border"
-          />
-          <span
-            style={{
-              position: "absolute",
-              left: "20px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "#888"
-            }}
-          >
-            🔍
-          </span>
-        </Form>
+        <div className="mx-auto w-100 px-3" style={{ maxWidth: "600px", position: "relative" }}>
+          <SearchBar />
+        </div>
 
         {/* Sign In button on the right */}
         <Button

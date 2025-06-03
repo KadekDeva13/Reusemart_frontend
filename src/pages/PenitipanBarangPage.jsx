@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Form, Button, Spinner } from "react-bootstrap";
+import { Form, Button, Spinner, InputGroup } from "react-bootstrap";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { X } from "lucide-react";
 
@@ -32,6 +32,39 @@ export default function PenitipanBarangPage() {
     useEffect(() => {
         if (isEditMode) fetchBarangDetail(id_barang);
     }, []);
+
+    useEffect(() => {
+        if (isTempMode) {
+            const tempList = JSON.parse(localStorage.getItem("temp_barang_list") || "[]");
+            const editIndex = localStorage.getItem("edit_barang_index");
+
+            if (editIndex !== null) {
+                const barangToEdit = tempList[parseInt(editIndex, 10)];
+
+                if (barangToEdit) {
+                    setEditModeAktif(true);
+                    setForm({
+                        nama_barang: barangToEdit.nama_barang,
+                        kategori_barang: barangToEdit.kategori_barang,
+                        deskripsi: barangToEdit.deskripsi,
+                        harga_barang: barangToEdit.harga_barang,
+                        berat_barang: barangToEdit.berat_barang,
+                        punya_garansi: barangToEdit.punya_garansi || false,
+                        tanggal_garansi: barangToEdit.tanggal_garansi || "",
+                    });
+
+                    // Atur ulang preview image
+                    setPreviewImage(barangToEdit.foto_preview || []);
+
+                    const fotoCache = window._fotoBarangCache?.[editIndex];
+                    if (fotoCache) {
+                        setFotoBarang(fotoCache);
+                    }
+                }
+            }
+        }
+    }, []);
+
 
     const fetchBarangDetail = async (id) => {
         try {
@@ -116,6 +149,7 @@ export default function PenitipanBarangPage() {
 
             if (isTempMode) {
                 const prev = JSON.parse(localStorage.getItem("temp_barang_list") || "[]");
+                const editIndex = localStorage.getItem("edit_barang_index");
 
                 const fotoPreviews = fotoBarang.map((file) => ({
                     url: URL.createObjectURL(file),
@@ -124,18 +158,44 @@ export default function PenitipanBarangPage() {
 
                 const newBarang = { ...data, foto_preview: fotoPreviews };
 
-                // simpan untuk tampilan
-                localStorage.setItem("temp_barang_list", JSON.stringify([...prev, newBarang]));
+                let updatedList;
 
-                // simpan file asli ke cache global sementara
+                if (editIndex !== null) {
+                    // 🔁 Mode edit: ganti data di index tersebut
+                    const index = parseInt(editIndex, 10);
+                    updatedList = [...prev];
+                    updatedList[index] = newBarang;
+
+                    // Hapus index dari localStorage setelah selesai
+                    localStorage.removeItem("edit_barang_index");
+
+                    alert("Barang berhasil diperbarui di daftar sementara.");
+                } else {
+                    // ➕ Mode tambah: tambahkan barang baru
+                    updatedList = [...prev, newBarang];
+                    alert("Barang berhasil ditambahkan ke daftar sementara.");
+                }
+
+                // Simpan list ke localStorage
+                localStorage.setItem("temp_barang_list", JSON.stringify(updatedList));
+
+                // Simpan file asli ke cache (untuk upload nanti)
                 window._fotoBarangCache = window._fotoBarangCache || [];
-                window._fotoBarangCache.push(fotoBarang); // array of File[]
 
+                if (editIndex !== null) {
+                    // Ganti cache lama kalau edit
+                    window._fotoBarangCache[parseInt(editIndex)] = fotoBarang;
+                } else {
+                    // Tambah cache baru kalau tambah
+                    window._fotoBarangCache.push(fotoBarang);
+                }
+
+                // Pindah step dan navigasi
                 localStorage.setItem("penitipan_step", "2");
-                alert("Barang berhasil ditambahkan ke daftar sementara.");
                 navigate("/user/gudang/penitipan-tambah");
                 return;
             }
+
             else if (isEditMode) {
                 const token = localStorage.getItem("token");
                 const formData = new FormData();
@@ -212,7 +272,14 @@ export default function PenitipanBarangPage() {
             <div className="flex justify-between items-center mb-4">
 
                 <h3 className="text-2xl font-semibold">
-                    {!editModeAktif ? "Detail Barang Titipan" : "Edit Barang Titipan"}
+                    {isTempMode
+                        ? editModeAktif
+                            ? "Edit Barang Titipan"
+                            : "Tambah Barang Titipan"
+                        : editModeAktif
+                            ? "Edit Barang Titipan"
+                            : "Detail Barang Titipan"
+                    }
                 </h3>
                 {readonly && (
                     <div className="text-right">
@@ -410,15 +477,19 @@ export default function PenitipanBarangPage() {
 
                     <Form.Group>
                         <Form.Label>Harga Barang</Form.Label>
-                        <Form.Control
-                            type="number"
-                            name="harga_barang"
-                            value={form.harga_barang}
-                            onChange={handleChange}
-                            readOnly={readonly && !editModeAktif}
-                            required
-                        />
+                        <InputGroup className="mb-3">
+                            <InputGroup.Text>Rp</InputGroup.Text>
+                            <Form.Control
+                                type="number"
+                                name="harga_barang"
+                                value={form.harga_barang}
+                                onChange={handleChange}
+                                readOnly={readonly && !editModeAktif}
+                                required
+                            />
+                        </InputGroup>
                     </Form.Group>
+
 
                     <Form.Group>
                         <Form.Label>Berat Barang (kg)</Form.Label>

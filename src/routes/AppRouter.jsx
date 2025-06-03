@@ -12,6 +12,7 @@ import ProtectedRoutes from "./ProtectedRoutes";
 //Non-Login
 import HomeNonLoginPage from "../pages/HomeNonLoginPage";
 import KategoriBarangNonLoginPage from "../pages/KatagoriBarangNonLoginPage";
+import SearchBarangPage from "../pages/SearchBarangPage";
 import DetailBarangNonLogin from "../pages/DetailBarangNonLogin";
 
 
@@ -124,7 +125,7 @@ const router = createBrowserRouter([
     path: "/user/profile/pembeli/alamat",
     element: <Navigate to="/user/pembeli/alamat" replace />,
   },
-  
+
   {
     path: "/",
     element: <LandingPage />,
@@ -144,6 +145,10 @@ const router = createBrowserRouter([
       {
         path: "kategori/:kategori",
         element: <KategoriBarangPage />,
+      },
+      {
+        path: "search",
+        element: <SearchBarangPage />,
       },
     ],
   },
@@ -175,7 +180,11 @@ const router = createBrowserRouter([
       { path: "kategori/:kategori", element: <KategoriBarangPage /> },
       { path: "barang/:id", element: <DetailBarangPage /> },
       { path: "diskusi/:id_barang", element: <DiskusiPage /> },
-      { path: "keranjang", element: <KeranjangPagePembeli /> }
+      { path: "keranjang", element: <KeranjangPagePembeli /> },
+      {
+        path: "search",
+        element: <SearchBarangPage />,
+      },
 
     ],
   },
@@ -208,7 +217,7 @@ const router = createBrowserRouter([
       { path: "barang", element: <BarangPegawaiPage /> },
       { path: "diskusi/:id_barang", element: <DiskusiPegawaiPage /> },
       { path: "penitip", element: <PenitipPageCS /> },
-      {path:"/user/pegawai/verifikasi-transaksi", element:<VerifikasiTransaksiPage />}
+      { path: "/user/pegawai/verifikasi-transaksi", element: <VerifikasiTransaksiPage /> }
 
     ],
   },
@@ -237,7 +246,7 @@ const router = createBrowserRouter([
       { path: "daftar-pegawai", element: <DaftarPegawaiPage /> },
       { path: "tambah-pegawai", element: <TambahPegawaiPage /> },
       { path: "daftar-organisasi", element: <DaftarOrganisasiPage /> },
-      { path: "daftar-belum", element: <DaftarOrganisasiBelum/>},
+      { path: "daftar-belum", element: <DaftarOrganisasiBelum /> },
     ],
   },
 
