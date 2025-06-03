@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { Navbar, Container, Form } from "react-bootstrap";
 import { Bell, ShoppingCart, Mail } from "lucide-react";
 import axios from "axios";
+import SearchBar from "./SearchBar";
 
 const TopNavbar = ({ onLogout }) => {
   const navigate = useNavigate();
@@ -95,31 +96,13 @@ const TopNavbar = ({ onLogout }) => {
         <img
           src="/images/Logo.png"
           alt="Logo"
-          style={{ width: "40px", height: "40px", objectFit: "contain" }}
+          style={{ width: "40px", height: "40px", objectFit: "contain", cursor: "pointer" }}
           onClick={() => navigate("/user/pembeli")}
         />
 
-        <Form
-          className="mx-auto w-100 px-3"
-          style={{ maxWidth: "600px", position: "relative" }}
-        >
-          <Form.Control
-            type="search"
-            placeholder="Cari di ReuseMart"
-            className="ps-5 py-2 rounded-pill border"
-          />
-          <span
-            style={{
-              position: "absolute",
-              left: "20px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "#888",
-            }}
-          >
-            🔍
-          </span>
-        </Form>
+        <div className="mx-auto w-100 px-3" style={{ maxWidth: "600px", position: "relative" }}>
+          <SearchBar />
+        </div>
 
         <div className="d-flex align-items-center gap-4">
           <Bell size={20} style={{ color: "#fff", cursor: "pointer" }} />

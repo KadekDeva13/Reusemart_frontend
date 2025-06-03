@@ -11,8 +11,11 @@ function DaftarPenitipanPage() {
     const itemsPerPage = 10;
     const navigate = useNavigate();
 
+    const [penitipanBaruList, setPenitipanBaruList] = useState([]);
+
     useEffect(() => {
         fetchPenitipan();
+        fetchPenitipanBaru();
     }, []);
 
     useEffect(() => {
@@ -35,6 +38,25 @@ function DaftarPenitipanPage() {
             setLoading(false);
         }
     };
+
+    const fetchPenitipanBaru = async () => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem("token");
+            const res = await axios.get("http://localhost:8000/api/penitipan/get-penitipan-baru", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setPenitipanBaruList(res.data || []);
+            console.log("Data penitipan:", res.data);
+        } catch (err) {
+            console.error("Gagal fetch data penitipan:", err);
+            setPenitipanBaruList([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
 
     const filteredList = penitipanList.filter((item) => {
         const keyword = searchQuery.toLowerCase();
@@ -214,6 +236,75 @@ function DaftarPenitipanPage() {
                         </button>
                     </div>
                 </div>
+            </div>
+
+            <h2 className="text-lg font-semibold mb-4 mt-10">daftar barang titipan yang baru saja dititipkan</h2>
+            <div className="bg-white rounded-lg shadow overflow-x-auto">
+                <table className="w-full text-sm text-center border">
+                    <thead className="bg-green-100 text-gray-800 font-semibold">
+                        <tr>
+                            <th className="py-3 border">No</th>
+                            <th className="py-3 border">Nama Penitip</th>
+                            <th className="py-3 border">Tanggal Masuk</th>
+                            <th className="py-3 border">Barang</th>
+                            <th className="py-3 border"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading ? (
+                            <tr>
+                                <td colSpan="5" className="py-6 text-gray-500">
+                                    Memuat data...
+                                </td>
+                            </tr>
+                        ) : filteredList.length === 0 ? (
+                            <tr>
+                                <td colSpan="5" className="py-6 text-gray-500">
+                                    Tidak ada data penitipan.
+                                </td>
+                            </tr>
+                        ) : (
+                            penitipanBaruList.map((item, index) => (
+                                <tr key={item.id_penitipan} className="hover:bg-gray-50">
+                                    <td className="py-2 border">
+                                        {indexOfFirstItem + index + 1}
+                                    </td>
+                                    <td className="py-2 border">
+                                        {item.penitip?.nama_lengkap || "-"}
+                                    </td>
+                                    <td className="py-2 border">
+                                        {formatTanggal(item.tanggal_masuk)}
+                                    </td>
+                                    <td className="py-2 border text-left">
+                                        {item.barang?.length > 0 ? (
+                                            <ul className="list-disc list-inside text-sm text-gray-700">
+                                                {item.barang.map((b, i) => (
+                                                    <li key={i}>{b.nama_barang}</li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
+                                                Belum ada barang
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="py-2 border">
+                                        <button
+                                            onClick={() =>
+                                                navigate(
+                                                    `/user/gudang/penitipan-detail/${item.id_penitipan}`
+                                                )
+                                            }
+                                            className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded"
+                                        >
+                                            Detail Penitipan
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
             </div>
         </div>
     );

@@ -11,8 +11,18 @@ function DetailPenitipanPage() {
     const [penitipan, setPenitipan] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [formEdit, setFormEdit] = useState({
+        tanggal_masuk: "",
+        tanggal_akhir: "",
+        id_qc: "",
+    });
+    const [qcList, setQcList] = useState([]);
+
+
     useEffect(() => {
         fetchDetail();
+        fetchQCList();
     }, []);
 
     const fetchDetail = async () => {
@@ -32,6 +42,18 @@ function DetailPenitipanPage() {
         }
     };
 
+    const fetchQCList = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await axios.get("http://localhost:8000/api/pegawai/qc", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setQcList(res.data.data);
+        } catch (err) {
+            console.error("Gagal ambil pegawai QC:", err);
+        }
+    };
+
     const formatTanggal = (tanggal) => {
         if (!tanggal) return "-";
         const d = new Date(tanggal);
@@ -44,6 +66,25 @@ function DetailPenitipanPage() {
         const blob = await pdf(<NotaPenitipanBarang data={penitipan} />).toBlob();
         saveAs(blob, `Nota_Penitipan_${penitipan.id_penitipan}.pdf`);
     };
+
+    const handleDelete = async () => {
+        const konfirmasi = window.confirm("Yakin ingin menghapus penitipan ini beserta semua barangnya?");
+        if (!konfirmasi) return;
+
+        try {
+            const token = localStorage.getItem("token");
+            await axios.delete(`http://localhost:8000/api/penitipan/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            alert("Penitipan berhasil dihapus.");
+            navigate("/user/gudang/penitipan-daftar");
+        } catch (err) {
+            console.error("Gagal menghapus penitipan:", err);
+            alert("Terjadi kesalahan saat menghapus penitipan.");
+        }
+    };
+
 
     return (
         <div className="overflow-x-auto px-5">
@@ -76,6 +117,29 @@ function DetailPenitipanPage() {
                                     >
                                         Cetak Nota
                                     </button>
+
+                                    {/* <button
+                                        onClick={handleDelete}
+                                        className="bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-1 rounded shadow"
+                                    >
+                                        Hapus Penitipan
+                                    </button> */}
+
+                                    <button
+                                        onClick={() => {
+                                            setFormEdit({
+                                                tanggal_masuk: penitipan.tanggal_masuk || "",
+                                                tanggal_akhir: penitipan.tanggal_akhir || "",
+                                                id_qc: penitipan.pegawaiqc?.id_pegawai || "",
+                                            });
+                                            setShowEditModal(true);
+                                        }}
+                                        className="bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-3 py-1 rounded shadow mr-2"
+                                    >
+                                        Edit
+                                    </button>
+
+
                                 </div>
                             </div>
 
@@ -144,6 +208,88 @@ function DetailPenitipanPage() {
                     )}
                 </div>
             </div>
+            {showEditModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white rounded-lg p-6 w-[90%] max-w-md shadow">
+                        <h4 className="text-lg font-semibold mb-4">Edit Penitipan</h4>
+                        <div className="mb-3">
+                            <label className="block mb-1 font-medium">Tanggal Masuk</label>
+                            <input
+                                type="date"
+                                className="w-full border rounded px-3 py-2"
+                                value={formEdit.tanggal_masuk}
+                                onChange={(e) =>
+                                    setFormEdit({ ...formEdit, tanggal_masuk: e.target.value })
+                                }
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="block mb-1 font-medium">Tanggal Akhir</label>
+                            <input
+                                type="date"
+                                className="w-full border rounded px-3 py-2"
+                                value={formEdit.tanggal_akhir}
+                                onChange={(e) =>
+                                    setFormEdit({ ...formEdit, tanggal_akhir: e.target.value })
+                                }
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block mb-1 font-medium">Pegawai QC</label>
+                            <select
+                                className="w-full border rounded px-3 py-2"
+                                value={formEdit.id_qc}
+                                onChange={(e) =>
+                                    setFormEdit({ ...formEdit, id_qc: e.target.value })
+                                }
+                            >
+                                <option value="">-- Pilih Pegawai QC --</option>
+                                {qcList.map((qc) => (
+                                    <option key={qc.id_pegawai} value={qc.id_pegawai}>
+                                        {qc.nama_lengkap}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={() => setShowEditModal(false)}
+                                className="bg-gray-300 px-4 py-2 rounded"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    try {
+                                        const token = localStorage.getItem("token");
+                                        await axios.put(
+                                            `http://localhost:8000/api/penitipan/${id}`,
+                                            {
+                                                tanggal_masuk: formEdit.tanggal_masuk,
+                                                tanggal_akhir: formEdit.tanggal_akhir,
+                                                id_qc: formEdit.id_qc,
+                                            },
+                                            {
+                                                headers: { Authorization: `Bearer ${token}` },
+                                            }
+                                        );
+                                        alert("Penitipan berhasil diperbarui.");
+                                        setShowEditModal(false);
+                                        fetchDetail(); // refresh
+                                    } catch (err) {
+                                        console.error("Gagal update penitipan:", err);
+                                        alert("Gagal menyimpan perubahan.");
+                                    }
+                                }}
+                                className="bg-green-600 text-white px-4 py-2 rounded"
+                            >
+                                Simpan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }

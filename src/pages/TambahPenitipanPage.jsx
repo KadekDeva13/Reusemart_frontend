@@ -292,6 +292,7 @@ const TambahPenitipanPage = () => {
                                         id_hunter: form.id_hunter,
                                         id_qc: form.id_qc,
                                     }));
+                                    localStorage.removeItem("edit_barang_index");
                                     navigate(`/user/gudang/tambah-barang?id_penitipan=temp`);
                                 }}
                                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
