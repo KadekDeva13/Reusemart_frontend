@@ -6,10 +6,13 @@ import {
     FaIdBadge,
     FaUser,
     FaSignOutAlt,
+    FaGift,
+    FaChevronDown,
 } from 'react-icons/fa';
 
 const AdminSidebar = ({ activePage }) => {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const [merchandiseMenuOpen, setMerchandiseMenuOpen] = useState(false);
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -45,6 +48,35 @@ const AdminSidebar = ({ activePage }) => {
                     <FaIdBadge className="mr-3" />
                     Manajemen Organisasi
                 </div>
+
+                {/* MENU MERCHANDISE */}
+                <div
+                    className={`flex items-center justify-between px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('/merchandise') ? 'bg-[#798248]' : ''}`}
+                    onClick={() => setMerchandiseMenuOpen(!merchandiseMenuOpen)}
+                >
+                    <div className="flex items-center">
+                        <FaGift className="mr-3" />
+                        Manajemen Merchandise
+                    </div>
+                    <FaChevronDown className={`transition-transform ${merchandiseMenuOpen ? '-rotate-90' : ''}`} />
+                </div>
+
+                {merchandiseMenuOpen && (
+                    <>
+                        <div
+                            className={`pl-12 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('/merchandise/tambah') ? 'bg-[#798248]' : ''}`}
+                            onClick={() => navigate("/user/admin/merchandise-tambah")}
+                        >
+                            Tambah Merchandise
+                        </div>
+                        <div
+                            className={`pl-12 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage.includes('/merchandise/daftar') ? 'bg-[#798248]' : ''}`}
+                            onClick={() => navigate("/user/admin/merchandise-daftar")}
+                        >
+                            Daftar Merchandise
+                        </div>
+                    </>
+                )}
             </div>
 
             {/* Footer */}
