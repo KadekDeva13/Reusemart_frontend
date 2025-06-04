@@ -14,17 +14,16 @@ export default function KategoriBarangNonLoginPage() {
   const fetchBarang = async () => {
     try {
       const res = await axios.get(`http://localhost:8000/api/barang/kategori/${encodeURIComponent(kategori)}`, {
-        withCredentials: false,  // Menonaktifkan pengiriman cookies atau kredensial lainnya
+        withCredentials: false,
       });
-      setBarangList(res.data);
+      setBarangList(res.data.barang); // ✅ ambil array dari key 'barang'
     } catch (error) {
       console.error("Gagal mengambil data barang:", error);
+      setBarangList([]); // fallback jika error
     } finally {
       setLoading(false);
     }
   };
-
-
 
   useEffect(() => {
     fetchBarang(); // Panggil fungsi fetch barang ketika kategori berubah
