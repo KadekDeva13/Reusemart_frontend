@@ -106,16 +106,15 @@ const NotaPDF = ({ transaksiList }) => {
         const potongan = (transaksi.poin_digunakan || 0) * 100;
         const totalAkhir = totalBarang + ongkir - potongan;
 
-        const getQcName = () => {
-          for (const dt of transaksi.detailtransaksi || []) {
-            const detailList = dt?.barang?.detailpenitipan || [];
-            for (const detail of detailList) {
-              const namaQC = detail?.penitipan?.pegawaiqc?.nama_lengkap;
-              if (namaQC) return namaQC;
-            }
-          }
-          return "-";
-        };
+const getQcName = () => {
+  for (const dt of transaksi.detailtransaksi || []) {
+    const penitipan = dt?.barang?.detailpenitipan?.penitipan;
+    const qcName = penitipan?.pegawaiqc?.nama_lengkap;
+    if (qcName) return qcName;
+  }
+  return "-";
+};
+
 
 
 

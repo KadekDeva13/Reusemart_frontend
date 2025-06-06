@@ -38,18 +38,33 @@ const DaftarPegawaiPage = () => {
   const handleEdit = async (formData) => {
     try {
       const token = localStorage.getItem("token");
+
+      const data = new FormData();
+      data.append("nama_lengkap", formData.nama_lengkap);
+      data.append("email", formData.email);
+      data.append("no_telepon", formData.no_telepon);
+      data.append("alamat", formData.alamat);
+      data.append("id_jabatan", formData.id_jabatan);
+
+      if (parseInt(formData.id_jabatan) === 5) {
+        data.append("komisi_hunter", formData.komisi_hunter);
+      }
+
+      // ✅ tambahkan image jika berupa File
+      if (formData.image_user instanceof File) {
+        data.append("image_user", formData.image_user);
+      }
+
+
       await axios.post(
         `http://localhost:8000/api/pegawai/update/${formData.id_pegawai}`,
+        data,
         {
-          nama_lengkap: formData.nama_lengkap,
-          email: formData.email,
-          no_telepon: formData.no_telepon,
-          alamat: formData.alamat,
-          id_jabatan: formData.id_jabatan,
-          komisi_hunter:
-            parseInt(formData.id_jabatan) === 5 ? formData.komisi_hunter : null,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+          headers: {
+            Authorization: `Bearer ${token}`,
+            // ⚠️ jangan atur Content-Type, biarkan browser menentukan boundary-nya
+          },
+        }
       );
 
       fetchPegawai();
@@ -58,6 +73,7 @@ const DaftarPegawaiPage = () => {
       console.error("Gagal update pegawai", error);
     }
   };
+
 
   const handleDelete = async (id) => {
     const konfirmasi = window.confirm("Yakin ingin menghapus pegawai ini?");

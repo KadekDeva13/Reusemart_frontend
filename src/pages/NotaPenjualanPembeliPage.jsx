@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NotaPDFPembeli from "../pages/NotaPenjualan/NotaPenjualanPagePembeli";
-import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
+import { pdf, PDFViewer } from "@react-pdf/renderer";
 
 // Fungsi generate nomor nota frontend format YY.MM.id_transaksi
 const generateNomorNotaFrontend = (trx) => {
@@ -15,6 +15,7 @@ const generateNomorNotaFrontend = (trx) => {
 export default function NotaPenjualanPembeliPage() {
   const [transaksiList, setTransaksiList] = useState([]);
   const [selectedTransaksi, setSelectedTransaksi] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchTransaksi();
@@ -66,6 +67,39 @@ export default function NotaPenjualanPembeliPage() {
     }
   };
 
+  const handleProsesDanDownloadNota = async () => {
+    if (!selectedTransaksi) return;
+
+    const konfirmasi = window.confirm(`Proses final dan download nota untuk transaksi ${selectedTransaksi.nomor_nota}?`);
+    if (!konfirmasi) return;
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+
+      await axios.post(
+        `http://localhost:8000/api/transaksi/proses-final/${selectedTransaksi.id_transaksi}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const blob = await pdf(<NotaPDFPembeli transaksiList={[selectedTransaksi]} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${selectedTransaksi.nomor_nota}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Gagal memproses final transaksi", err);
+      alert("Gagal memproses transaksi.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-6 flex flex-col lg:flex-row gap-6">
       {/* Form Pilihan & Tombol */}
@@ -92,13 +126,13 @@ export default function NotaPenjualanPembeliPage() {
         </div>
 
         {selectedTransaksi && (
-          <PDFDownloadLink
-            document={<NotaPDFPembeli transaksiList={[selectedTransaksi]} />}
-            fileName={`${generateNomorNotaFrontend(selectedTransaksi)}.pdf`}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+          <button
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded mb-4"
+            onClick={handleProsesDanDownloadNota}
+            disabled={loading}
           >
-            {({ loading }) => loading ? "Membuat Nota..." : "Download Nota Penjualan"}
-          </PDFDownloadLink>
+            {loading ? "Memproses & Membuat Nota..." : "Proses Final & Download Nota"}
+          </button>
         )}
       </div>
 

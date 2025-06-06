@@ -15,7 +15,7 @@ const jabatanList = [
   "Supervisor",
 ];
 
-const ModalDetailPegawai = ({ show, onClose, data, onEdit, onDelete,onResetPassword }) => {
+const ModalDetailPegawai = ({ show, onClose, data, onEdit, onDelete, onResetPassword }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
@@ -41,10 +41,14 @@ const ModalDetailPegawai = ({ show, onClose, data, onEdit, onDelete,onResetPassw
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const imageURL = URL.createObjectURL(file);
-      setFormData({ ...formData, image_user: imageURL, file });
+      setFormData((prev) => ({
+        ...prev,
+        image_user: file,
+        previewImage: URL.createObjectURL(file),
+      }));
     }
   };
+
 
   const validate = () => {
     const err = {};
@@ -111,9 +115,8 @@ const ModalDetailPegawai = ({ show, onClose, data, onEdit, onDelete,onResetPassw
                   "https://via.placeholder.com/150"
                 }
                 alt="Foto Pegawai"
-                className={`w-24 h-24 rounded-full object-cover border shadow ${
-                  isEditing ? "cursor-pointer" : ""
-                }`}
+                className={`w-24 h-24 rounded-full object-cover border shadow ${isEditing ? "cursor-pointer" : ""
+                  }`}
                 onClick={() => {
                   if (isEditing) fileInputRef.current.click();
                 }}
@@ -144,7 +147,7 @@ const ModalDetailPegawai = ({ show, onClose, data, onEdit, onDelete,onResetPassw
               { label: "Gender", key: "gender" },
               { label: "Tanggal Lahir", key: "tanggal_lahir" },
               ...(parseInt(formData.id_jabatan) === 5 ||
-              parseInt(data.id_jabatan) === 5
+                parseInt(data.id_jabatan) === 5
                 ? [{ label: "Komisi Hunter", key: "komisi_hunter" }]
                 : []),
             ].map(({ label, key, span }) => (
@@ -179,11 +182,10 @@ const ModalDetailPegawai = ({ show, onClose, data, onEdit, onDelete,onResetPassw
                     name={key}
                     value={formData[key] || ""}
                     onChange={handleChange}
-                    className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 ${
-                      errors[key]
+                    className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 ${errors[key]
                         ? "border-red-500 focus:ring-red-400"
                         : "border-gray-300 focus:ring-green-400"
-                    }`}
+                      }`}
                   />
                 ) : (
                   <p className="border border-gray-300 bg-gray-50 rounded-md px-3 py-2 text-gray-900">
