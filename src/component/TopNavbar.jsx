@@ -177,6 +177,15 @@ const TopNavbar = ({ onLogout }) => {
 
                 </button>
                 <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    setShowDropdown(false);
+                    navigate("/user/pembeli/klaim-merchandise");
+                  }}
+                >
+                  Klaim Merchandise
+                </button>
+                <button
                   className="dropdown-item text-danger"
                   onClick={onLogout}
                 >

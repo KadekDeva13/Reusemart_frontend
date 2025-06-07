@@ -11,6 +11,7 @@ import {
   Modal,
 } from "react-bootstrap";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 export default function PenitipPageCS() {
@@ -39,9 +40,16 @@ export default function PenitipPageCS() {
     message: "",
   });
   const [showEditModal, setShowEditModal] = useState(false);
+  const [klaimList, setKlaimList] = useState([]);
+  const [showTanggalModal, setShowTanggalModal] = useState(false);
+  const [selectedKlaimId, setSelectedKlaimId] = useState(null);
+  const [tanggalAmbil, setTanggalAmbil] = useState("");
+  const [filterStatus, setFilterStatus] = useState("semua");
+
   const navigate = useNavigate();
   useEffect(() => {
     fetchPenitip();
+    fetchKlaim();
   }, []);
 
 
@@ -67,8 +75,8 @@ export default function PenitipPageCS() {
       const list = Array.isArray(data)
         ? data
         : Array.isArray(data.data)
-        ? data.data
-        : [];
+          ? data.data
+          : [];
       setPenitipList(list);
     } catch (error) {
       console.error("Gagal mengambil data penitip:", error);
@@ -192,10 +200,55 @@ export default function PenitipPageCS() {
     setModalInfo({ ...modalInfo, show: false });
   };
 
+  const fetchKlaim = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:8000/api/merchandise/klaim", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
+      setKlaimList(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("Gagal ambil klaim merchandise:", err);
+    }
+  };
+
+  const handleIsiTanggalAmbil = (id_klaim) => {
+    setSelectedKlaimId(id_klaim);
+    setTanggalAmbil(""); // reset input
+    setShowTanggalModal(true);
+  };
+
+  const submitTanggalAmbil = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `http://localhost:8000/api/merchandise/klaim/tanggal-ambil/${selectedKlaimId}`,
+        { tanggal_ambil: tanggalAmbil },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      );
+      toast.success("Tanggal ambil berhasil disimpan");
+      setShowTanggalModal(false);
+      fetchKlaim();
+    } catch (err) {
+      toast.error("Gagal menyimpan tanggal ambil");
+      console.error(err.response?.data);
+      toast.error(err.response?.data?.message || "Gagal menyimpan tanggal ambil");
+    }
+  };
+
+
   const filteredPenitip = Array.isArray(penitipList)
     ? penitipList.filter((p) =>
-        p.nama_lengkap?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      p.nama_lengkap?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : [];
 
   return (
@@ -234,6 +287,10 @@ export default function PenitipPageCS() {
           <Nav.Item>
             <Nav.Link eventKey="transaksi">Transaksi</Nav.Link>
           </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey="klaim">Klaim Merchandise</Nav.Link>
+          </Nav.Item>
+
         </Nav>
 
         <Tab.Content className="mt-4">
@@ -486,6 +543,70 @@ export default function PenitipPageCS() {
               </Table>
             </Card>
           </Tab.Pane>
+
+          {/* Klaim Merchandise */}
+          <Tab.Pane eventKey="klaim">
+            <Form.Select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="mb-3"
+              style={{ maxWidth: "200px" }}
+            >
+              <option value="semua">Semua</option>
+              <option value="belum diambil">Belum Diambil</option>
+              <option value="sudah diambil">Sudah Diambil</option>
+            </Form.Select>
+            <Card className="p-4 shadow-sm">
+              <h5 className="mb-3">Daftar Klaim Merchandise</h5>
+              <Table bordered hover>
+                <thead>
+                  <tr>
+                    <th>Nama Pembeli</th>
+                    <th>Merchandise</th>
+                    <th>Poin</th>
+                    <th>Tanggal Klaim</th>
+                    <th>Status</th>
+                    <th>Tanggal Ambil</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {klaimList
+                    .filter((item) =>
+                      filterStatus === "semua" ? true : item.status === filterStatus
+                    )
+                    .map((item) => (
+                      <tr key={item.id_klaim}>
+                        <td>{item.pembeli?.nama_lengkap || "-"}</td>
+                        <td>{item.merchandise?.nama_merchandise || "-"}</td>
+                        <td>{item.merchandise?.poin_penukaran || "-"}</td>
+                        <td>{item.tanggal_klaim}</td>
+                        <td>
+                          {item.status === "sudah diambil" ? (
+                            <span className="text-success fw-bold">Sudah</span>
+                          ) : (
+                            <span className="text-warning fw-bold">Belum</span>
+                          )}
+                        </td>
+                        <td>{item.tanggal_ambil || "-"}</td>
+                        <td>
+                          {item.status === "belum diambil" && (
+                            <Button
+                              size="sm"
+                              variant="success"
+                              onClick={() => handleIsiTanggalAmbil(item.id_klaim)}
+                            >
+                              Isi Tanggal Ambil
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            </Card>
+          </Tab.Pane>
+
         </Tab.Content>
       </Tab.Container>
 
@@ -592,6 +713,30 @@ export default function PenitipPageCS() {
             onClick={handleCloseModal}
           >
             Tutup
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showTanggalModal} onHide={() => setShowTanggalModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Isi Tanggal Ambil</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label>Tanggal Ambil</Form.Label>
+            <Form.Control
+              type="date"
+              value={tanggalAmbil}
+              onChange={(e) => setTanggalAmbil(e.target.value)}
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowTanggalModal(false)}>
+            Batal
+          </Button>
+          <Button variant="success" onClick={submitTanggalAmbil}>
+            Simpan
           </Button>
         </Modal.Footer>
       </Modal>
