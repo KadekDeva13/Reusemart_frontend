@@ -2,18 +2,11 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const kategoriOptions = [
-    "Eco-Friendly",
-    "Aksesoris",
-    "Fashion",
-    "Alat Tulis",
-];
-
 const TambahMerchandisePage = () => {
     const navigate = useNavigate();
     const [form, setForm] = useState({
         nama_merchandise: "",
-        kategori: "",
+        poin_penukaran: 0,
         stock: 0,
     });
     const [fotoList, setFotoList] = useState([]);
@@ -74,20 +67,24 @@ const TambahMerchandisePage = () => {
                 type="text"
                 className="w-full border p-2 rounded mb-4 bg-white"
                 value={form.nama_merchandise}
-                onChange={(e) => setForm({ ...form, nama_merchandise: e.target.value })}
+                onChange={(e) =>
+                    setForm({ ...form, nama_merchandise: e.target.value })
+                }
             />
 
-            <label className="block mb-2 font-semibold">Kategori Merchandise</label>
-            <select
+            <label className="block mb-2 font-semibold">Poin Penukaran</label>
+            <input
+                type="number"
+                min="0"
                 className="w-full border p-2 rounded mb-4 bg-white"
-                value={form.kategori}
-                onChange={(e) => setForm({ ...form, kategori: e.target.value })}
-            >
-                <option value="">-- Pilih Kategori --</option>
-                {kategoriOptions.map((k, idx) => (
-                    <option key={idx} value={k}>{k}</option>
-                ))}
-            </select>
+                value={form.poin_penukaran}
+                onChange={(e) =>
+                    setForm({
+                        ...form,
+                        poin_penukaran: parseInt(e.target.value) || 0,
+                    })
+                }
+            />
 
             <label className="block mb-2 font-semibold">Stok Merchandise</label>
             <input
@@ -95,7 +92,12 @@ const TambahMerchandisePage = () => {
                 min="0"
                 className="w-full border p-2 rounded mb-4 bg-white"
                 value={form.stock}
-                onChange={(e) => setForm({ ...form, stock: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                    setForm({
+                        ...form,
+                        stock: parseInt(e.target.value) || 0,
+                    })
+                }
             />
 
             <label className="block mb-2 font-semibold">Foto Merchandise</label>
