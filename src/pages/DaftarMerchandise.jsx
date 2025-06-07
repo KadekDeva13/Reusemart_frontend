@@ -79,6 +79,7 @@ function DaftarMerchandisePage() {
                                 <th className="py-3 border">Foto</th>
                                 <th className="py-3 border">Nama</th>
                                 <th className="py-3 border">Kategori</th>
+                                <th className="py-3 border">Stock</th>
                                 <th className="py-3 border">Pegawai</th>
                             </tr>
                         </thead>
@@ -108,6 +109,7 @@ function DaftarMerchandisePage() {
                                         </td>
                                         <td className="py-2 border">{item.nama_merchandise}</td>
                                         <td className="py-2 border">{item.kategori}</td>
+                                        <td className="py-2 border">{item.stock}</td>
                                         <td className="py-2 border">{item.pegawai?.nama_lengkap || "-"}</td>
                                     </tr>
                                 ))

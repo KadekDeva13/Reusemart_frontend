@@ -43,6 +43,7 @@ import KategoriBarangPage from "../pages/KategoriBarangPage";
 import DetailBarangPage from "../pages/DetailBarangPage";
 import DiskusiPage from "../pages/DiskusiPage";
 import KeranjangPagePembeli from "../pages/KeranjangPagePembeli";
+import KlaimMerchandisePage from "../pages/KlaimMerchandisePage";
 
 // Pegawai Pages
 import PenitipPageCS from "../pages/PagePenitipCS";
@@ -183,6 +184,8 @@ const router = createBrowserRouter([
       { path: "barang/:id", element: <DetailBarangPage /> },
       { path: "diskusi/:id_barang", element: <DiskusiPage /> },
       { path: "keranjang", element: <KeranjangPagePembeli /> },
+      { path: "klaim-merchandise", element: <KlaimMerchandisePage /> },
+
       {
         path: "search",
         element: <SearchBarangPage />,
@@ -249,8 +252,8 @@ const router = createBrowserRouter([
       { path: "tambah-pegawai", element: <TambahPegawaiPage /> },
       { path: "daftar-organisasi", element: <DaftarOrganisasiPage /> },
       { path: "daftar-belum", element: <DaftarOrganisasiBelum /> },
-      {path : "merchandise-tambah", element: <TambahMerchandisePage />},
-      {path : "merchandise-daftar", element: <DaftarMerchandisePage />}
+      { path: "merchandise-tambah", element: <TambahMerchandisePage /> },
+      { path: "merchandise-daftar", element: <DaftarMerchandisePage /> }
     ],
   },
 
