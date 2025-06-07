@@ -55,6 +55,20 @@ const formatTanggal = (tanggal) => {
     .padStart(2, '0')}/${t.getFullYear()}`;
 };
 
+const formatTanggalCetak = (tanggal) => {
+  if (!tanggal) return '-';
+  const t = new Date(tanggal);
+  const bulanIndonesia = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+  ];
+  const tanggalStr = t.getDate().toString().padStart(2, '0');
+  const bulanStr = bulanIndonesia[t.getMonth()];
+  const tahunStr = t.getFullYear();
+  return `${tanggalStr} ${bulanStr} ${tahunStr}`;
+};
+
+
 const LaporanBarangHabisPDF = ({ data = [], tanggalCetak = "" }) => {
   const rowsPerPage = 20;
   const totalPages = Math.ceil(data.length / rowsPerPage);
@@ -74,8 +88,7 @@ const LaporanBarangHabisPDF = ({ data = [], tanggalCetak = "" }) => {
         <Text style={[styles.title, styles.underline]}>
           Laporan Barang Yang Masa Penitipannya Sudah Habis
         </Text>
-        <Text>Tanggal cetak: {formatTanggal(tanggalCetak)}</Text>
-
+        <Text>Tanggal cetak: {formatTanggalCetak(tanggalCetak)}</Text>
         <View style={styles.table}>
           <View style={styles.row}>
             <Text style={styles.wideCell}>Kode Produk</Text>
