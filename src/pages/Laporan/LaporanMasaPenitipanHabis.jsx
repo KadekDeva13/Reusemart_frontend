@@ -55,7 +55,7 @@ const LaporanBarangHabisPage = () => {
                     <div className="space-y-3">
                         <PDFDownloadLink
                             document={<LaporanBarangHabisPDF data={data} tanggalCetak={tanggalCetak} />}
-                            fileName="Laporan_Barang_Penitipan_Habis.pdf"
+                            fileName="Laporan Barang Masa Penitipan Habis.pdf"
                         >
                             {({ loading }) => (
                                 <span className="inline-block bg-blue-500 text-white px-3 py-1 rounded shadow hover:bg-blue-600 transition text-sm whitespace-nowrap">
