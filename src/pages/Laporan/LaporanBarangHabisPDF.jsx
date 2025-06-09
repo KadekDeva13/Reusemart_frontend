@@ -45,6 +45,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'solid',
   },
+  emptyText: {
+    marginTop: 10,
+    fontSize: 10,
+    fontStyle: 'italic',
+    color: 'gray',
+    textAlign: 'left',
+  },
 });
 
 const formatTanggal = (tanggal) => {
@@ -68,10 +75,9 @@ const formatTanggalCetak = (tanggal) => {
   return `${tanggalStr} ${bulanStr} ${tahunStr}`;
 };
 
-
 const LaporanBarangHabisPDF = ({ data = [], tanggalCetak = "" }) => {
   const rowsPerPage = 20;
-  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const totalPages = Math.max(1, Math.ceil(data.length / rowsPerPage));
 
   const pages = Array.from({ length: totalPages }, (_, pageIndex) => {
     const start = pageIndex * rowsPerPage;
@@ -89,6 +95,7 @@ const LaporanBarangHabisPDF = ({ data = [], tanggalCetak = "" }) => {
           Laporan Barang Yang Masa Penitipannya Sudah Habis
         </Text>
         <Text>Tanggal cetak: {formatTanggalCetak(tanggalCetak)}</Text>
+
         <View style={styles.table}>
           <View style={styles.row}>
             <Text style={styles.wideCell}>Kode Produk</Text>
@@ -100,24 +107,31 @@ const LaporanBarangHabisPDF = ({ data = [], tanggalCetak = "" }) => {
             <Text style={styles.cell}>Ambil</Text>
           </View>
 
-          {pageData.map((item, i) => (
-            <View key={i} style={styles.row}>
-              <Text style={styles.wideCell}>{item.id_barang}</Text>
-              <Text style={styles.wideCell}>
-                {item.nama_produk.length > 30 ? item.nama_produk.slice(0, 30) + '…' : item.nama_produk}
+          {pageData.length === 0 ? (
+            <View style={styles.row}>
+              <Text style={{ ...styles.cell, flex: 12, textAlign: 'center' }}>
+                Tidak ada data barang yang masa penitipannya habis.
               </Text>
-              <Text style={styles.cell}>{item.id_penitip}</Text>
-              <Text style={styles.widerCell}>
-                {item.nama_penitip.length > 25 ? item.nama_penitip.slice(0, 25) + '…' : item.nama_penitip}
-              </Text>
-              <Text style={styles.cell}>{formatTanggal(item.tanggal_masuk)}</Text>
-              <Text style={styles.cell}>{formatTanggal(item.tanggal_akhir)}</Text>
-              <Text style={styles.cell}>{formatTanggal(item.batas_ambil)}</Text>
             </View>
-          ))}
+          ) : (
+            pageData.map((item, i) => (
+              <View key={i} style={styles.row}>
+                <Text style={styles.wideCell}>{item.id_barang}</Text>
+                <Text style={styles.wideCell}>
+                  {item.nama_produk.length > 30 ? item.nama_produk.slice(0, 30) + '…' : item.nama_produk}
+                </Text>
+                <Text style={styles.cell}>{item.id_penitip}</Text>
+                <Text style={styles.widerCell}>
+                  {item.nama_penitip.length > 25 ? item.nama_penitip.slice(0, 25) + '…' : item.nama_penitip}
+                </Text>
+                <Text style={styles.cell}>{formatTanggal(item.tanggal_masuk)}</Text>
+                <Text style={styles.cell}>{formatTanggal(item.tanggal_akhir)}</Text>
+                <Text style={styles.cell}>{formatTanggal(item.batas_ambil)}</Text>
+              </View>
+            ))
+          )}
         </View>
 
-        {/* Footer halaman */}
         <View
           fixed
           style={{
