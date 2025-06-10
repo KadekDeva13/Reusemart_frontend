@@ -186,7 +186,7 @@ const LaporanKategoriPage = () => {
                     {laporan[tahun]?.document ? (
                       <PDFDownloadLink
                         document={laporan[tahun].document}
-                        fileName={`Laporan_Kategori_${tahun}.pdf`}
+                        fileName={`Laporan Penjualan Per Kategori Barang ${tahun}.pdf`}
                         className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm shadow transition"
                       >
                         {({ loading }) => (loading ? '...' : 'Unduh')}
