@@ -68,8 +68,11 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
 
   return (
     <Document>
-      {/* Halaman 1 - Grafik */}
+      {/* Halaman 1 - Tabel */}
       <Page size="A4" orientation="landscape" style={styles.page}>
+        <Text style={[styles.title, styles.underline, { marginBottom: 10 }]}>
+          RINCIAN PENJUALAN
+        </Text>
         <Text style={styles.bold}>ReUse Mart</Text>
         <Text>Jl. Green Eco Park No. 456 Yogyakarta</Text>
         <Text style={[styles.title, styles.underline]}>
@@ -77,25 +80,6 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
         </Text>
         <Text>Tahun: {tahun}</Text>
         <Text style={{ marginBottom: 6 }}>Tanggal cetak: {tanggalCetak}</Text>
-
-        {grafikImage && (
-          <View style={{ textAlign: 'center', marginTop: 20 }}>
-            <Text style={[styles.bold, { marginBottom: 6 }]}>
-              Grafik Penjualan per Bulan
-            </Text>
-            <Image
-              src={grafikImage}
-              style={{ width: 700, height: 300, margin: 'auto' }}
-            />
-          </View>
-        )}
-      </Page>
-
-      {/* Halaman 2 - Tabel */}
-      <Page size="A4" orientation="landscape" style={styles.page}>
-        <Text style={[styles.title, styles.underline, { marginBottom: 10 }]}>
-          RINCIAN PENJUALAN
-        </Text>
 
         <View style={styles.table}>
           <View style={styles.row}>
@@ -112,29 +96,35 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
               </Text>
             </View>
           ))}
-          <View style={styles.totalRow}>
+          <View style={[styles.row, { backgroundColor: '#eee' }]}>
+            <Text style={styles.monthCell}></Text>
+
             <Text
-              style={{
-                borderWidth: 1,
-                padding: 4,
-                textAlign: 'center',
-                flex: 2,
-                backgroundColor: '#eee',
-                fontWeight: 'bold',
-              }}
+              style={[
+                styles.cell,
+                {
+                  fontWeight: 'bold',
+                  textAlign: 'right',
+                  paddingRight: 10,
+                  borderLeftWidth: 1,               // tetap ada
+                  borderColor: '#eee',              // hilangkan secara visual
+                  backgroundColor: '#eee',
+                },
+              ]}
             >
               Total
             </Text>
+
             <Text
-              style={{
-                borderWidth: 1,
-                padding: 4,
-                textAlign: 'right',
-                paddingRight: 6,
-                flex: 2,
-                backgroundColor: '#eee',
-                fontWeight: 'bold',
-              }}
+              style={[
+                styles.cell,
+                {
+                  fontWeight: 'bold',
+                  textAlign: 'right',
+                  paddingRight: 6,
+                  backgroundColor: '#eee',
+                },
+              ]}
             >
               {formatRupiah(totalUang)}
             </Text>
@@ -159,6 +149,21 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
             }
           />
         </View>
+      </Page>
+
+      {/* Halaman 2 - Grafik */}
+      <Page size="A4" orientation="landscape" style={styles.page}>
+        {grafikImage && (
+          <View style={{ textAlign: 'center', marginTop: 20 }}>
+            <Text style={[styles.bold, { marginBottom: 6 }]}>
+              Grafik Penjualan per Bulan
+            </Text>
+            <Image
+              src={grafikImage}
+              style={{ width: 700, height: 300, margin: 'auto' }}
+            />
+          </View>
+        )}
       </Page>
     </Document>
   );

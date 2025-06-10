@@ -26,9 +26,11 @@ export default function ProfilePagePembeli() {
     poin_sosial: 0,
     saldo: 0,
     alamat: "",
+    id_pembeli: null,
     image_user: null,
     imagePreview: "https://cdn-icons-png.flaticon.com/512/847/847969.png",
   });
+
   const [loading, setLoading] = useState(true);
   const [imageUploading, setImageUploading] = useState(false);
   const [activeTab, setActiveTab] = useState("biodata");
@@ -67,6 +69,27 @@ export default function ProfilePagePembeli() {
     }
   };
 
+  const fetchAlamatUtama = async (id_pembeli) => {
+    try {
+      const res = await axios.get(`http://localhost:8000/api/pembeli/${id_pembeli}/alamat-utama`);
+      if (res.data) {
+        const alamat = res.data;
+        const alamatLengkap = `${alamat.detail_alamat}, ${alamat.kelurahan}, ${alamat.kecamatan}, ${alamat.provinsi} ${alamat.kode_pos}`;
+        setFormData((prev) => ({
+          ...prev,
+          alamat: alamatLengkap,
+        }));
+      }
+    } catch (err) {
+      console.error("Gagal ambil alamat utama:", err);
+      setFormData((prev) => ({
+        ...prev,
+        alamat: "-",
+      }));
+    }
+  };
+
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -76,26 +99,31 @@ export default function ProfilePagePembeli() {
       })
       .then((res) => {
         const data = res.data.data || res.data;
+
         setFormData((prev) => ({
           ...prev,
+          id_pembeli: data.id_pembeli, // simpan id
           nama_lengkap: data.nama_lengkap || "",
           email: data.email || "",
           no_telepon: data.no_telepon || "",
           tanggal_lahir: data.tanggal_lahir || "",
           poin_sosial: data.poin_sosial || 0,
           saldo: data.saldo || 0,
-          alamat: data.alamat || "",
+          alamat: "", // kosong dulu, isi setelah fetch alamat utama
           image_user: null,
           imagePreview: data.image_user
             ? `http://localhost:8000/storage/foto_pembeli/${data.image_user}`
             : prev.imagePreview,
         }));
+
+        fetchAlamatUtama(data.id_pembeli); // ⬅️ Panggil di sini
         setLoading(false);
       })
       .catch((err) => {
         console.error("Gagal ambil data pembeli:", err);
         setLoading(false);
       });
+
 
     fetchRiwayat();
 

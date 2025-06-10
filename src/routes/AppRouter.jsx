@@ -76,6 +76,8 @@ import HistoryDonasiPage from "../pages/HistoryDonasiPage";
 import LaporanKategoriPage from "../pages/Laporan/LaporanPenjualanPerkategoriPage";
 import LaporanBarangHabis from "../pages/Laporan/LaporanMasaPenitipanHabis";
 import LaporanPenjualanBulananPage from "../pages/Laporan/LaporanPenjualanBulananPage";
+import LaporanKomisiPage from "../pages/Laporan/LaporanKomisiPage";
+import LaporanStokGudangPage from "../pages/Laporan/LaporanStokGudangPage";
 
 //Pegawai Gudang Pages
 import DaftarPenitipanPage from "../pages/DaftarPenitipanPage";
@@ -271,7 +273,9 @@ const router = createBrowserRouter([
       { path: "history-donasi", element: <HistoryDonasiPage /> },
       { path: "laporan/laporan-penjualan-kategori", element: <LaporanKategoriPage /> },
       { path: "laporan/laporan-masa-penitipan-habis", element: <LaporanBarangHabis /> },
-      { path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPage /> }
+      { path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPage /> },
+      { path: "laporan/laporan-komisi", element: <LaporanKomisiPage /> },
+      { path: "laporan/laporan-stok-gudang", element: <LaporanStokGudangPage /> }
     ],
   },
 
