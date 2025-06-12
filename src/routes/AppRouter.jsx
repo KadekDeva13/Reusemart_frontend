@@ -274,7 +274,7 @@ const router = createBrowserRouter([
       { path: "history-donasi", element: <HistoryDonasiPage /> },
       { path: "laporan/laporan-penjualan-kategori", element: <LaporanKategoriPage /> },
       { path: "laporan/laporan-masa-penitipan-habis", element: <LaporanBarangHabis /> },
-      { path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPage /> },
+      { path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPDFPage /> },
       { path: "laporan/laporan-komisi", element: <LaporanKomisiPage /> },
       { path: "laporan/laporan-stok-gudang", element: <LaporanStokGudangPage /> }
     ],

@@ -93,14 +93,14 @@ const OwnerSidebar = () => {
                         className={`w-full py-2 pl-9 pr-2 cursor-pointer hover:bg-[#2c2d2f] ${activePage === "laporan-komisi" ? "bg-[#798248] text-white font-semibold" : ""}`}
                         onClick={() => navigate("/user/owner/laporan/laporan-komisi")}
                     >
-                        Laporan Komisi Bulanan
+                        Komisi Bulanan
                     </div>
                     <div
                         className={`w-full py-2 pl-9 pr-2 cursor-pointer hover:bg-[#2c2d2f] ${activePage === "laporan-stok-gudang" ? "bg-[#798248] text-white font-semibold" : ""
                             }`}
                         onClick={() => navigate("/user/owner/laporan/laporan-stok-gudang")}
                     >
-                        Laporan Stok Gudang
+                        Stok Gudang
                     </div>
                 </div>
             </div>
