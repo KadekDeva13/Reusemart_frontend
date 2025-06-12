@@ -78,6 +78,7 @@ import LaporanBarangHabis from "../pages/Laporan/LaporanMasaPenitipanHabis";
 import LaporanPenjualanBulananPage from "../pages/Laporan/LaporanPenjualanBulananPage";
 import LaporanKomisiPage from "../pages/Laporan/LaporanKomisiPage";
 import LaporanStokGudangPage from "../pages/Laporan/LaporanStokGudangPage";
+import LaporanPenjualanBulananPDFPage from "../pages/Laporan/LaporanPenjualanBulananPDFPage";
 
 //Pegawai Gudang Pages
 import DaftarPenitipanPage from "../pages/DaftarPenitipanPage";

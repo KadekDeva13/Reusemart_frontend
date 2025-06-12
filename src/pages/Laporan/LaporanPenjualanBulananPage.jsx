@@ -30,19 +30,25 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontWeight: 'bold',
   },
+  tableWrapper: {
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+    borderColor: "#000",
+    marginTop: 10,
+    marginBottom: 10,
+  },
   table: {
     display: 'table',
     width: '100%',
-    borderWidth: 1,
-    borderStyle: 'solid',
     marginBottom: 20,
   },
   row: { flexDirection: 'row' },
   cell: {
-    borderWidth: 1,
     padding: 4,
-    textAlign: 'center',
-    flex: 1,
+    justifyContent: 'center',
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#000',
   },
   monthCell: {
     borderWidth: 1,
@@ -81,55 +87,52 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
         <Text>Tahun: {tahun}</Text>
         <Text style={{ marginBottom: 6 }}>Tanggal cetak: {tanggalCetak}</Text>
 
-        <View style={styles.table}>
+        <View style={styles.tableWrapper}>
+          {/* Header */}
           <View style={styles.row}>
-            <Text style={styles.monthCell}>Bulan</Text>
-            <Text style={styles.cell}>Jumlah Terjual</Text>
-            <Text style={styles.cell}>Total Penjualan</Text>
+            <View style={[styles.cell, { width: '34%', fontWeight: 'bold' }]}>
+              <Text>Bulan</Text>
+            </View>
+            <View style={[styles.cell, { width: '33%', fontWeight: 'bold' }]}>
+              <Text>Jumlah Barang Terjual</Text>
+            </View>
+            <View style={[styles.cell, { width: '33%', fontWeight: 'bold' }]}>
+              <Text>Jumlah Penjualan Kotor</Text>
+            </View>
           </View>
+
+          {/* Data Rows */}
           {data.map((item, i) => (
             <View key={i} style={styles.row}>
-              <Text style={styles.monthCell}>{item.bulan}</Text>
-              <Text style={styles.cell}>{item.jumlah_terjual}</Text>
-              <Text style={styles.cell}>
-                {formatRupiah(item.total_penjualan)}
-              </Text>
+              <View style={[styles.cell, { width: '34%' }]}>
+                <Text>{item.bulan}</Text>
+              </View>
+              <View style={[styles.cell, { width: '33%', textAlign: 'center' }]}>
+                <Text style={{ textAlign: 'center' }}>{item.jumlah_terjual}</Text>
+              </View>
+              <View style={[styles.cell, { width: '33%' }]}>
+                <Text style={{ textAlign: 'right' }}>
+                  {formatRupiah(item.total_penjualan)}
+                </Text>
+              </View>
             </View>
           ))}
+
+          {/* Total Row */}
           <View style={[styles.row, { backgroundColor: '#eee' }]}>
-            <Text style={styles.monthCell}></Text>
-
-            <Text
-              style={[
-                styles.cell,
-                {
-                  fontWeight: 'bold',
-                  textAlign: 'right',
-                  paddingRight: 10,
-                  borderLeftWidth: 1,               // tetap ada
-                  borderColor: '#eee',              // hilangkan secara visual
-                  backgroundColor: '#eee',
-                },
-              ]}
-            >
-              Total
-            </Text>
-
-            <Text
-              style={[
-                styles.cell,
-                {
-                  fontWeight: 'bold',
-                  textAlign: 'right',
-                  paddingRight: 6,
-                  backgroundColor: '#eee',
-                },
-              ]}
-            >
-              {formatRupiah(totalUang)}
-            </Text>
+            <View style={[styles.cell, { width: '67%' }]}>
+              <Text style={{ fontWeight: 'bold', textAlign: 'right', paddingRight: 6 }}>
+                Total
+              </Text>
+            </View>
+            <View style={[styles.cell, { width: '33%' }]}>
+              <Text style={{ fontWeight: 'bold', textAlign: 'right' }}>
+                {formatRupiah(totalUang)}
+              </Text>
+            </View>
           </View>
         </View>
+
 
         <View
           fixed
@@ -274,8 +277,8 @@ const LaporanPenjualanBulananPage = () => {
           <thead className="bg-gray-100">
             <tr>
               <th className="border px-3 py-2">Bulan</th>
-              <th className="border px-3 py-2">Jumlah Terjual</th>
-              <th className="border px-3 py-2">Total Penjualan</th>
+              <th className="border px-3 py-2">Jumlah Barang Terjual</th>
+              <th className="border px-3 py-2">Jumlah Penjualan Kotor</th>
             </tr>
           </thead>
           <tbody>

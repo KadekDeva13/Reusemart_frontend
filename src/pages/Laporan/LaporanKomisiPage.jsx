@@ -25,7 +25,8 @@ export default function LaporanKomisiPage() {
 
             const result = res.data.data || [];
             setData(result);
-            generatePDF(result);
+            const totalHargaJual = result.reduce((sum, item) => sum + item.harga_barang, 0);
+            generatePDF(result, totalHargaJual);
         } catch (err) {
             console.error(err);
             toast.error("Gagal memuat data laporan komisi.");
@@ -34,8 +35,15 @@ export default function LaporanKomisiPage() {
         }
     };
 
-    const generatePDF = async (dataArr) => {
-        const blob = await pdf(<LaporanKomisiPDF data={dataArr} bulan={bulan} tahun={tahun} />).toBlob();
+    const generatePDF = async (dataArr, totalHarga) => {
+        const blob = await pdf(
+            <LaporanKomisiPDF
+                data={dataArr}
+                bulan={bulan}
+                tahun={tahun}
+                totalHargaJual={totalHarga}
+            />
+        ).toBlob();
         const url = URL.createObjectURL(blob);
         setPdfUrl(url);
     };

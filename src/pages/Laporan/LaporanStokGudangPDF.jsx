@@ -50,7 +50,9 @@ const StokGudangPDF = ({ data }) => {
                             <Text style={styles.cell}>{item.nama_penitip}</Text>
                             <Text style={styles.cell}>{item.tanggal_masuk}</Text>
                             <Text style={styles.cell}>{item.perpanjangan}</Text>
-                            <Text style={styles.cell}>P{item.id_hunter}</Text>
+                            <Text style={styles.cell}>
+                                {item.id_hunter ? `P${item.id_hunter}` : '-'}
+                            </Text>
                             <Text style={styles.cell}>{item.nama_hunter}</Text>
                             <Text style={[styles.cell, { flex: 1, textAlign: 'right' }]}>
                                 {Number(item.harga).toLocaleString('id-ID')}
