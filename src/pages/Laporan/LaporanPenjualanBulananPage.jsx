@@ -30,19 +30,25 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontWeight: 'bold',
   },
+  tableWrapper: {
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+    borderColor: "#000",
+    marginTop: 10,
+    marginBottom: 10,
+  },
   table: {
     display: 'table',
     width: '100%',
-    borderWidth: 1,
-    borderStyle: 'solid',
     marginBottom: 20,
   },
   row: { flexDirection: 'row' },
   cell: {
-    borderWidth: 1,
     padding: 4,
-    textAlign: 'center',
-    flex: 1,
+    justifyContent: 'center',
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#000',
   },
   monthCell: {
     borderWidth: 1,
@@ -68,8 +74,11 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
 
   return (
     <Document>
-      {/* Halaman 1 - Grafik */}
+      {/* Halaman 1 - Tabel */}
       <Page size="A4" orientation="landscape" style={styles.page}>
+        <Text style={[styles.title, styles.underline, { marginBottom: 10 }]}>
+          RINCIAN PENJUALAN
+        </Text>
         <Text style={styles.bold}>ReUse Mart</Text>
         <Text>Jl. Green Eco Park No. 456 Yogyakarta</Text>
         <Text style={[styles.title, styles.underline]}>
@@ -78,68 +87,52 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
         <Text>Tahun: {tahun}</Text>
         <Text style={{ marginBottom: 6 }}>Tanggal cetak: {tanggalCetak}</Text>
 
-        {grafikImage && (
-          <View style={{ textAlign: 'center', marginTop: 20 }}>
-            <Text style={[styles.bold, { marginBottom: 6 }]}>
-              Grafik Penjualan per Bulan
-            </Text>
-            <Image
-              src={grafikImage}
-              style={{ width: 700, height: 300, margin: 'auto' }}
-            />
-          </View>
-        )}
-      </Page>
-
-      {/* Halaman 2 - Tabel */}
-      <Page size="A4" orientation="landscape" style={styles.page}>
-        <Text style={[styles.title, styles.underline, { marginBottom: 10 }]}>
-          RINCIAN PENJUALAN
-        </Text>
-
-        <View style={styles.table}>
+        <View style={styles.tableWrapper}>
+          {/* Header */}
           <View style={styles.row}>
-            <Text style={styles.monthCell}>Bulan</Text>
-            <Text style={styles.cell}>Jumlah Terjual</Text>
-            <Text style={styles.cell}>Total Penjualan</Text>
+            <View style={[styles.cell, { width: '34%', fontWeight: 'bold' }]}>
+              <Text>Bulan</Text>
+            </View>
+            <View style={[styles.cell, { width: '33%', fontWeight: 'bold' }]}>
+              <Text>Jumlah Barang Terjual</Text>
+            </View>
+            <View style={[styles.cell, { width: '33%', fontWeight: 'bold' }]}>
+              <Text>Jumlah Penjualan Kotor</Text>
+            </View>
           </View>
+
+          {/* Data Rows */}
           {data.map((item, i) => (
             <View key={i} style={styles.row}>
-              <Text style={styles.monthCell}>{item.bulan}</Text>
-              <Text style={styles.cell}>{item.jumlah_terjual}</Text>
-              <Text style={styles.cell}>
-                {formatRupiah(item.total_penjualan)}
-              </Text>
+              <View style={[styles.cell, { width: '34%' }]}>
+                <Text>{item.bulan}</Text>
+              </View>
+              <View style={[styles.cell, { width: '33%', textAlign: 'center' }]}>
+                <Text style={{ textAlign: 'center' }}>{item.jumlah_terjual}</Text>
+              </View>
+              <View style={[styles.cell, { width: '33%' }]}>
+                <Text style={{ textAlign: 'right' }}>
+                  {formatRupiah(item.total_penjualan)}
+                </Text>
+              </View>
             </View>
           ))}
-          <View style={styles.totalRow}>
-            <Text
-              style={{
-                borderWidth: 1,
-                padding: 4,
-                textAlign: 'center',
-                flex: 2,
-                backgroundColor: '#eee',
-                fontWeight: 'bold',
-              }}
-            >
-              Total
-            </Text>
-            <Text
-              style={{
-                borderWidth: 1,
-                padding: 4,
-                textAlign: 'right',
-                paddingRight: 6,
-                flex: 2,
-                backgroundColor: '#eee',
-                fontWeight: 'bold',
-              }}
-            >
-              {formatRupiah(totalUang)}
-            </Text>
+
+          {/* Total Row */}
+          <View style={[styles.row, { backgroundColor: '#eee' }]}>
+            <View style={[styles.cell, { width: '67%' }]}>
+              <Text style={{ fontWeight: 'bold', textAlign: 'right', paddingRight: 6 }}>
+                Total
+              </Text>
+            </View>
+            <View style={[styles.cell, { width: '33%' }]}>
+              <Text style={{ fontWeight: 'bold', textAlign: 'right' }}>
+                {formatRupiah(totalUang)}
+              </Text>
+            </View>
           </View>
         </View>
+
 
         <View
           fixed
@@ -159,6 +152,21 @@ const LaporanPDF = ({ data, tahun, grafikImage }) => {
             }
           />
         </View>
+      </Page>
+
+      {/* Halaman 2 - Grafik */}
+      <Page size="A4" orientation="landscape" style={styles.page}>
+        {grafikImage && (
+          <View style={{ textAlign: 'center', marginTop: 20 }}>
+            <Text style={[styles.bold, { marginBottom: 6 }]}>
+              Grafik Penjualan per Bulan
+            </Text>
+            <Image
+              src={grafikImage}
+              style={{ width: 700, height: 300, margin: 'auto' }}
+            />
+          </View>
+        )}
       </Page>
     </Document>
   );
@@ -269,8 +277,8 @@ const LaporanPenjualanBulananPage = () => {
           <thead className="bg-gray-100">
             <tr>
               <th className="border px-3 py-2">Bulan</th>
-              <th className="border px-3 py-2">Jumlah Terjual</th>
-              <th className="border px-3 py-2">Total Penjualan</th>
+              <th className="border px-3 py-2">Jumlah Barang Terjual</th>
+              <th className="border px-3 py-2">Jumlah Penjualan Kotor</th>
             </tr>
           </thead>
           <tbody>

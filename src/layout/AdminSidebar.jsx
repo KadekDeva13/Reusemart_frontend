@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import {
     FaTachometerAlt,
@@ -9,6 +10,7 @@ import {
     FaGift,
     FaChevronDown,
 } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const AdminSidebar = ({ activePage }) => {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -18,6 +20,33 @@ const AdminSidebar = ({ activePage }) => {
     const handleLogout = () => {
         localStorage.removeItem("token");
         window.location.href = "/";
+    };
+
+    const handleGenerateTopSeller = async () => {
+        const confirm = window.confirm("Apakah kamu yakin ingin generate Top Seller bulan lalu?");
+        if (!confirm) return;
+
+        try {
+            const token = localStorage.getItem("token");
+            const res = await axios.post(
+                "http://localhost:8000/api/penitip/generate-top-seller",
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+
+            toast.success(res.data.message || "Top Seller berhasil digenerate");
+        } catch (error) {
+            const errMsg =
+                error.response?.data?.message || "Terjadi kesalahan saat menghubungi server";
+            toast.error(errMsg);
+        } finally {
+            setUserMenuOpen(false);
+        }
     };
 
     return (
@@ -90,7 +119,14 @@ const AdminSidebar = ({ activePage }) => {
                 </div>
 
                 {userMenuOpen && (
-                    <div className="absolute bottom-full left-0 mb-2 bg-white text-black shadow-lg rounded-md w-40 z-10 py-2">
+                    <div className="absolute bottom-full left-0 mb-2 bg-white text-black shadow-lg rounded-md w-48 z-10 py-2">
+                        <div
+                            className="flex items-center text-blue-700 hover:bg-blue-100 px-4 py-2 cursor-pointer"
+                            onClick={handleGenerateTopSeller}
+                        >
+                            <FaIdBadge className="mr-2" />
+                            Generate Top Seller
+                        </div>
                         <div
                             className="flex items-center text-red-600 hover:bg-red-100 hover:text-red-700 px-4 py-2 cursor-pointer"
                             onClick={handleLogout}
