@@ -64,6 +64,7 @@ import DaftarOrganisasiPage from '../pages/DaftarOrganisasiPage';
 import DaftarOrganisasiBelum from '../pages/organisasiBelum';
 import TambahMerchandisePage from "../pages/TambahMerchandisePage";
 import DaftarMerchandisePage from "../pages/DaftarMerchandise";
+import DaftarKomisiHunterPage from "../pages/DaftarKomisiHunter";
 
 //Penitipan
 import KategoriBarangPenitipanPage from "../pages/KategoriBarangPenitipanPage";
@@ -256,7 +257,8 @@ const router = createBrowserRouter([
       { path: "daftar-organisasi", element: <DaftarOrganisasiPage /> },
       { path: "daftar-belum", element: <DaftarOrganisasiBelum /> },
       { path: "merchandise-tambah", element: <TambahMerchandisePage /> },
-      { path: "merchandise-daftar", element: <DaftarMerchandisePage /> }
+      { path: "merchandise-daftar", element: <DaftarMerchandisePage /> },
+      { path: "komisi-daftar", element: <DaftarKomisiHunterPage /> },
     ],
   },
 

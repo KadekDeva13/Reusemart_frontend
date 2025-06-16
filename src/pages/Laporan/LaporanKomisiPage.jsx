@@ -35,18 +35,23 @@ export default function LaporanKomisiPage() {
         }
     };
 
-    const generatePDF = async (dataArr, totalHarga) => {
-        const blob = await pdf(
-            <LaporanKomisiPDF
-                data={dataArr}
-                bulan={bulan}
-                tahun={tahun}
-                totalHargaJual={totalHarga}
-            />
-        ).toBlob();
-        const url = URL.createObjectURL(blob);
-        setPdfUrl(url);
-    };
+const generatePDF = async (dataArr, totalHarga) => {
+  try {
+    const blob = await pdf(
+      <LaporanKomisiPDF
+        data={dataArr}
+        bulan={bulan}
+        tahun={tahun}
+        totalHargaJual={totalHarga}
+      />
+    ).toBlob();
+    const url = URL.createObjectURL(blob);
+    setPdfUrl(url);
+  } catch (error) {
+    console.error("Gagal generate PDF:", error);
+    setPdfUrl(null);
+  }
+};
 
     const handleDownload = () => {
         const a = document.createElement("a");
@@ -85,7 +90,7 @@ export default function LaporanKomisiPage() {
                     <select
                         value={bulan}
                         onChange={(e) => setBulan(parseInt(e.target.value))}
-                        className="border rounded px-3 py-1"
+                        className="border rounded px-3 py-1 bg-white"
                     >
                         {daftarBulan.map((nama, index) => (
                             <option key={index + 1} value={index + 1}>{nama}</option>
@@ -98,7 +103,7 @@ export default function LaporanKomisiPage() {
                     <select
                         value={tahun}
                         onChange={(e) => setTahun(parseInt(e.target.value))}
-                        className="border rounded px-3 py-1"
+                        className="border rounded px-3 py-1 bg-white"
                     >
                         {Array.from({ length: 6 }, (_, i) => 2020 + i).map((th) => (
                             <option key={th} value={th}>{th}</option>

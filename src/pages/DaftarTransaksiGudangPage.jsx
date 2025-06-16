@@ -14,10 +14,10 @@ export default function DaftarTransaksiGudangPage() {
   useEffect(() => {
     fetchTransaksiGudang();
 
-    const interval = setInterval(() => {
-      handleHanguskanOtomatis();
-    }, 10 * 60 * 1000);
-    return () => clearInterval(interval);
+    // const interval = setInterval(() => {
+    //   handleHanguskanOtomatis();
+    // }, 10 * 60 * 1000);
+    // return () => clearInterval(interval);
   }, []);
 
   const fetchTransaksiGudang = async () => {

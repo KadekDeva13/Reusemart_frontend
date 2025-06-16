@@ -104,7 +104,7 @@ const LaporanBarangHabisPDF = ({ data = [], tanggalCetak = "" }) => {
             <Text style={styles.widerCell}>Penitip</Text>
             <Text style={styles.cell}>Tgl Masuk</Text>
             <Text style={styles.cell}>Tgl Akhir</Text>
-            <Text style={styles.cell}>Ambil</Text>
+            <Text style={styles.cell}>Batas Ambil</Text>
           </View>
 
           {pageData.length === 0 ? (
