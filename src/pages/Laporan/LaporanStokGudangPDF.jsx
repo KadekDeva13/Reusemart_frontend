@@ -31,7 +31,7 @@ const StokGudangPDF = ({ data }) => {
 
                 <View style={styles.table}>
                     <View style={[styles.row, styles.header]}>
-                        <Text style={[styles.cell, { flex: 0.7 }]}>Kode Produk</Text>
+                        <Text style={[styles.cell, { flex: 0.7 }]}>Kode {'\n'} Produk</Text>
                         <Text style={[styles.cell, { flex: 1.5 }]}>Nama Produk</Text>
                         <Text style={styles.cell}>ID Penitip</Text>
                         <Text style={styles.cell}>Nama Penitip</Text>
@@ -44,7 +44,7 @@ const StokGudangPDF = ({ data }) => {
 
                     {data.map((item, i) => (
                         <View key={i} style={styles.row}>
-                            <Text style={[styles.cell, { flex: 0.7 }]}>{item.kode_produk}</Text>
+                            <Text style={[styles.cell, { flex: 0.7 }]}>PR{item.kode_produk}</Text>
                             <Text style={[styles.cell, { flex: 1.5 }]}>{item.nama_produk}</Text>
                             <Text style={styles.cell}>{item.id_penitip}</Text>
                             <Text style={styles.cell}>{item.nama_penitip}</Text>

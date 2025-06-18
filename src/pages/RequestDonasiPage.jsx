@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Tab, Nav, Card, Form, Button, Row, Col, Table, Modal } from "react-bootstrap";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function RequestDonasiPage() {
   const [donasiList, setDonasiList] = useState([]);
   const [organisasiList, setOrganisasiList] = useState([]);
-  const [formData, setFormData] = useState({ nama_barang: "", pesan_request: "", status_donasi: "diminta", id_organisasi: "" });
+  const [formData, setFormData] = useState({
+    nama_barang: "",
+    kategori_barang: "",
+    pesan_request: "",
+  });
   const [editingId, setEditingId] = useState(null);
   const [editModalShow, setEditModalShow] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -40,27 +45,43 @@ export default function RequestDonasiPage() {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
+
     try {
-      await axios.post("http://localhost:8000/api/donasi/store", formData, {
-        headers: { Authorization: `Bearer ${token}` },
+      const token = localStorage.getItem("token");
+      const payload = {
+        nama_barang: formData.nama_barang,
+        kategori_barang: formData.kategori_barang,
+        pesan_request: formData.pesan_request,
+      };
+
+      const res = await axios.post("http://localhost:8000/api/donasi/", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      setModalMessage("Berhasil menambahkan request donasi.");
-      setShowModal(true);
-      fetchDonasi();
-      setFormData({ nama_barang: "", pesan_request: "", status_donasi: "diminta", id_organisasi: "" });
-      // eslint-disable-next-line no-unused-vars
+
+      if (res.data && res.data.message) {
+        toast.success("Request donasi berhasil dikirim!");
+        setFormData({
+          nama_barang: "",
+          kategori_barang: "",
+          pesan_request: "",
+        });
+      }
     } catch (err) {
-      setModalMessage("Gagal menyimpan data.");
-      setShowModal(true);
+      console.error(err);
+      alert("Terjadi kesalahan saat mengirim request.");
     }
   };
+
 
   const handleEdit = (item) => {
     setFormData({ nama_barang: item.nama_barang, pesan_request: item.pesan_request, status_donasi: item.status_donasi, id_organisasi: item.id_organisasi });
@@ -130,39 +151,50 @@ export default function RequestDonasiPage() {
                   <Col md={6}>
                     <Form.Group className="mb-3">
                       <Form.Label>Nama Barang</Form.Label>
-                      <Form.Control name="nama_barang" value={formData.nama_barang} onChange={handleInputChange} required />
+                      <Form.Control
+                        name="nama_barang"
+                        value={formData.nama_barang}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </Form.Group>
                   </Col>
+
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Pesan Request</Form.Label>
-                      <Form.Control as="textarea" rows={4} name="pesan_request" value={formData.pesan_request} onChange={handleInputChange} required />
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Status Donasi</Form.Label>
-                      <Form.Control type="text" value="diminta" disabled />
-                      <Form.Control type="hidden" name="status_donasi" value={formData.status_donasi} />
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Organisasi</Form.Label>
+                      <Form.Label>Kategori Barang</Form.Label>
                       <Form.Select
-                        name="id_organisasi"
-                        value={formData.id_organisasi}
+                        name="kategori_barang"
+                        value={formData.kategori_barang}
                         onChange={handleInputChange}
                         required
                       >
-                        <option value="">-- Pilih Organisasi --</option>
-                        {organisasiList.map((org) => (
-                          <option key={org.id_organisasi} value={org.id_organisasi}>
-                            {org.nama_organisasi}
-                          </option>
-                        ))}
+                        <option value="">-- Pilih Kategori --</option>
+                        <option value="Elektronik & Gadget">Elektronik & Gadget</option>
+                        <option value="Pakaian & Aksesori">Pakaian & Aksesori</option>
+                        <option value="Perabotan Rumah Tangga">Perabotan Rumah Tangga</option>
+                        <option value="Buku, Alat Tulis, & Peralatan Sekolah">Buku, Alat Tulis, & Peralatan Sekolah</option>
+                        <option value="Hobi, Mainan, & Koleksi">Hobi, Mainan, & Koleksi</option>
+                        <option value="Perlengkapan Bayi & Anak">Perlengkapan Bayi & Anak</option>
+                        <option value="Otomotif & Aksesori">Otomotif & Aksesori</option>
+                        <option value="Perlengkapan Taman & Outdoor">Perlengkapan Taman & Outdoor</option>
+                        <option value="Peralatan Kantor & Industri">Peralatan Kantor & Industri</option>
+                        <option value="Kosmetik & Perawatan Diri">Kosmetik & Perawatan Diri</option>
                       </Form.Select>
+                    </Form.Group>
+                  </Col>
 
+                  <Col md={12}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Pesan Request</Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        rows={4}
+                        name="pesan_request"
+                        value={formData.pesan_request}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </Form.Group>
                   </Col>
                 </Row>

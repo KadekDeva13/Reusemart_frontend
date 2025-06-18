@@ -137,14 +137,13 @@ const LaporanKomisiPDF = ({ data, bulan, tahun, totalHargaJual }) => {
                     {/* Table Body */}
                     {data.map((item, idx) => {
                         const harga = item.harga_barang;
-                        const komisiHunter = harga * parseFloat(item.komisi_hunter || 0);
+                        const komisiHunter = parseFloat(item.komisiHunter || 0);
                         const bonusPenitip = parseFloat(item.bonus_penitip || 0);
                         const komisiReusemart = harga * 0.2 - komisiHunter - bonusPenitip;
 
                         totalHunter += komisiHunter;
-                        totalBonus += bonusPenitip;
                         totalReuse += komisiReusemart;
-
+                        totalBonus += bonusPenitip;
                         return (
                             <View style={styles.tableRow} key={idx}>
                                 <View style={[styles.cell, { width: "12%", borderLeftWidth: 0 }]}>
@@ -154,7 +153,7 @@ const LaporanKomisiPDF = ({ data, bulan, tahun, totalHargaJual }) => {
                                     <Text>{item.nama_barang}</Text>
                                 </View>
                                 <View style={[styles.cell, { width: "12%" }]}>
-                                    <Text style={{ textAlign: "right" }}>{formatRp(harga)}</Text>
+                                    <Text style={{ textAlign: "right" }}>{formatRp(item.harga_barang)}</Text>
                                 </View>
                                 <View style={[styles.cell, { width: "10%" }]}>
                                     <Text style={{ textAlign: "center" }}>{formatTanggal(item.tanggal_masuk)}</Text>
@@ -163,46 +162,55 @@ const LaporanKomisiPDF = ({ data, bulan, tahun, totalHargaJual }) => {
                                     <Text style={{ textAlign: "center" }}>{formatTanggal(item.tanggal_pelunasan)}</Text>
                                 </View>
                                 <View style={[styles.cell, { width: "12%" }]}>
-                                    <Text style={{ textAlign: "right" }}>{formatRp(komisiHunter)}</Text>
+                                    <Text style={{ textAlign: "right" }}>{formatRp(item.komisiHunter)}</Text>
                                 </View>
                                 <View style={[styles.cell, { width: "12%" }]}>
-                                    <Text style={{ textAlign: "right" }}>{formatRp(komisiReusemart)}</Text>
+                                    <Text style={{ textAlign: "right" }}>
+                                        {formatRp(item.harga_barang * 0.2 - (item.komisiHunter || 0) - (item.bonus_penitip || 0))}
+                                    </Text>
                                 </View>
                                 <View style={[styles.cell, { width: "12%" }]}>
-                                    <Text style={{ textAlign: "right" }}>{formatRp(bonusPenitip)}</Text>
+                                    <Text style={{ textAlign: "right" }}>{formatRp(item.bonus_penitip)}</Text>
                                 </View>
                             </View>
                         );
                     })}
 
                     {/* Total */}
-                    <View style={styles.totalRow}>
-                        <View style={[styles.cell, { width: "32%", borderLeftWidth: 0 }]}>
-                            <Text style={{ fontWeight: "bold", textAlign: "right" }}>Total</Text>
-                        </View>
-                        <View style={[styles.cell, { width: "12%" }]}>
-                            <Text style={{ textAlign: "right", fontWeight: "bold" }}>
-                                {formatRp(totalHargaJual)}
-                            </Text>
-                        </View>
-                        <View style={[styles.cell, { width: "20%" }]} />
-                        <View style={[styles.cell, { width: "12%" }]}>
-                            <Text style={{ textAlign: "right", fontWeight: "bold" }}>
-                                {formatRp(totalHunter)}
-                            </Text>
-                        </View>
-                        <View style={[styles.cell, { width: "12%" }]}>
-                            <Text style={{ textAlign: "right", fontWeight: "bold" }}>
-                                {formatRp(totalReuse)}
-                            </Text>
-                        </View>
-                        <View style={[styles.cell, { width: "12%" }]}>
-                            <Text style={{ textAlign: "right", fontWeight: "bold" }}>
-                                {formatRp(totalBonus)}
-                            </Text>
-                        </View>
-                    </View>
-
+                    {
+                        data.length === 0 ? (
+                            <View style={{ width: "100%", paddingVertical: 10 }}>
+                                <Text style={{ fontWeight: "bold", textAlign: "center" }}>Data tidak ditemukan</Text>
+                            </View>
+                        ) : (
+                            <View style={[styles.totalRow, { width: "100%" }]}>
+                                <View style={[styles.cell, { width: "32%", borderLeftWidth: 0 }]}>
+                                    <Text style={{ fontWeight: "bold", textAlign: "right" }}>Total</Text>
+                                </View>
+                                <View style={[styles.cell, { width: "12%" }]}>
+                                    <Text style={{ textAlign: "right", fontWeight: "bold" }}>
+                                        {formatRp(totalHargaJual)}
+                                    </Text>
+                                </View>
+                                <View style={[styles.cell, { width: "20%" }]} />
+                                <View style={[styles.cell, { width: "12%" }]}>
+                                    <Text style={{ textAlign: "right", fontWeight: "bold" }}>
+                                        {formatRp(totalHunter)}
+                                    </Text>
+                                </View>
+                                <View style={[styles.cell, { width: "12%" }]}>
+                                    <Text style={{ textAlign: "right", fontWeight: "bold" }}>
+                                        {formatRp(totalReuse)}
+                                    </Text>
+                                </View>
+                                <View style={[styles.cell, { width: "12%" }]}>
+                                    <Text style={{ textAlign: "right", fontWeight: "bold" }}>
+                                        {formatRp(totalBonus)}
+                                    </Text>
+                                </View>
+                            </View>
+                        )
+                    }
                 </View>
 
                 {/* Footer */}

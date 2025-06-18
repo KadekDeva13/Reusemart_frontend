@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button, Table, Spinner } from "react-bootstrap";
 import axios from "axios";
 
-function ModalPilihBarangDonasi({ show, handleClose, onBarangSelected }) {
+function ModalPilihBarangDonasi({ show, handleClose, onBarangSelected, kategoriDonasi }) {
   const [barangDonasiList, setBarangDonasiList] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -12,25 +12,23 @@ function ModalPilihBarangDonasi({ show, handleClose, onBarangSelected }) {
     }
   }, [show]);
 
-const fetchBarangDonasi = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    const res = await axios.get("http://localhost:8000/api/barang/donasi", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const fetchBarangDonasi = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:8000/api/barang/donasi", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "X-Kategori-Barang": kategoriDonasi,
+        },
+      });
 
-    // ✅ Langsung tampilkan semua barang yang diberikan backend
-    setBarangDonasiList(res.data);
-
-  } catch (error) {
-    console.error("Gagal mengambil data barang donasi", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      setBarangDonasiList(res.data);
+    } catch (error) {
+      console.error("Gagal mengambil data barang donasi", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (
@@ -55,26 +53,34 @@ const fetchBarangDonasi = async () => {
               </tr>
             </thead>
             <tbody>
-              {barangDonasiList.map((barang, index) => (
-                <tr key={barang.id_barang}>
-                  <td>{index + 1}</td>
-                  <td>{barang.nama_barang}</td>
-                  <td>{barang.kategori_barang}</td>
-                  <td className="text-center">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() => {
-                        onBarangSelected(barang);
-                        handleClose();
-                      }}
-                    >
-                      Pilih
-                    </Button>
+              {barangDonasiList.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="text-center text-muted">
+                    Tidak ada barang yang cocok dengan kategori request donasi.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                barangDonasiList.map((barang, index) => (
+                  <tr key={barang.id_barang}>
+                    <td>{index + 1}</td>
+                    <td>{barang.nama_barang}</td>
+                    <td>{barang.kategori_barang}</td>
+                    <td className="text-center">
+                      <button
+                        className="bg-green-500 hover:bg-green-600 text-white text-sm font-semibold py-1.5 px-3 rounded"
+                        onClick={() => {
+                          onBarangSelected(barang);
+                          handleClose();
+                        }}
+                      >
+                        Pilih
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
+
           </Table>
         )}
       </Modal.Body>

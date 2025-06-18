@@ -553,8 +553,8 @@ export default function PenitipPageCS() {
               style={{ maxWidth: "200px" }}
             >
               <option value="semua">Semua</option>
-              <option value="belum diambil">Belum Diambil</option>
-              <option value="sudah diambil">Sudah Diambil</option>
+              <option value="belum diambil">Belum diambil</option>
+              <option value="sudah diambil">Sudah diambil</option>
             </Form.Select>
             <Card className="p-4 shadow-sm">
               <h5 className="mb-3">Daftar Klaim Merchandise</h5>
@@ -567,7 +567,7 @@ export default function PenitipPageCS() {
                     <th>Tanggal Klaim</th>
                     <th>Status</th>
                     <th>Tanggal Ambil</th>
-                    <th>Aksi</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -583,13 +583,13 @@ export default function PenitipPageCS() {
                         <td>{item.tanggal_klaim}</td>
                         <td>
                           {item.status === "sudah diambil" ? (
-                            <span className="text-success fw-bold">Sudah</span>
+                            <span className="text-success fw-bold">Sudah diambil</span>
                           ) : (
-                            <span className="text-warning fw-bold">Belum</span>
+                            <span className="text-warning fw-bold">Belum diambil</span>
                           )}
                         </td>
                         <td>{item.tanggal_ambil || "-"}</td>
-                        <td>
+                        <td className="text-center">
                           {item.status === "belum diambil" && (
                             <Button
                               size="sm"

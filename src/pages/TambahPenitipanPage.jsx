@@ -115,6 +115,7 @@ const TambahPenitipanPage = () => {
                 {
                     id_penitip: form.id_penitip,
                     id_qc: form.id_qc,
+                    id_hunter: form.id_hunter,
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -133,6 +134,8 @@ const TambahPenitipanPage = () => {
                 formData.append("berat_barang", barang.berat_barang);
                 formData.append("stock", barang.stock);
                 formData.append("status_barang", barang.status_barang);
+
+                formData.append("id_pegawai", form.id_hunter);
 
                 if (barang.tanggal_garansi)
                     formData.append("tanggal_garansi", barang.tanggal_garansi);
@@ -218,7 +221,7 @@ const TambahPenitipanPage = () => {
                             }}
                             onFocus={() => {
                                 if (!searchHunter.trim()) {
-                                    setFilteredHunter(hunterList); // ← langsung tampilkan semua saat klik
+                                    setFilteredHunter(hunterList);
                                 } else {
                                     const filtered = hunterList.filter((h) =>
                                         h.nama_lengkap.toLowerCase().includes(searchHunter.toLowerCase())
@@ -239,7 +242,7 @@ const TambahPenitipanPage = () => {
                                             setSearchHunter(h.nama_lengkap);
                                             setFilteredHunter([]);
                                             setShowHunterDropdown(false);
-                                            localStorage.setItem("penitipan_id_hunter", h.id_pegawai); // ⬅️ Simpan ke localStorage
+                                            localStorage.setItem("penitipan_id_hunter", h.id_pegawai);
                                         }}
                                     >
                                         {h.nama_lengkap}

@@ -49,6 +49,33 @@ const AdminSidebar = ({ activePage }) => {
         }
     };
 
+    const handleGenerateKonversiDonasi = async () => {
+        const confirm = window.confirm("Apakah kamu yakin ingin konversi barang expired menjadi doansi?");
+        if (!confirm) return;
+
+        try {
+            const token = localStorage.getItem("token");
+            const res = await axios.post(
+                "http://localhost:8000/api/barang/generate-konversi-donasi",
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+
+            toast.success(res.data.message || "Top Seller berhasil digenerate");
+        } catch (error) {
+            const errMsg =
+                error.response?.data?.message || "Terjadi kesalahan saat menghubungi server";
+            toast.error(errMsg);
+        } finally {
+            setUserMenuOpen(false);
+        }
+    };
+
     return (
         <div className="w-[240px] h-screen fixed top-0 left-0 bg-[#1e1f20] flex flex-col justify-between text-white text-sm">
             <div>
@@ -120,6 +147,13 @@ const AdminSidebar = ({ activePage }) => {
 
                 {userMenuOpen && (
                     <div className="absolute bottom-full left-0 mb-2 bg-white text-black shadow-lg rounded-md w-48 z-10 py-2">
+                        <div
+                            className="flex items-center text-blue-700 hover:bg-blue-100 px-4 py-2 cursor-pointer"
+                            onClick={handleGenerateKonversiDonasi}
+                        >
+                            <FaIdBadge className="mr-2" />
+                            Konversi Donasi Expired
+                        </div>
                         <div
                             className="flex items-center text-blue-700 hover:bg-blue-100 px-4 py-2 cursor-pointer"
                             onClick={handleGenerateTopSeller}
