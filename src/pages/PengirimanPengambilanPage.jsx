@@ -1,3 +1,4 @@
+// ✅ PengirimanPengambilanPage.js (versi akhir sesuai permintaan: jadwal dulu → munculkan tanggal)
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ModalJadwalPengiriman from "../components/ModalJadwalPengiriman";
@@ -20,7 +21,7 @@ export default function PengirimanPengambilanPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTransaksiList(res.data || []);
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       setAlert({ show: true, message: "Gagal memuat data.", variant: "danger" });
     } finally {
@@ -43,11 +44,11 @@ export default function PengirimanPengambilanPage() {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert("Pengambilan mandiri berhasil dijadwalkan.");
+      window.alert("Pengambilan mandiri berhasil dijadwalkan.");
       fetchJadwal();
     } catch (error) {
       const msg = error.response?.data?.message || "Gagal menjadwalkan.";
-      alert(msg);
+      window.alert(msg);
     }
   };
 
@@ -56,11 +57,7 @@ export default function PengirimanPengambilanPage() {
       <h4 className="text-xl font-bold mb-4">Atur Pengiriman & Pengambilan</h4>
 
       {alert.show && (
-        <div
-          className={`mb-4 p-3 rounded text-sm text-white ${
-            alert.variant === "danger" ? "bg-red-500" : "bg-green-500"
-          }`}
-        >
+        <div className={`mb-4 p-3 rounded text-sm text-white ${alert.variant === "danger" ? "bg-red-500" : "bg-green-500"}`}>
           {alert.message}
         </div>
       )}
@@ -94,11 +91,10 @@ export default function PengirimanPengambilanPage() {
                     <td className="border border-gray-300 px-3 py-2 space-x-2">
                       {trx.jenis_pengiriman?.toLowerCase() === "kurir reusemart" && (
                         <button
-                          className={`text-white text-sm font-semibold px-3 py-1 rounded ${
-                            trx.status_transaksi === "kurir sedang mengirim"
+                          className={`text-white text-sm font-semibold px-3 py-1 rounded ${trx.status_transaksi === "dikirim"
                               ? "bg-gray-400 cursor-not-allowed"
                               : "bg-yellow-400 hover:bg-yellow-500"
-                          }`}
+                            }`}
                           onClick={() => {
                             if (trx.status_transaksi !== "dikirim") {
                               handleOpenModalKurir(trx);
@@ -107,30 +103,28 @@ export default function PengirimanPengambilanPage() {
                           disabled={trx.status_transaksi === "dikirim"}
                         >
                           {trx.status_transaksi === "dikirim"
-                            ? "dikirim"
+                            ? new Date(trx.tanggal_dikirim).toLocaleDateString("id-ID")
                             : "Jadwalkan Kurir"}
                         </button>
                       )}
 
                       {trx.jenis_pengiriman?.toLowerCase() === "pengambilan mandiri" && (
-                        <button
-                          className={`text-white text-sm font-semibold px-3 py-1 rounded ${
-                            trx.status_transaksi === "pengambilan mandiri"
-                              ? "bg-gray-400 cursor-not-allowed"
-                              : "bg-green-600 hover:bg-green-700"
-                          }`}
-                          onClick={() => {
-                            if (trx.status_transaksi !== "") {
-                              handleJadwalkanAmbilSendiri(trx);
-                            }
-                          }}
-                          disabled={trx.status_transaksi === "pengambilan mandiri"}
-                        >
-                          {trx.status_transaksi === "pengambilan mandiri"
-                            ? "pengambilan mandiri"
-                            : "Jadwalkan Ambil"}
-                        </button>
+                        trx.status_transaksi?.toLowerCase() === "selesai" ? (
+                          <span className="text-sm text-gray-600">
+                            {trx.tanggal_pelunasan
+                              ? new Date(trx.tanggal_pelunasan).toLocaleDateString("id-ID")
+                              : "-"}
+                          </span>
+                        ) : (
+                          <button
+                            className="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-3 py-1 rounded"
+                            onClick={() => handleJadwalkanAmbilSendiri(trx)}
+                          >
+                            Jadwalkan Ambil
+                          </button>
+                        )
                       )}
+
                     </td>
                   </tr>
                 ))

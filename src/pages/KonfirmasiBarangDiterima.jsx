@@ -18,10 +18,11 @@ export default function KonfirmasiBarangDiterimaPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const filter = res.data.filter(trx =>
-        trx.jenis_pengiriman?.toLowerCase() === 'pengambilan mandiri' &&
-        trx.status_transaksi?.toLowerCase() === 'disiapkan'
-      );
+const filter = res.data.filter(trx =>
+  trx.jenis_pengiriman?.toLowerCase() === 'pengambilan mandiri' &&
+  ['pengambilan mandiri', 'disiapkan'].includes(trx.status_transaksi?.toLowerCase())
+);
+
       setTransaksiList(filter);
     // eslint-disable-next-line no-unused-vars
     } catch (error) {
