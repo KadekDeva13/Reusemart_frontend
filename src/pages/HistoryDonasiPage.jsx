@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import ModalKonfirmasiDonasi from "../components/ModalKonfirmasiDonasi"; // sesuaikan path sesuai proyekmu
+import ModalKonfirmasiDonasi from "../components/ModalKonfirmasiDonasi";
 
 export default function HistoryDonasiPage() {
   const [historyList, setHistoryList] = useState([]);
@@ -12,7 +12,7 @@ export default function HistoryDonasiPage() {
 
     useEffect(() => {
         fetchHistory();
-        fetchBarang();
+        // fetchBarang();
     }, []);
 
     const fetchHistory = async () => {
@@ -31,19 +31,19 @@ export default function HistoryDonasiPage() {
         }
     };
 
-    const fetchBarang = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:8000/api/barang/terjual", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setBarangList(res.data);
-        } catch (error) {
-            console.error("Gagal mengambil data barang", error);
-        }
-    };
+    // const fetchBarang = async () => {
+    //     try {
+    //         const token = localStorage.getItem("token");
+    //         const res = await axios.get("http://localhost:8000/api/barang/terjual", {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         });
+    //         setBarangList(res.data);
+    //     } catch (error) {
+    //         console.error("Gagal mengambil data barang", error);
+    //     }
+    // };
 
     const handleUpdate = ({ id_donasi, tanggal_donasi }) => {
         setHistoryList((prev) =>

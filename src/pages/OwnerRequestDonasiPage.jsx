@@ -45,14 +45,12 @@ const OwnerRequestDonasiPage = () => {
     setShowModalKonfirmasi(true);
   };
 
-  // ...kode lainnya tetap
-
-const handleKirimDonasi = ({ barang, request, tanggal }) => {
-  fetchDonasiDiminta(); 
-  setSelectedRequest(null);
-  setBarangDipilih(null);
-  setShowModalKonfirmasi(false);
-};
+  const handleKirimDonasi = ({ barang, request, tanggal }) => {
+    fetchDonasiDiminta();
+    setSelectedRequest(null);
+    setBarangDipilih(null);
+    setShowModalKonfirmasi(false);
+  };
 
 
   return (
@@ -103,6 +101,7 @@ const handleKirimDonasi = ({ barang, request, tanggal }) => {
           show={showModalPilih}
           handleClose={() => setShowModalPilih(false)}
           onBarangSelected={handleBarangSelected}
+          kategoriDonasi={selectedRequest.kategori_barang}
         />
       )}
 

@@ -238,16 +238,16 @@ function DaftarPenitipanPage() {
                 </div>
             </div>
 
-            <h2 className="text-lg font-semibold mb-4 mt-10">daftar barang titipan yang baru saja dititipkan</h2>
+            <h2 className="text-lg font-semibold mb-4 mt-10">Daftar Barang Penitip Tertentu</h2>
             <div className="bg-white rounded-lg shadow overflow-x-auto">
                 <table className="w-full text-sm text-center border">
                     <thead className="bg-green-100 text-gray-800 font-semibold">
                         <tr>
-                            <th className="py-3 border">No</th>
-                            <th className="py-3 border">Nama Penitip</th>
-                            <th className="py-3 border">Tanggal Masuk</th>
                             <th className="py-3 border">Barang</th>
-                            <th className="py-3 border"></th>
+                            <th className="py-3 border">Tanggal Masuk</th>
+                            <th className="py-3 border">Nama Penitip</th>
+                            <th className="py-3 border">Status Barang</th>
+                            <th className="py-3 border">Harga Barang</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -266,15 +266,6 @@ function DaftarPenitipanPage() {
                         ) : (
                             penitipanBaruList.map((item, index) => (
                                 <tr key={item.id_penitipan} className="hover:bg-gray-50">
-                                    <td className="py-2 border">
-                                        {indexOfFirstItem + index + 1}
-                                    </td>
-                                    <td className="py-2 border">
-                                        {item.penitip?.nama_lengkap || "-"}
-                                    </td>
-                                    <td className="py-2 border">
-                                        {formatTanggal(item.tanggal_masuk)}
-                                    </td>
                                     <td className="py-2 border text-left">
                                         {item.barang?.length > 0 ? (
                                             <ul className="list-disc list-inside text-sm text-gray-700">
@@ -289,16 +280,36 @@ function DaftarPenitipanPage() {
                                         )}
                                     </td>
                                     <td className="py-2 border">
-                                        <button
-                                            onClick={() =>
-                                                navigate(
-                                                    `/user/gudang/penitipan-detail/${item.id_penitipan}`
-                                                )
-                                            }
-                                            className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded"
-                                        >
-                                            Detail Penitipan
-                                        </button>
+                                        {formatTanggal(item.tanggal_masuk)}
+                                    </td>
+                                    <td className="py-2 border">
+                                        {item.penitip?.nama_lengkap || "-"}
+                                    </td>
+                                    <td className="py-2 border">
+                                        {item.barang?.length > 0 ? (
+                                            <ul className="list-disc list-inside text-sm text-gray-700">
+                                                {item.barang.map((b, i) => (
+                                                    <li key={i}>{b.status_barang}</li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
+                                                Belum ada barang
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="py-2 border">
+                                        {item.barang?.length > 0 ? (
+                                            <ul className="list-disc list-inside text-sm text-gray-700">
+                                                {item.barang.map((b, i) => (
+                                                    <li key={i}>{b.harga_barang}</li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
+                                                Belum ada barang
+                                            </span>
+                                        )}
                                     </td>
                                 </tr>
                             ))

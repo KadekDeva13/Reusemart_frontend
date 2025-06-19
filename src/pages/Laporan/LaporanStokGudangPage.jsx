@@ -47,17 +47,18 @@ export default function LaporanStokGudangPage() {
 
     return (
         <div className="p-6 bg-white">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-gray-800">📄 Laporan Stok Gudang</h2>
+            <div className="mb-4">
+                <h2 className="text-xl font-bold text-gray-800 mb-8">Laporan Stok Gudang</h2>
                 {pdfUrl && (
                     <button
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-sm"
+                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow text-sm"
                         onClick={handleDownload}
                     >
                         Cetak PDF Laporan
                     </button>
                 )}
             </div>
+
 
             {loading ? (
                 <p className="text-gray-500">Memuat data PDF...</p>

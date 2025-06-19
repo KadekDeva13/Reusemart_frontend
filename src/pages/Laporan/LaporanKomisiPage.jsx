@@ -71,16 +71,8 @@ const generatePDF = async (dataArr, totalHarga) => {
 
     return (
         <div className="p-6 bg-white">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-gray-800">📄 Laporan Komisi Bulanan per Produk</h2>
-                {pdfUrl && (
-                    <button
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow text-sm"
-                        onClick={handleDownload}
-                    >
-                        Cetak PDF Laporan
-                    </button>
-                )}
+            <div className="mb-4">
+                <h2 className="text-xl font-bold text-gray-800 mb-8">Laporan Stok Gudang</h2>
             </div>
 
             {/* Filter */}
@@ -109,6 +101,18 @@ const generatePDF = async (dataArr, totalHarga) => {
                             <option key={th} value={th}>{th}</option>
                         ))}
                     </select>
+                </div>
+
+                <div>
+                    <label className="block mb-1 text-sm invisible">-</label>
+                    {pdfUrl && (
+                        <button
+                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow text-sm"
+                            onClick={handleDownload}
+                        >
+                            Cetak PDF Laporan
+                        </button>
+                    )}
                 </div>
             </div>
 
