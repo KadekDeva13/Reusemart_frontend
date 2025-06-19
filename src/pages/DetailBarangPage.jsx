@@ -87,6 +87,15 @@ export default function DetailBarangPage() {
     navigate(`/user/pembeli/diskusi/${barang.id_barang}`);
   };
 
+  const formatTanggal = (tanggal) => {
+    if (!tanggal) return "-";
+    const tgl = new Date(tanggal);
+    const d = String(tgl.getDate()).padStart(2, "0");
+    const m = String(tgl.getMonth() + 1).padStart(2, "0");
+    const y = tgl.getFullYear();
+    return `${d}-${m}-${y}`;
+  };
+
   if (loading) return <div className="text-center mt-5">Memuat...</div>;
   if (!barang) return <div className="text-center mt-5">Barang tidak ditemukan.</div>;
 
@@ -249,7 +258,7 @@ export default function DetailBarangPage() {
             <h6>Detail Barang</h6>
             <p><strong>Kategori:</strong> {barang.kategori_barang}</p>
             {barang.tanggal_garansi && (
-              <p><strong>Garansi:</strong> {barang.tanggal_garansi}</p>
+              <p><strong>Tanggal Kadaluarsa Garansi: </strong>{formatTanggal(barang.tanggal_garansi)}</p>
             )}
             <p>{barang.deskripsi}</p>
           </Col>

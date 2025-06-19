@@ -44,7 +44,6 @@ const TambahPenitipanPage = () => {
     }, [step]);
 
     useEffect(() => {
-        // Pastikan step dan form di-load ulang
         const savedStep = localStorage.getItem("penitipan_step");
         if (savedStep) setStep(parseInt(savedStep));
 
@@ -53,15 +52,24 @@ const TambahPenitipanPage = () => {
             setForm((prev) => ({
                 ...prev,
                 ...JSON.parse(savedForm),
+                id_hunter: localStorage.getItem("penitipan_id_hunter") || "",
             }));
         }
 
         const tempBarang = JSON.parse(localStorage.getItem("temp_barang_list") || "[]");
         setBarangList(tempBarang);
 
-        // ⬇️ Tambahkan ini di bawah:
         window._fotoBarangCache = window._fotoBarangCache || [];
     }, []);
+
+    useEffect(() => {
+        if (step === 1 && form.id_hunter) {
+            const hunter = hunterList.find((h) => h.id_pegawai === parseInt(form.id_hunter));
+            if (hunter) {
+                setSearchHunter(hunter.nama_lengkap);
+            }
+        }
+    }, [step, form.id_hunter, hunterList]);
 
 
     const fetchPenitip = async () => {
@@ -115,7 +123,6 @@ const TambahPenitipanPage = () => {
                 {
                     id_penitip: form.id_penitip,
                     id_qc: form.id_qc,
-                    id_hunter: form.id_hunter,
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -123,6 +130,8 @@ const TambahPenitipanPage = () => {
             const id_penitipan = res.data.data.id_penitipan;
 
             const fotoCache = window._fotoBarangCache || [];
+
+            console.log("ID Pegawai (hunter) dikirim:", form.id_hunter);
 
             for (let i = 0; i < barangList.length; i++) {
                 const barang = barangList[i];
@@ -164,7 +173,7 @@ const TambahPenitipanPage = () => {
             localStorage.removeItem("penitipan_id_hunter");
             localStorage.removeItem("temp_barang_list");
             localStorage.removeItem("edit_barang_index");
-            window._fotoBarangCache = []; // bersihkan cache file
+            window._fotoBarangCache = [];
             navigate("/user/gudang/penitipan-daftar");
         } catch (err) {
             console.error("Gagal submit penitipan:", err);
@@ -243,6 +252,10 @@ const TambahPenitipanPage = () => {
                                             setFilteredHunter([]);
                                             setShowHunterDropdown(false);
                                             localStorage.setItem("penitipan_id_hunter", h.id_pegawai);
+                                            setForm((prev) => ({
+                                                ...prev,
+                                                id_hunter: h.id_pegawai,
+                                            }));
                                         }}
                                     >
                                         {h.nama_lengkap}
@@ -371,7 +384,17 @@ const TambahPenitipanPage = () => {
                         <div className="mt-6 flex justify-between">
                             <button
                                 className="bg-gray-500 text-white px-4 py-2 rounded"
-                                onClick={() => setStep(1)}
+                                onClick={() => {
+                                    const savedForm = localStorage.getItem("penitipan_form");
+                                    if (savedForm) {
+                                        setForm((prev) => ({
+                                            ...prev,
+                                            ...JSON.parse(savedForm),
+                                            id_hunter: localStorage.getItem("penitipan_id_hunter") || "",
+                                        }));
+                                    }
+                                    setStep(1);
+                                }}
                             >
                                 ← Kembali
                             </button>

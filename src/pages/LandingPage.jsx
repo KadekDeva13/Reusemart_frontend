@@ -6,14 +6,14 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const hasVisited = localStorage.getItem("hasVisited");
+    const hasVisited = sessionStorage.getItem("hasVisited");
     if (hasVisited) {
       navigate("/home", { replace: true });
     }
   }, [navigate]);
 
   const handleEnter = () => {
-    localStorage.setItem("hasVisited", "true");
+    sessionStorage.setItem("hasVisited", "true");
     navigate("/home");
   };
 

@@ -88,26 +88,6 @@ function ModalKonfirmasiDonasi({
           <p><strong>Barang:</strong> {barang.nama_barang}</p>
         )}
 
-        {/* <Form.Group className="mt-3">
-          <Form.Label>Nama Penerima</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Masukkan nama penerima"
-            value={namaPenerima}
-            onChange={(e) => setNamaPenerima(e.target.value)}
-          />
-        </Form.Group> */}
-
-        <Form.Group className="mt-3">
-          <Form.Label>Nama Penerima</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Masukkan nama penerima"
-            value={namaPenerima}
-            onChange={(e) => setNamaPenerima(e.target.value)}
-          />
-        </Form.Group>
-
         <Form.Group className="mt-3">
           <Form.Label>Tanggal Donasi</Form.Label>
           <Form.Control
@@ -117,16 +97,30 @@ function ModalKonfirmasiDonasi({
           />
         </Form.Group>
 
-        <Form.Group className="mt-3">
-          <Form.Label>Status Donasi</Form.Label>
-          <Form.Select
-            value={statusDonasi}
-            onChange={(e) => setStatusDonasi(e.target.value)}
-          >
-            <option value="disiapkan">Disiapkan</option>
-            <option value="siap dikirim">Siap Dikirim</option>
-          </Form.Select>
-        </Form.Group>
+        {mode === "update" && (
+          <>
+            <Form.Group className="mt-3">
+              <Form.Label>Nama Penerima</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Masukkan nama penerima"
+                value={namaPenerima}
+                onChange={(e) => setNamaPenerima(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group className="mt-3">
+              <Form.Label>Status Donasi</Form.Label>
+              <Form.Select
+                value={statusDonasi}
+                onChange={(e) => setStatusDonasi(e.target.value)}
+              >
+                <option value="disiapkan">Disiapkan</option>
+                <option value="siap dikirim">Siap Dikirim</option>
+              </Form.Select>
+            </Form.Group>
+          </>
+        )}
 
       </Modal.Body>
       <Modal.Footer>
