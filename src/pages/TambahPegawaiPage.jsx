@@ -10,7 +10,7 @@ const jabatanList = [
     'Marketing',
     'Hunter',
     'Keuangan',
-    'Teknisi Gudang',
+    'Pegawai Gudang',
     'Staff Penitipan',
     'IT Support',
     'Supervisor',
