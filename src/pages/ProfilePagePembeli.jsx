@@ -37,6 +37,7 @@ export default function ProfilePagePembeli() {
   const [modalType, setModalType] = useState("success");
   const [modalMessage, setModalMessage] = useState("");
   const [transaksiList, setTransaksiList] = useState([]);
+  const [transaksiListValid, setTransaksiListValid] = useState([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedTransaksiId, setSelectedTransaksiId] = useState(null);
   const [detailList, setDetailList] = useState([]);
@@ -46,6 +47,24 @@ export default function ProfilePagePembeli() {
   const [selectedBarang, setSelectedBarang] = useState(null);
   const [selectedRating, setSelectedRating] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+
+  const fetchJadwal = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:8000/api/transaksi/valid", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTransaksiListValid(res.data || []);
+    } catch (error) {
+      setAlert({
+        show: true,
+        message: "Gagal memuat data.",
+        variant: "danger",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchRiwayat = async () => {
     const token = localStorage.getItem("token");
@@ -95,6 +114,7 @@ export default function ProfilePagePembeli() {
       });
 
     fetchRiwayat();
+    fetchJadwal();
 
     const interval = setInterval(async () => {
       try {
@@ -401,6 +421,52 @@ export default function ProfilePagePembeli() {
       </Row>
     </Form>
   );
+  const renderValid = () => (
+      <Card className="p-4 shadow-sm">
+        <h5 className="fw-bold mb-3">Riwayat Transaksi Valid</h5>
+        <Table responsive>
+          <thead>
+            <tr>
+              <th>No Transaksi</th>
+              <th>Tanggal</th>
+              <th>Total</th>
+              <th>Status Transaksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            {transaksiListValid.length > 0 ? (
+              transaksiListValid.map((item) => {
+                return (
+                  <tr key={item.id_transaksi}>
+                    <td>{item.id_transaksi}</td>
+                    <td>
+                      {item.created_at
+                        ? new Date(
+                            item.created_at.replace(" ", "T")
+                          ).toLocaleDateString()
+                        : "-"}
+                    </td>
+                    <td>Rp{parseInt(item.total_pembayaran).toLocaleString()}</td>
+                    <td>
+                      <Badge bg={getBadgeVariant(item.status_transaksi)}>
+                        {item.status_transaksi}
+                      </Badge>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center text-muted">
+                  Tidak ada transaksi
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </Card>
+    );
 
   const renderHistory = () => (
     <Card className="p-4 shadow-sm">
@@ -550,12 +616,16 @@ export default function ProfilePagePembeli() {
         <Nav.Item>
           <Nav.Link eventKey="history">Riwayat Pembelian</Nav.Link>
         </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="valid">Riwayat Valid</Nav.Link> 
+        </Nav.Item>
       </Nav>
 
       <div className="mt-4">
         {activeTab === "biodata" && renderBiodata()}
         {activeTab === "history" && renderHistory()}
         {activeTab === "detail" && renderDetail()}
+        {activeTab === "valid" && renderValid()}
       </div>
 
       {/* ✅ Modal Detail Transaksi */}

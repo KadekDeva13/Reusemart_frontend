@@ -85,9 +85,14 @@ import KonfirmasiBarangDiterimaPage from "../pages/KonfirmasiBarangDiterima";
 import NotaPenjualanKurirPage from "../pages/NotaPenjualanKurirPage";
 import NotaPenjualanPembeliPage from "../pages/NotaPenjualanPembeliPage";
 import KonfirmasiPengambilanPage from "../pages/KonfirmasiPengambilanPage";
+import DisiapkanTransaksiPage from "../pages/PembatalanTransaksiValid";
 
 
 import VerifikasiTransaksiPage from "../pages/VerifikasiTransaksiPage";
+import LaporanDonasiDownloadButton from "../pages/Laporan/LaporanDonasiDownloadButton";
+import LaporanRequestDonasiPage from "../pages/Laporan/LaporanReqDonasiPage";
+import LaporanTransaksiPenitipPage from "../pages/Laporan/LaporanTransaksiPenitipPage";
+import FilterKurirPage from "../pages/Laporan/filterKurir";
 
 const router = createBrowserRouter([
   {
@@ -123,6 +128,7 @@ const router = createBrowserRouter([
     path: "/user/profile/pembeli/alamat",
     element: <Navigate to="/user/pembeli/alamat" replace />,
   },
+  
   
   {
     path: "/",
@@ -169,7 +175,8 @@ const router = createBrowserRouter([
       { path: "kategori/:kategori", element: <KategoriBarangPage /> },
       { path: "barang/:id", element: <DetailBarangPage /> },
       { path: "diskusi/:id_barang", element: <DiskusiPage /> },
-      { path: "keranjang", element: <KeranjangPagePembeli /> }
+      { path: "keranjang", element: <KeranjangPagePembeli /> },
+      { path: "transaksi-disiapkan", element: <DisiapkanTransaksiPage /> },
 
     ],
   },
@@ -249,7 +256,11 @@ const router = createBrowserRouter([
       { path: "history-donasi", element: <HistoryDonasiPage /> },
       { path: "laporan/laporan-penjualan-kategori", element: <LaporanKategoriPage /> },
       { path: "laporan/laporan-masa-penitipan-habis", element: <LaporanBarangHabis /> },
-      { path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPage /> }
+      { path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPage /> },
+      { path: "laporan/laporan-donasi-barang", element: <LaporanDonasiDownloadButton/>},
+      { path: "laporan/laporan-request-donasi", element: <LaporanRequestDonasiPage/>},
+      { path: "laporan/laporan-transaksi-penitip", element: <LaporanTransaksiPenitipPage/>},
+      { path: "filter-kurir", element: <FilterKurirPage/>},
     ],
   },
 

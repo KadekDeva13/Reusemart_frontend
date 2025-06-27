@@ -12,6 +12,7 @@ export default function PengirimanPengambilanPage() {
   useEffect(() => {
     fetchJadwal();
   }, []);
+  
 
   const fetchJadwal = async () => {
     try {
@@ -75,15 +76,16 @@ export default function PengirimanPengambilanPage() {
                 <th className="w-[5%] border border-gray-300 px-3 py-3">No</th>
                 <th className="w-[25%] border border-gray-300 px-3 py-3">Pembeli</th>
                 <th className="w-[25%] border border-gray-300 px-3 py-3">Jenis Pengiriman</th>
-                <th className="w-[20%] border border-gray-300 px-3 py-3">Status</th>
+                <th className="w-[20%] border border-gray-300 px-3 py-3">Status transaksi</th>
                 <th className="w-[25%] border border-gray-300 px-3 py-3">Aksi</th>
+                <th className="w-[25%] border border-gray-300 px-3 py-3">status pengiriman</th>
               </tr>
             </thead>
             <tbody className="bg-white text-center">
               {transaksiList.length > 0 ? (
                 transaksiList.map((trx, index) => (
                   <tr key={trx.id_transaksi}>
-                    <td className="border border-gray-300 px-3 py-2">{index + 1}</td>
+                    <td className="border border-gray-300 px-3 py-2">{trx.id_transaksi}</td>
                     <td className="border border-gray-300 px-3 py-2">{trx.pembeli?.nama_lengkap || "-"}</td>
                     <td className="border border-gray-300 px-3 py-2">{trx.jenis_pengiriman}</td>
                     <td className="border border-gray-300 px-3 py-2">
@@ -92,7 +94,7 @@ export default function PengirimanPengambilanPage() {
                       </span>
                     </td>
                     <td className="border border-gray-300 px-3 py-2 space-x-2">
-                      {trx.jenis_pengiriman?.toLowerCase() === "kurir reusemart" && (
+                      {trx.jenis_pengiriman?.toLowerCase() === "kurir" && (
                         <button
                           className={`text-white text-sm font-semibold px-3 py-1 rounded ${
                             trx.status_transaksi === "kurir sedang mengirim"
@@ -104,7 +106,7 @@ export default function PengirimanPengambilanPage() {
                               handleOpenModalKurir(trx);
                             }
                           }}
-                          disabled={trx.status_transaksi === "dikirim"}
+                          disabled={trx.status_transaksi === "belum selesai"}
                         >
                           {trx.status_transaksi === "dikirim"
                             ? "dikirim"
@@ -112,10 +114,30 @@ export default function PengirimanPengambilanPage() {
                         </button>
                       )}
 
-                      {trx.jenis_pengiriman?.toLowerCase() === "pengambilan mandiri" && (
+                      {trx.jenis_pengiriman?.toLowerCase() === "kurir" && (
                         <button
                           className={`text-white text-sm font-semibold px-3 py-1 rounded ${
-                            trx.status_transaksi === "pengambilan mandiri"
+                            trx.status_transaksi === "kurir sedang mengirim"
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-yellow-400 hover:bg-yellow-500"
+                          }`}
+                          onClick={() => {
+                            if (trx.status_transaksi !== "belum selesai") {
+                              handleOpenModalKurir(trx);
+                            }
+                          }}
+                          disabled={trx.status_transaksi === "belum selesai"}
+                        >
+                          {trx.status_transaksi === "belum selesai"
+                            ? "belum selesai"
+                            : "Jadwalkan Kurir"}
+                        </button>
+                      )}
+
+                      {trx.jenis_pengiriman?.toLowerCase() === "ambil" && (
+                        <button
+                          className={`text-white text-sm font-semibold px-3 py-1 rounded ${
+                            trx.status_transaksi === "disiapkan"
                               ? "bg-gray-400 cursor-not-allowed"
                               : "bg-green-600 hover:bg-green-700"
                           }`}
@@ -124,13 +146,18 @@ export default function PengirimanPengambilanPage() {
                               handleJadwalkanAmbilSendiri(trx);
                             }
                           }}
-                          disabled={trx.status_transaksi === "pengambilan mandiri"}
+                          disabled={trx.status_transaksi === "belum selesai"}
                         >
-                          {trx.status_transaksi === "pengambilan mandiri"
-                            ? "pengambilan mandiri"
+                          {trx.status_transaksi === "disiapkan"
+                            ? "disiapkan"
                             : "Jadwalkan Ambil"}
                         </button>
                       )}
+                    </td>
+                    <td>
+                       <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        {trx.status_pengiriman}
+                      </span>
                     </td>
                   </tr>
                 ))
