@@ -54,6 +54,14 @@ function DetailPenitipanPage() {
         }
     };
 
+    const hunterDisplay = (() => {
+        const barangDenganHunter = penitipan?.barang?.find(b => b.pegawai);
+        return barangDenganHunter
+            ? `P${barangDenganHunter.id_pegawai} - ${barangDenganHunter.pegawai?.nama_lengkap}`
+            : "-";
+    })();
+
+
     const formatTanggal = (tanggal) => {
         if (!tanggal) return "-";
         const d = new Date(tanggal);
@@ -110,14 +118,8 @@ function DetailPenitipanPage() {
                                 <p><span className="font-semibold">Tanggal Masuk:</span> {formatTanggal(penitipan.tanggal_masuk)}</p>
                                 <p><span className="font-semibold">Tanggal Akhir:</span> {formatTanggal(penitipan.tanggal_akhir)}</p>
                                 <p><span className="font-semibold">Pegawai QC:</span> P{penitipan.pegawaiqc?.id_pegawai} - {penitipan.pegawaiqc?.nama_lengkap || "-"}</p>
+                                <p><span className="font-semibold">Hunter:</span> {hunterDisplay}</p>
                                 <div className="absolute bottom-2 right-4">
-                                    <button
-                                        onClick={handleDownload}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded shadow"
-                                    >
-                                        Cetak Nota
-                                    </button>
-
                                     {/* <button
                                         onClick={handleDelete}
                                         className="bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-1 rounded shadow"
@@ -137,6 +139,13 @@ function DetailPenitipanPage() {
                                         className="bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-3 py-1 rounded shadow mr-2"
                                     >
                                         Edit
+                                    </button>
+
+                                    <button
+                                        onClick={handleDownload}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded shadow"
+                                    >
+                                        Cetak Nota
                                     </button>
 
 

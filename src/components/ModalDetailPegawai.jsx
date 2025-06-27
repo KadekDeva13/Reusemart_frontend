@@ -111,8 +111,11 @@ const ModalDetailPegawai = ({ show, onClose, data, onEdit, onDelete, onResetPass
             <div className="relative group w-24 h-24">
               <img
                 src={
-                  (isEditing ? formData.image_user : data.image_user) ||
-                  "https://via.placeholder.com/150"
+                  isEditing
+                    ? formData.previewImage || "https://via.placeholder.com/150"
+                    : data.image_user
+                      ? `http://localhost:8000/storage/${data.image_user}`
+                      : "https://via.placeholder.com/150"
                 }
                 alt="Foto Pegawai"
                 className={`w-24 h-24 rounded-full object-cover border shadow ${isEditing ? "cursor-pointer" : ""
@@ -183,8 +186,8 @@ const ModalDetailPegawai = ({ show, onClose, data, onEdit, onDelete, onResetPass
                     value={formData[key] || ""}
                     onChange={handleChange}
                     className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 ${errors[key]
-                        ? "border-red-500 focus:ring-red-400"
-                        : "border-gray-300 focus:ring-green-400"
+                      ? "border-red-500 focus:ring-red-400"
+                      : "border-gray-300 focus:ring-green-400"
                       }`}
                   />
                 ) : (

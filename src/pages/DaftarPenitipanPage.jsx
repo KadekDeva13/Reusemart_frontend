@@ -8,6 +8,7 @@ function DaftarPenitipanPage() {
     const [searchBy, setSearchBy] = useState("all");
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
+    const [rating, setRating] = useState([]);
     const itemsPerPage = 10;
     const navigate = useNavigate();
 
@@ -56,6 +57,21 @@ function DaftarPenitipanPage() {
         }
     };
 
+    const fetchRatingBarang = async () => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem("token");
+            const res = await axios.get("http://localhost:8000/api/penitipan/rating-barang", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log("Data rating barang:", res.data);
+            setRating(res.data);
+        } catch (err) {
+            console.error("Gagal fetch data rating barang:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
 
     const filteredList = penitipanList.filter((item) => {
@@ -238,7 +254,7 @@ function DaftarPenitipanPage() {
                 </div>
             </div>
 
-            <h2 className="text-lg font-semibold mb-4 mt-10">Daftar Barang Penitip Tertentu</h2>
+            {/* <h2 className="text-lg font-semibold mb-4 mt-10">Daftar Barang Penitip Tertentu</h2>
             <div className="bg-white rounded-lg shadow overflow-x-auto">
                 <table className="w-full text-sm text-center border">
                     <thead className="bg-green-100 text-gray-800 font-semibold">
@@ -314,6 +330,28 @@ function DaftarPenitipanPage() {
                                 </tr>
                             ))
                         )}
+                    </tbody>
+                </table>
+            </div> */}
+
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Barang</th>
+                            <th>Pembeli</th>
+                            <th>Rating</th>
+                            <th>Komentar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rating.map((r, i) => (
+                            <tr key={i}>
+                                <td>{r.barang.nama_barang}</td>
+                                <td>{r.pembeli.nama_lengkap}</td>
+                                <td>{"★".repeat(r.rating)}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>

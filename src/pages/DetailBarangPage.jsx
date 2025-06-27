@@ -254,12 +254,14 @@ export default function DetailBarangPage() {
                 </div>
               </div>
             </div>
-
-            <h6>Detail Barang</h6>
             <p><strong>Kategori:</strong> {barang.kategori_barang}</p>
-            {barang.tanggal_garansi && (
+            {barang.tanggal_garansi !== '-' ? (
+              <p><strong className="text-red-500">Barang Tidak Memiliki Garansi</strong></p>
+            ) : (
+
               <p><strong>Tanggal Kadaluarsa Garansi: </strong>{formatTanggal(barang.tanggal_garansi)}</p>
             )}
+
             <p>{barang.deskripsi}</p>
           </Col>
         </Row>

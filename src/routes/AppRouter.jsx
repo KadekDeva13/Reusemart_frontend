@@ -54,6 +54,7 @@ import DiskusiPegawaiPage from "../pages/DiskusiPegawaiPage";
 // Penitip Pages
 import ProfilePagePenitip from "../pages/ProfilePagePenitip";
 import HomePagePenitip from "../pages/HomePagePenitip";
+import PengajuanPenarikanSaldoPage from "../pages/PengajuanPenarikanSaldoPage";
 
 // Admin Pages
 import AdminPages from "../pages/adminPage";
@@ -211,6 +212,7 @@ const router = createBrowserRouter([
       { path: "profile", element: <ProfilePagePenitip /> },
       { path: "kategori/:kategori", element: <KategoriBarangPenitipanPage /> },
       { path: "penitipan/show/:id", element: <DetailBarangPenitipanPage /> },
+      { path: "penarikan-saldo", element: <PengajuanPenarikanSaldoPage /> },
     ],
   },
 

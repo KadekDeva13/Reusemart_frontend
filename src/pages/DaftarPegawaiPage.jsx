@@ -50,7 +50,6 @@ const DaftarPegawaiPage = () => {
         data.append("komisi_hunter", formData.komisi_hunter);
       }
 
-      // ✅ tambahkan image jika berupa File
       if (formData.image_user instanceof File) {
         data.append("image_user", formData.image_user);
       }
@@ -62,7 +61,6 @@ const DaftarPegawaiPage = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            // ⚠️ jangan atur Content-Type, biarkan browser menentukan boundary-nya
           },
         }
       );

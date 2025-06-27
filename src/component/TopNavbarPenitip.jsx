@@ -121,6 +121,16 @@ const TopNavbarPenitip = ({ onLogout, searchQuery, setSearchQuery }) => {
                   Akun Saya
                 </button>
 
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    setShowDropdown(false);
+                    navigate("/user/penitip/penarikan-saldo");
+                  }}
+                >
+                  Pengajuan Penarikan Saldo
+                </button>
+
                 <button className="dropdown-item text-danger" onClick={onLogout}>
                   Logout
                 </button>

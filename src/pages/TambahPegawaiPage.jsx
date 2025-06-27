@@ -10,8 +10,8 @@ const jabatanList = [
     'Marketing',
     'Hunter',
     'Keuangan',
-    'Teknisi Gudang',
-    'Staff Penitipan',
+    'Pegawai Gudang',
+    'Quality Control',
     'IT Support',
     'Supervisor',
 ];
@@ -84,7 +84,7 @@ const TambahPegawaiPage = ({ setActivePage }) => {
             data.append('alamat', formData.alamat);
             data.append('gender', formData.gender);
             data.append('tanggal_lahir', formData.tanggal_lahir);
-            data.append('password', 'Reusemart123'); // default password
+            data.append('password', 'Reusemart123');
             if (formData.file) {
                 data.append('image_user', formData.file);
             }

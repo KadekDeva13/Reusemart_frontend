@@ -67,7 +67,7 @@ const OwnerRequestDonasiPage = () => {
           <thead>
             <tr>
               <th className="col-organisasi">Nama Organisasi</th>
-              <th className="col-barang">Nama barang</th>
+              <th className="col-barang">Kategori barang</th>
               <th className="col-pesan">Pesan Request</th>
               <th className="col-aksi"></th>
             </tr>

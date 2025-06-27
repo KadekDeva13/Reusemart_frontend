@@ -23,14 +23,6 @@ const OwnerSidebar = () => {
             <div>
                 <h2 className="text-center font-bold text-xl py-4 border-b border-gray-700">Reusemart</h2>
 
-                <div
-                    className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage === "owner" ? "bg-[#798248] text-white" : ""}`}
-                    onClick={() => navigate("/user/owner")}
-                >
-                    <FaTachometerAlt className="mr-3" />
-                    Dashboard
-                </div>
-
                 {/* Donasi */}
                 <div>
                     <div
