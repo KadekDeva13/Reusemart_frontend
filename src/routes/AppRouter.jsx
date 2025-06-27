@@ -95,9 +95,14 @@ import KonfirmasiBarangDiterimaPage from "../pages/KonfirmasiBarangDiterima";
 import NotaPenjualanKurirPage from "../pages/NotaPenjualanKurirPage";
 import NotaPenjualanPembeliPage from "../pages/NotaPenjualanPembeliPage";
 import KonfirmasiPengambilanPage from "../pages/KonfirmasiPengambilanPage";
-// import VerifikasiTransaksiPage from "../pages/VerifikasiTransaksiPage";
+import DisiapkanTransaksiPage from "../pages/PembatalanTransaksiValid";
+
 
 import VerifikasiTransaksiPage from "../pages/VerifikasiTransaksiPage";
+import LaporanDonasiDownloadButton from "../pages/Laporan/LaporanDonasiDownloadButton";
+import LaporanRequestDonasiPage from "../pages/Laporan/LaporanReqDonasiPage";
+import LaporanTransaksiPenitipPage from "../pages/Laporan/LaporanTransaksiPenitipPage";
+import FilterKurirPage from "../pages/Laporan/filterKurir";
 
 const router = createBrowserRouter([
   {
@@ -133,7 +138,8 @@ const router = createBrowserRouter([
     path: "/user/profile/pembeli/alamat",
     element: <Navigate to="/user/pembeli/alamat" replace />,
   },
-
+  
+  
   {
     path: "/",
     element: <LandingPage />,
@@ -195,6 +201,7 @@ const router = createBrowserRouter([
         path: "search",
         element: <SearchBarangPage />,
       },
+      { path: "transaksi-disiapkan", element: <DisiapkanTransaksiPage /> },
 
     ],
   },
@@ -281,6 +288,10 @@ const router = createBrowserRouter([
       { path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPDFPage /> },
       { path: "laporan/laporan-komisi", element: <LaporanKomisiPage /> },
       { path: "laporan/laporan-stok-gudang", element: <LaporanStokGudangPage /> }
+      { path: "laporan/laporan-donasi-barang", element: <LaporanDonasiDownloadButton/>},
+      { path: "laporan/laporan-request-donasi", element: <LaporanRequestDonasiPage/>},
+      { path: "laporan/laporan-transaksi-penitip", element: <LaporanTransaksiPenitipPage/>},
+      { path: "filter-kurir", element: <FilterKurirPage/>},
     ],
   },
 

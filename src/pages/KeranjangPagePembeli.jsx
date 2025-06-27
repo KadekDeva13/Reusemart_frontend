@@ -89,7 +89,7 @@ const KeranjangPagePembeli = () => {
 
   const ongkir =
     metodePengiriman === "kurir" && subtotal < 1500000 ? 100000 : 0;
-  const potongan = Math.min(poinTukar, poinDimiliki) * 10000;
+  const potongan = Math.min(poinTukar, poinDimiliki) * 100;
   const totalAkhir = subtotal + ongkir - potongan;
 
   const poinUtama = Math.floor(subtotal / 10000);
