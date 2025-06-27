@@ -3,7 +3,6 @@ import AdminSidebar from '../layout/AdminSidebar';
 import './AdminPage.css';
 import DaftarPegawaiPage from './DaftarPegawaiPage';
 import TambahPegawaiPage from './TambahPegawaiPage';
-import NotaPDF from './NotaPenjualan/NotaPenjualanPageKurir';
 
 const AdminPage = () => {
   const [activePage, setActivePage] = useState('dashboard');

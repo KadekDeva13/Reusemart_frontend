@@ -57,7 +57,7 @@ import HomePagePenitip from "../pages/HomePagePenitip";
 import PengajuanPenarikanSaldoPage from "../pages/PengajuanPenarikanSaldoPage";
 
 // Admin Pages
-import AdminPages from "../pages/adminPage";
+import AdminPages from "../pages/AdminPage";
 import AdminLayout from "../layouts/AdminLayout";
 import DaftarPegawaiPage from '../pages/DaftarPegawaiPage';
 import TambahPegawaiPage from '../pages/TambahPegawaiPage';
@@ -260,7 +260,7 @@ const router = createBrowserRouter([
       </ProtectedRoutes>
     ),
     children: [
-      { path: "", element: <DaftarPegawaiPage /> },
+      { path: "", element: <AdminPages /> },
       { path: "daftar-pegawai", element: <DaftarPegawaiPage /> },
       { path: "tambah-pegawai", element: <TambahPegawaiPage /> },
       { path: "daftar-organisasi", element: <DaftarOrganisasiPage /> },
