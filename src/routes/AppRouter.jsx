@@ -280,7 +280,7 @@ const router = createBrowserRouter([
       { path: "laporan/laporan-masa-penitipan-habis", element: <LaporanBarangHabis /> },
       { path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPDFPage /> },
       { path: "laporan/laporan-komisi", element: <LaporanKomisiPage /> },
-      { path: "laporan/laporan-stok-gudang", element: <LaporanStokGudangPage /> }
+      { path: "laporan/laporan-stok-gudang", element: <LaporanStokGudangPage /> },
     ],
   },
 
