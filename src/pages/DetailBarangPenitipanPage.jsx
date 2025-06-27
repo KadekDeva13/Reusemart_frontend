@@ -70,7 +70,7 @@ export default function DetailBarangPenitipanPage() {
   };
 
   const handlePerpanjang = async () => {
-    if (!window.confirm("Yakin ingin memperpanjang masa penitipan 30 hari?")) return;
+    // if (!window.confirm("Yakin ingin memperpanjang masa penitipan 30 hari?")) return;
 
     try {
       setPerpanjangLoading(true);
