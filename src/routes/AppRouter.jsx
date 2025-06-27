@@ -287,7 +287,7 @@ const router = createBrowserRouter([
       { path: "laporan/laporan-masa-penitipan-habis", element: <LaporanBarangHabis /> },
       { path: "laporan/laporan-penjualan-bulanan", element: <LaporanPenjualanBulananPDFPage /> },
       { path: "laporan/laporan-komisi", element: <LaporanKomisiPage /> },
-      { path: "laporan/laporan-stok-gudang", element: <LaporanStokGudangPage /> }
+      { path: "laporan/laporan-stok-gudang", element: <LaporanStokGudangPage /> },
       { path: "laporan/laporan-donasi-barang", element: <LaporanDonasiDownloadButton/>},
       { path: "laporan/laporan-request-donasi", element: <LaporanRequestDonasiPage/>},
       { path: "laporan/laporan-transaksi-penitip", element: <LaporanTransaksiPenitipPage/>},
