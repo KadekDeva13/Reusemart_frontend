@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import GudangSidebar from "../layout/PegawaiGudangSidebar";
 import axios from "axios";
+import API from "@/utils/api";
 
 const PegawaiGudangLayout = () => {
   const location = useLocation();
@@ -11,7 +12,7 @@ const PegawaiGudangLayout = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       const token = localStorage.getItem("token");
-      axios.post("http://localhost:8000/api/transaksi/hanguskan-otomatis", {}, {
+      API.post("/api/transaksi/hanguskan-otomatis", {}, {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(() => {
@@ -20,7 +21,7 @@ const PegawaiGudangLayout = () => {
         .catch((err) => {
           console.error("❌ Gagal hanguskan otomatis:", err?.response?.data?.message || err.message);
         });
-    }, 10 * 60 * 1000); // setiap 10 menit
+    }, 30 * 60 * 1000); // setiap 10 menit
     return () => clearInterval(interval);
   }, []);
 

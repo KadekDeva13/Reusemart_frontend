@@ -45,7 +45,6 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const res = await API.post("/api/login", { email, password });
-      console.log("Respon dari Laravel:", res);
 
       const { token, role } = res.data;
 

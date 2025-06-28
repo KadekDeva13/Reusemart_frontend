@@ -164,7 +164,7 @@ export default function DetailBarangPage() {
               {barang.foto_barang.map((foto, i) => (
                 <img
                   key={i}
-                  src={`http://localhost:8000/storage/${foto.foto_barang}`}
+                  src={`${API.defaults.baseURL}/storage/${foto.foto_barang}`}
                   alt={`Thumb ${i + 1}`}
                   onClick={() => swiperRef.current.slideToLoop(i)}
                   className={`w-[70px] h-[70px] object-cover cursor-pointer rounded border ${i === selectedImage ? "border-blue-600 border-2" : "border-gray-300"
