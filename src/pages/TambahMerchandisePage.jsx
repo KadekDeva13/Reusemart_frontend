@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API from "@/utils/api";
 
 const TambahMerchandisePage = () => {
     const navigate = useNavigate();
@@ -22,8 +22,8 @@ const TambahMerchandisePage = () => {
             setLoading(true);
             const token = localStorage.getItem("token");
 
-            const res = await axios.post(
-                "http://localhost:8000/api/merchandise/tambah",
+            const res = await API.post(
+                "/api/merchandise/tambah",
                 form,
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -36,8 +36,8 @@ const TambahMerchandisePage = () => {
                 const formData = new FormData();
                 formData.append("foto_merchandise", fotoList[i]);
 
-                await axios.post(
-                    `http://localhost:8000/api/merchandise/${id_merchandise}/upload-foto`,
+                await API.post(
+                    `/api/merchandise/${id_merchandise}/upload-foto`,
                     formData,
                     {
                         headers: {

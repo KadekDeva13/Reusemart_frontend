@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Table, Spinner } from "react-bootstrap";
-import axios from "axios";
+import API from "@/utils/api";
 
 function ModalPilihBarangDonasi({ show, handleClose, onBarangSelected, kategoriDonasi }) {
   const [barangDonasiList, setBarangDonasiList] = useState([]);
@@ -15,7 +15,7 @@ function ModalPilihBarangDonasi({ show, handleClose, onBarangSelected, kategoriD
   const fetchBarangDonasi = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/barang/donasi", {
+      const res = await API.get("/api/barang/donasi", {
         headers: {
           Authorization: `Bearer ${token}`,
           "X-Kategori-Barang": kategoriDonasi,

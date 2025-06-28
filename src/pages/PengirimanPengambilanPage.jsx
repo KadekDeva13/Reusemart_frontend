@@ -1,6 +1,5 @@
-// ✅ PengirimanPengambilanPage.js (versi akhir sesuai permintaan: jadwal dulu → munculkan tanggal)
+import API from "@/utils/api";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import ModalJadwalPengiriman from "../components/ModalJadwalPengiriman";
 
 export default function PengirimanPengambilanPage() {
@@ -18,7 +17,7 @@ export default function PengirimanPengambilanPage() {
   const fetchJadwal = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/gudang/transaksi", {
+      const res = await API.get("/api/gudang/transaksi", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTransaksiList(res.data || []);
@@ -40,8 +39,8 @@ export default function PengirimanPengambilanPage() {
     if (!konfirmasi) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        `http://localhost:8000/api/gudang/transaksi/jadwalkan-ambil-sendiri/${trx.id_transaksi}`,
+      await API.post(
+        `/api/gudang/transaksi/jadwalkan-ambil-sendiri/${trx.id_transaksi}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "@/utils/api";
 
 const organisasiBelum = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const organisasiBelum = () => {
   const fetchOrganisasi = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/organisasi", {
+      const res = await API.get("/api/organisasi", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -26,7 +26,7 @@ const organisasiBelum = () => {
     }
   };
 
-  
+
 
   const filteredData = organisasiList.filter((item) =>
     item.id_organisasi != 1
@@ -71,7 +71,7 @@ const organisasiBelum = () => {
                 <img
                   src={
                     item.image_user
-                      ? `http://localhost:8000/storage/${item.image_user}`
+                      ? `${API.defaults.baseURL}/storage/${item.image_user}`
                       : "https://via.placeholder.com/40"
                   }
                   alt="Logo Organisasi"

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import ModalKonfirmasiDonasi from "../components/ModalKonfirmasiDonasi";
+import API from "@/utils/api";
 
 export default function HistoryDonasiPage() {
   const [historyList, setHistoryList] = useState([]);
@@ -18,7 +18,7 @@ export default function HistoryDonasiPage() {
     const fetchHistory = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:8000/api/donasi/riwayat", {
+            const res = await API.get("/api/donasi/riwayat", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

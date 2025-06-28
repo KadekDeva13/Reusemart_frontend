@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Form, Button, Spinner, InputGroup } from "react-bootstrap";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { X } from "lucide-react";
+import API from "@/utils/api";
 
 export default function PenitipanBarangPage() {
     const navigate = useNavigate();
@@ -66,34 +66,34 @@ export default function PenitipanBarangPage() {
     }, []);
 
 
-    const fetchBarangDetail = async (id) => {
-        try {
-            const token = localStorage.getItem("token");
-            const res = await axios.get(`http://localhost:8000/api/barang/detail-barang/${id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            const b = res.data.data;
+const fetchBarangDetail = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await API.get(`/api/barang/detail-barang/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const b = res.data.data;
 
-            setForm({
-                nama_barang: b.nama_barang,
-                kategori_barang: b.kategori_barang,
-                deskripsi: b.deskripsi,
-                harga_barang: b.harga_barang,
-                berat_barang: b.berat_barang,
-                punya_garansi: Boolean(b.tanggal_garansi),
-                tanggal_garansi: b.tanggal_garansi || "",
-            });
+    setForm({
+      nama_barang: b.nama_barang,
+      kategori_barang: b.kategori_barang,
+      deskripsi: b.deskripsi,
+      harga_barang: b.harga_barang,
+      berat_barang: b.berat_barang,
+      punya_garansi: Boolean(b.tanggal_garansi),
+      tanggal_garansi: b.tanggal_garansi || "",
+    });
 
-            setPreviewImage(
-                b.foto_barang.map((f) => ({
-                    id: f.id_foto,
-                    url: `http://localhost:8000/storage/${f.foto_barang}`,
-                }))
-            );
-        } catch (err) {
-            console.error("Gagal ambil detail barang:", err);
-        }
-    };
+    setPreviewImage(
+      b.foto_barang.map((f) => ({
+        id: f.id_foto,
+        url: `${API.defaults.baseURL}/storage/${f.foto_barang}`,
+      }))
+    );
+  } catch (err) {
+    console.error("Gagal ambil detail barang:", err);
+  }
+};
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -210,7 +210,7 @@ export default function PenitipanBarangPage() {
                 fotoBarang.forEach((file) => formData.append("foto_barang[]", file));
                 fotoHapus.forEach((id) => formData.append("foto_hapus[]", id));
 
-                await axios.post(`http://localhost:8000/api/barang/update/${id_barang}`, formData, {
+                await API.post(`/api/barang/update/${id_barang}`, formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "multipart/form-data",
@@ -242,7 +242,7 @@ export default function PenitipanBarangPage() {
                 formData.append("tanggal_garansi", form.punya_garansi ? form.tanggal_garansi : "");
                 fotoBarang.forEach((file) => formData.append("foto_barang[]", file));
 
-                await axios.post("http://localhost:8000/api/barang/store", formData, {
+                await API.post("/api/barang/store", formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "multipart/form-data",

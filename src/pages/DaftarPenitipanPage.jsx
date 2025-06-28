@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API from "@/utils/api";
 
 function DaftarPenitipanPage() {
     const [penitipanList, setPenitipanList] = useState([]);
@@ -27,7 +27,7 @@ function DaftarPenitipanPage() {
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:8000/api/penitipan/show-all", {
+            const res = await API.get("/api/penitipan/show-all", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setPenitipanList(res.data || []);
@@ -44,7 +44,7 @@ function DaftarPenitipanPage() {
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:8000/api/penitipan/get-penitipan-baru", {
+            const res = await API.get("/api/penitipan/get-penitipan-baru", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setPenitipanBaruList(res.data || []);
@@ -61,7 +61,7 @@ function DaftarPenitipanPage() {
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:8000/api/penitipan/rating-barang", {
+            const res = await API.get("/api/penitipan/rating-barang", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             console.log("Data rating barang:", res.data);

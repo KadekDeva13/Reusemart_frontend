@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, Container, Row, Col, Button, Spinner } from "react-bootstrap";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function KategoriBarangPage() {
   const { kategori } = useParams();
@@ -12,8 +12,8 @@ export default function KategoriBarangPage() {
   const fetchBarang = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(
-        `http://localhost:8000/api/barang/kategori/${encodeURIComponent(
+      const res = await API.get(
+        `/api/barang/kategori/${encodeURIComponent(
           kategori
         )}`,
         {
@@ -55,7 +55,7 @@ export default function KategoriBarangPage() {
                   <img
                     src={
                       barang.foto_barang?.[0]?.foto_barang
-                        ? `http://localhost:8000/storage/${barang.foto_barang[0].foto_barang}`
+                        ? `${API.defaults.baseURL}/storage/${barang.foto_barang[0].foto_barang}`
                         : "https://via.placeholder.com/300x300?text=No+Image"
                     }
                     alt={barang.nama_barang}

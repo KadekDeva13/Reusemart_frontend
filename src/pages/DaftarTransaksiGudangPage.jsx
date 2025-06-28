@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function DaftarTransaksiGudangPage() {
   const [transaksiList, setTransaksiList] = useState([]);
@@ -14,17 +13,17 @@ export default function DaftarTransaksiGudangPage() {
   useEffect(() => {
     fetchTransaksiGudang();
 
-    // const interval = setInterval(() => {
-    //   handleHanguskanOtomatis();
-    // }, 10 * 60 * 1000);
-    // return () => clearInterval(interval);
+    const interval = setInterval(() => {
+      handleHanguskanOtomatis();
+    }, 30 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchTransaksiGudang = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/gudang/transaksi", {
+      const res = await API.get("/api/gudang/transaksi", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTransaksiList(res.data || []);
@@ -39,8 +38,8 @@ export default function DaftarTransaksiGudangPage() {
   const handleHanguskanOtomatis = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        "http://localhost:8000/api/transaksi/hanguskan-otomatis",
+      await API.post(
+        "/api/transaksi/hanguskan-otomatis",
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -167,7 +166,7 @@ export default function DaftarTransaksiGudangPage() {
                           {barang.foto_barang.map((foto, j) => (
                             <img
                               key={j}
-                              src={`http://localhost:8000/storage/${foto.foto_barang}`}
+                              src={`${API.defaults.baseURL}/storage/${foto.foto_barang}`}
                               alt={`Foto ${j + 1}`}
                               width="100"
                               className="rounded border"

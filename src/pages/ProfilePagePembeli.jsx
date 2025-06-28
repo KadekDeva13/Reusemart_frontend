@@ -13,7 +13,7 @@ import {
 } from "react-bootstrap";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function ProfilePagePembeli() {
   const navigate = useNavigate();
@@ -55,7 +55,7 @@ export default function ProfilePagePembeli() {
   const fetchJadwal = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/transaksi/valid", {
+      const res = await API.get("/api/transaksi/valid", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTransaksiListValid(res.data || []);
@@ -73,8 +73,8 @@ export default function ProfilePagePembeli() {
   const fetchRiwayat = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/riwayat-pembelian",
+      const res = await API.get(
+        "/api/riwayat-pembelian",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -89,7 +89,7 @@ export default function ProfilePagePembeli() {
 
   const fetchAlamatUtama = async (id_pembeli) => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/pembeli/${id_pembeli}/alamat-utama`);
+      const res = await API.get(`/api/pembeli/${id_pembeli}/alamat-utama`);
       if (res.data) {
         const alamat = res.data;
         const alamatLengkap = `${alamat.detail_alamat}, ${alamat.kelurahan}, ${alamat.kecamatan}, ${alamat.provinsi} ${alamat.kode_pos}`;
@@ -111,8 +111,8 @@ export default function ProfilePagePembeli() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    axios
-      .get("http://localhost:8000/api/pembeli/profile", {
+    API
+      .get("/api/pembeli/profile", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -129,9 +129,9 @@ export default function ProfilePagePembeli() {
           saldo: data.saldo || 0,
           alamat: "", // kosong dulu, isi setelah fetch alamat utama
           image_user: null,
-          imagePreview: data.image_user
-            ? `http://localhost:8000/storage/foto_pembeli/${data.image_user}`
-            : prev.imagePreview,
+         imagePreview: data.image_user
+  ? `${API.defaults.baseURL}/storage/foto_pembeli/${data.image_user}`
+  : prev.imagePreview,
         }));
 
         fetchAlamatUtama(data.id_pembeli); // ⬅️ Panggil di sini
@@ -148,8 +148,8 @@ export default function ProfilePagePembeli() {
 
     const interval = setInterval(async () => {
       try {
-        const res = await axios.post(
-          "http://localhost:8000/api/transaksi/batalkan-otomatis",
+        const res = await API.post(
+          "/api/transaksi/batalkan-otomatis",
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -177,8 +177,8 @@ export default function ProfilePagePembeli() {
     formData.append("bukti_pembayaran", buktiFile);
 
     try {
-      await axios.post(
-        `http://localhost:8000/api/transaksi/upload-bukti/${selectedTransaksiId}`,
+      await API.post(
+        `/api/transaksi/upload-bukti/${selectedTransaksiId}`,
         formData,
         {
           headers: {
@@ -225,8 +225,8 @@ export default function ProfilePagePembeli() {
         if (formData.password) payload.append("password", formData.password);
         payload.append("image_user", formData.image_user);
 
-        response = await axios.post(
-          "http://localhost:8000/api/pembeli/update",
+        response = await API.post(
+          "/api/pembeli/update",
           payload,
           {
             headers: {
@@ -243,8 +243,8 @@ export default function ProfilePagePembeli() {
         };
         if (formData.password) payload.password = formData.password;
 
-        response = await axios.post(
-          "http://localhost:8000/api/pembeli/update",
+        response = await API.post(
+          "/api/pembeli/update",
           payload,
           {
             headers: {
@@ -259,9 +259,9 @@ export default function ProfilePagePembeli() {
 
       setFormData((prev) => ({
         ...prev,
-        imagePreview: updatedData?.image_user
-          ? `http://localhost:8000/storage/foto_pembeli/${updatedData.image_user}`
-          : prev.imagePreview,
+      imagePreview: updatedData?.image_user
+  ? `${API.defaults.baseURL}/storage/foto_pembeli/${updatedData.image_user}`
+  : prev.imagePreview,
         password: "",
       }));
 
@@ -285,8 +285,8 @@ export default function ProfilePagePembeli() {
     try {
       setSubmitting(true);
       const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:8000/api/barang/rating/${selectedBarang.id_barang}`,
+      await API.put(
+        `/api/barang/rating/${selectedBarang.id_barang}`,
         { rating_barang: selectedRating },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
+
 export default function LandingPage() {
   const navigate = useNavigate();
 

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Form, Button, Card, Container, Row, Col, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import API from "@/utils/api";
 
 export default function RegisterOrganisasiPage() {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export default function RegisterOrganisasiPage() {
     nama_organisasi: "",
     nama_penerima: "",
     no_telepon: "",
-    alamat: "", 
+    alamat: "",
     email: "",
     password: "",
   });
@@ -26,23 +27,17 @@ export default function RegisterOrganisasiPage() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:8000/api/organisasi/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await res.json();
-      if (!res.ok) {
-        const message =
-          result.errors?.[Object.keys(result.errors)[0]]?.[0] || result.message;
-        throw new Error(message);
-      }
+      const res = await API.post("/api/organisasi/register", formData);
 
       toast.success("Registrasi berhasil! Silakan login.");
       navigate("/");
     } catch (err) {
-      setError(err.message || "Terjadi kesalahan");
+      const message =
+        err.response?.data?.errors?.[Object.keys(err.response.data.errors || {})[0]]?.[0] ||
+        err.response?.data?.message ||
+        "Terjadi kesalahan";
+
+      setError(message);
       toast.error("Registrasi gagal!");
     }
   };

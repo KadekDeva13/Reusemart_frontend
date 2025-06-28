@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { FaPen } from "react-icons/fa";
+import API from "@/utils/api";
 
 const jabatanList = [
   "Admin",
@@ -114,7 +115,7 @@ const ModalDetailPegawai = ({ show, onClose, data, onEdit, onDelete, onResetPass
                   isEditing
                     ? formData.previewImage || "https://via.placeholder.com/150"
                     : data.image_user
-                      ? `http://localhost:8000/storage/${data.image_user}`
+                      ? `${API.defaults.baseURL}/storage/${data.image_user}`
                       : "https://via.placeholder.com/150"
                 }
                 alt="Foto Pegawai"

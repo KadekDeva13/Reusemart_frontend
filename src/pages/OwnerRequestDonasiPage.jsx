@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import "./OwnerRequestDonasiPage.css";
 import ModalPilihBarangDonasi from "../components/ModalPilihBarangDonasi";
 import ModalKonfirmasiDonasi from "../components/ModalKonfirmasiDonasi";
+import API from "@/utils/api";
 
 const OwnerRequestDonasiPage = () => {
   const [donasiList, setDonasiList] = useState([]);
@@ -20,7 +20,7 @@ const OwnerRequestDonasiPage = () => {
   const fetchDonasiDiminta = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/donasi/diminta", {
+      const res = await API.get("/api/donasi/diminta", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

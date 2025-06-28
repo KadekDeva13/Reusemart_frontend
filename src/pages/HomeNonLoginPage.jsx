@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Container, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import TopNavbarNonLogin from "../component/TopNavBarNonLogin";
+import API from "@/utils/api";
 
 const categories = [
   { label: "Elektronik & Gadget", icon: "https://cdn-icons-png.flaticon.com/512/1041/1041880.png" },
@@ -27,19 +27,15 @@ const HomeNonLogin = () => {
 
   const fetchBarang = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/barang/rekomendasi", {
+      const res = await API.get("api/barang/rekomendasi", {
         withCredentials: false,
       });
-
       console.log("Data barang:", res.data.barang);
       setBarangList(res.data.barang);
     } catch (error) {
       console.error("Gagal mengambil data barang:", error);
     }
   };
-
-
-
 
   return (
     <>
@@ -83,12 +79,13 @@ const HomeNonLogin = () => {
                     <img
                       src={
                         barang.foto_barang?.[0]?.foto_barang
-                          ? `http://localhost:8000/storage/${barang.foto_barang[0].foto_barang}`
+                          ? `${API.defaults.baseURL}/storage/${barang.foto_barang[0].foto_barang}`
                           : "https://via.placeholder.com/300x300?text=No+Image"
                       }
                       alt={barang.nama_barang}
                       className="max-h-full max-w-full object-contain"
                     />
+
                   </div>
 
                   {/* Seluruh card bisa diklik */}

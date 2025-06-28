@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { PDFViewer, pdf } from '@react-pdf/renderer';
 import LaporanPenjualanBulananPDF from './LaporanPenjualanBulananPDF';
+import API from '@/utils/api';
 
 const LaporanPenjualanBulananPDFPage = () => {
     const thisYear = new Date().getFullYear();
@@ -14,8 +14,8 @@ const LaporanPenjualanBulananPDFPage = () => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            const res = await axios.get(
-                `http://localhost:8000/api/laporan/penjualan-bulanan?tahun=${tahunDipilih}`,
+            const res = await API.get(
+                `/api/laporan/penjualan-bulanan?tahun=${tahunDipilih}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setData(res.data.data || []);

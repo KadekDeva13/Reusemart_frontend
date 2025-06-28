@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import ModalDetailPegawai from "../components/ModalDetailPegawai";
+import API from "@/utils/api";
 
 const DaftarPegawaiPage = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const DaftarPegawaiPage = () => {
   const fetchPegawai = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/pegawai/", {
+      const res = await API.get("/api/pegawai/", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPegawaiList(res.data);
@@ -55,8 +55,8 @@ const DaftarPegawaiPage = () => {
       }
 
 
-      await axios.post(
-        `http://localhost:8000/api/pegawai/update/${formData.id_pegawai}`,
+      await API.post(
+        `/api/pegawai/update/${formData.id_pegawai}`,
         data,
         {
           headers: {
@@ -79,7 +79,7 @@ const DaftarPegawaiPage = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:8000/api/pegawai/delete/${id}`, {
+      await API.delete(`/api/pegawai/delete/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchPegawai();
@@ -95,8 +95,8 @@ const DaftarPegawaiPage = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
-        "http://localhost:8000/api/admin/reset-password/pegawai",
+      const res = await API.post(
+        "/api/admin/reset-password/pegawai",
         { email },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -149,7 +149,7 @@ const DaftarPegawaiPage = () => {
                 <img
                   src={
                     item.image_user
-                      ? `http://localhost:8000/storage/${item.image_user}`
+                      ? `${API.defaults.baseURL}/storage/${item.image_user}`
                       : "https://via.placeholder.com/40"
                   }
                   alt="Foto Pegawai"

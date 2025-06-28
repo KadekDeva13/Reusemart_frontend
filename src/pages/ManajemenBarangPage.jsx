@@ -6,7 +6,7 @@ import NotaPenitipanBarang from "../component/NotaPenitipan/NotaPenitipanBarang"
 import { pdf } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
+import API from "@/utils/api";
 
 const ManajemenBarangPage = () => {
     const location = useLocation();
@@ -36,7 +36,7 @@ const ManajemenBarangPage = () => {
     const fetchBarang = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:8000/api/barang", {
+            const res = await API.get("/api/barang", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -129,7 +129,7 @@ const ManajemenBarangPage = () => {
                                             <img
                                                 src={
                                                     item.foto_barang?.[0]?.foto_barang
-                                                        ? `http://localhost:8000/storage/${item.foto_barang[0].foto_barang}`
+                                                        ? `${API.defaults.baseURL}/storage/${item.foto_barang[0].foto_barang}`
                                                         : "https://via.placeholder.com/40"
                                                 }
                                                 alt="Foto Barang"

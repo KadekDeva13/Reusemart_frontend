@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button } from "react-bootstrap";
-import axios from "axios";
 import { MessageCircle, Heart, Share2 } from "lucide-react";
 import { FaChevronLeft, FaChevronRight, FaStar, FaRegStar } from "react-icons/fa";
 import TopNavbar from "../component/TopNavbar";
@@ -11,6 +10,7 @@ import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
+import API from "@/utils/api";
 
 export default function DetailBarangPage() {
   const { id } = useParams();
@@ -27,7 +27,7 @@ export default function DetailBarangPage() {
   useEffect(() => {
     const fetchBarang = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/barang/${id}`);
+        const res = await API.get(`/api/barang/${id}`);
         setBarang(res.data);
       } catch (error) {
         console.error("Gagal memuat detail barang:", error);
@@ -64,8 +64,8 @@ export default function DetailBarangPage() {
     } else {
       setAdding(true);
       try {
-        await axios.post(
-          "http://localhost:8000/api/keranjang/tambah",
+        await API.post(
+          "/api/keranjang/tambah",
           { id_barang: barang.id_barang },
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -146,7 +146,7 @@ export default function DetailBarangPage() {
                   <SwiperSlide key={i}>
                     <div className="flex justify-center items-center h-[450px] bg-black-100">
                       <img
-                        src={`http://localhost:8000/storage/${foto.foto_barang}`}
+                        src={`${API.defaults.baseURL}/storage/${foto.foto_barang}`}
                         alt={`Foto ${i + 1}`}
                         className="rounded max-h-full max-w-full object-contain"
                       />
@@ -227,10 +227,11 @@ export default function DetailBarangPage() {
               <div className="mt-4 p-3 rounded bg-transparent">
                 <h6 className="mb-3">Penitip</h6>
                 <div className="flex items-center gap-4">
+
                   <img
                     src={
                       barang?.detailpenitipan?.penitipan?.penitip?.image_user
-                        ? `http://localhost:8000/storage/foto_penitip/${barang.detailpenitipan.penitipan.penitip.image_user}`
+                        ? `${API.defaults.baseURL}/storage/foto_penitip/${barang.detailpenitipan.penitipan.penitip.image_user}`
                         : "https://cdn-icons-png.flaticon.com/512/847/847969.png"
                     }
                     alt="Foto Penitip"

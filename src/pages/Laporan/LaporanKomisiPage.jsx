@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import { pdf } from '@react-pdf/renderer';
 import LaporanKomisiPDF from './LaporanKomisiPDF';
+import API from '@/utils/api';
 
 export default function LaporanKomisiPage() {
     const [data, setData] = useState([]);
@@ -15,7 +15,7 @@ export default function LaporanKomisiPage() {
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:8000/api/transaksi/laporan-komisi", {
+            const res = await API.get("/api/transaksi/laporan-komisi", {
                 params: { bulan, tahun },
                 headers: {
                     Authorization: `Bearer ${token}`,

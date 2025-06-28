@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function KonfirmasiBarangDiterimaPage() {
   const [transaksiList, setTransaksiList] = useState([]);
@@ -14,7 +14,7 @@ export default function KonfirmasiBarangDiterimaPage() {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/gudang/transaksi", {
+      const res = await API.get("/api/gudang/transaksi", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -40,15 +40,15 @@ const filter = res.data.filter(trx =>
       const token = localStorage.getItem("token");
 
       // Step 1: Konfirmasi bahwa barang diterima
-      await axios.post(
-        `http://localhost:8000/api/gudang/transaksi/konfirmasi-diterima/${trx.id_transaksi}`,
+      await API.post(
+        `/api/gudang/transaksi/konfirmasi-diterima/${trx.id_transaksi}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       // Step 2: Panggil proses final transaksi (gabungan komisi & saldo & poin)
-      await axios.post(
-        `http://localhost:8000/api/transaksi/proses-final/${trx.id_transaksi}`,
+      await API.post(
+        `/api/transaksi/proses-final/${trx.id_transaksi}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

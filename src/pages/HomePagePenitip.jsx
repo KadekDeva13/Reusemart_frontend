@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Container, Button } from "react-bootstrap";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import axios from "axios";
+import API from "@/utils/api";
 
 const categories = [
   {
@@ -56,32 +56,32 @@ const HomePagePenitip = () => {
   }, []);
 
   const fetchBarang = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-      const res = await axios.get("http://localhost:8000/api/penitipan/barang", {
-        headers: { Authorization: `Bearer ${token}` },
+    const res = await API.get("/api/penitipan/barang", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const allBarang = [];
+
+    res.data.forEach((penitipan) => {
+      penitipan.detailpenitipan?.forEach((detail) => {
+        if (detail.barang) {
+          allBarang.push({
+            ...detail.barang,
+            id_penitipan: penitipan.id_penitipan,
+          });
+        }
       });
+    });
 
-      const allBarang = [];
-
-      res.data.forEach((penitipan) => {
-        penitipan.detailpenitipan?.forEach((detail) => {
-          if (detail.barang) {
-            allBarang.push({
-              ...detail.barang,
-              id_penitipan: penitipan.id_penitipan,
-            });
-          }
-        });
-      });
-
-      setBarangList(allBarang);
-    } catch (error) {
-      console.error("Gagal mengambil data barang penitip:", error.response?.data || error.message);
-    }
-  };
+    setBarangList(allBarang);
+  } catch (error) {
+    console.error("Gagal mengambil data barang penitip:", error.response?.data || error.message);
+  }
+};
 
   const filteredList = searchQuery
     ? barangList.filter((barang) =>
@@ -137,7 +137,7 @@ const HomePagePenitip = () => {
                     <img
                       src={
                         barang.foto_barang?.[0]?.foto_barang
-                          ? `http://localhost:8000/storage/${barang.foto_barang[0].foto_barang}`
+                          ? `${API.defaults.baseURL}/storage/${barang.foto_barang[0].foto_barang}`
                           : "https://via.placeholder.com/300x300?text=No+Image"
                       }
                       alt={barang.nama_barang}

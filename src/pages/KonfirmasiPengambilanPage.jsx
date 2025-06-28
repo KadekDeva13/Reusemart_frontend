@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "@/utils/api";
 
 const KonfirmasiPengambilanPage = () => {
   const [penitipanList, setPenitipanList] = useState([]);
@@ -14,7 +14,7 @@ const KonfirmasiPengambilanPage = () => {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/penitipan/show", {
+      const res = await API.get("/api/penitipan/show", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -36,8 +36,8 @@ const KonfirmasiPengambilanPage = () => {
       setSuccessMsg("");
       setErrorMsg("");
       const token = localStorage.getItem("token");
-      const res = await axios.post(
-        `http://localhost:8000/api/penitipan/ambil-kembali/${id_barang}`,
+      const res = await API.post(
+        `/api/penitipan/ambil-kembali/${id_barang}`,
         {},
         {
           headers: {

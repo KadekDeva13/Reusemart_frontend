@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, Card, Button, Alert } from "react-bootstrap";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function VerifikasiTransaksiPage() {
   const [transaksiList, setTransaksiList] = useState([]);
@@ -18,8 +18,8 @@ export default function VerifikasiTransaksiPage() {
   const fetchTransaksiDibayar = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(
-        "http://localhost:8000/api/transaksi/dibayar",
+      const res = await API.get(
+        "/api/transaksi/dibayar",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -35,8 +35,8 @@ export default function VerifikasiTransaksiPage() {
     if (!window.confirm("Yakin ingin menolak transaksi ini?")) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        `http://localhost:8000/api/transaksi/tolak/${id}`,
+      await API.post(
+        `/api/transaksi/tolak/${id}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -62,8 +62,8 @@ export default function VerifikasiTransaksiPage() {
     if (!window.confirm("Yakin ingin verifikasi transaksi ini?")) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        `http://localhost:8000/api/transaksi/verifikasi/${id}`,
+      await API.post(
+        `/api/transaksi/verifikasi/${id}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -137,7 +137,7 @@ export default function VerifikasiTransaksiPage() {
                   <td>
                     {trx.bukti_pembayaran ? (
                       <img
-                        src={`http://localhost:8000/storage/bukti_bayar/${trx.bukti_pembayaran}`}
+                        src={`${API.defaults.baseURL}/storage/bukti_bayar/${trx.bukti_pembayaran}`}
                         alt="Bukti Bayar"
                         style={{ width: 100, height: 100, objectFit: "cover" }}
                       />

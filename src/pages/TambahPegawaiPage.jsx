@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { FaChevronLeft, FaPen } from 'react-icons/fa';
+import API from '@/utils/api';
 
 const jabatanList = [
     'Admin',
@@ -89,7 +89,7 @@ const TambahPegawaiPage = ({ setActivePage }) => {
                 data.append('image_user', formData.file);
             }
 
-            await axios.post('http://localhost:8000/api/pegawai/store', data, {
+            await API.post('/api/pegawai/store', data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',

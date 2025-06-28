@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import API from '@/utils/api';
 
 const formatRupiah = (angka) => {
   return new Intl.NumberFormat('id-ID', {
@@ -20,8 +20,8 @@ function DaftarKomisiHunterPage() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const res = await axios.get(
-        `http://localhost:8000/api/pegawai/hunter/komisi/daftar?id_pegawai=5`, // ID Hunter di-hardcode
+      const res = await API.get(
+        `/api/pegawai/hunter/komisi/daftar`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

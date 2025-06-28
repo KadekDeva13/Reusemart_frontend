@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Card, Form, Button } from "react-bootstrap";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function DiskusiPegawaiPage() {
   const { id_barang } = useParams();
@@ -15,8 +15,8 @@ export default function DiskusiPegawaiPage() {
     const fetchBarang = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(
-          `http://localhost:8000/api/barang/${id_barang}`,
+        const res = await API.get(
+          `/api/barang/${id_barang}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -37,8 +37,8 @@ export default function DiskusiPegawaiPage() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:8000/api/diskusi/${id_barang}`,
+        const res = await API.get(
+          `/api/diskusi/${id_barang}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -64,8 +64,8 @@ export default function DiskusiPegawaiPage() {
     if (input.trim() === "") return;
 
     try {
-      await axios.post(
-        "http://localhost:8000/api/diskusi/kirim",
+      await API.post(
+        "/api/diskusi/kirim",
         {
           id_barang: parseInt(id_barang),
           pesan_diskusi: input,

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Container, Form, Button, Alert } from "react-bootstrap";
 import { KeyRound } from "lucide-react";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      const res = await axios.post("http://localhost:8000/api/password/reset", {
+      const res = await API.post("/api/password/reset", {
         email,
         token,
         password,

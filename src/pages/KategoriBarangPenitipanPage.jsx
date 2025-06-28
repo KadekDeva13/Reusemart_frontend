@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function KategoriPenitipPage() {
   const { kategori } = useParams();
@@ -11,8 +11,8 @@ export default function KategoriPenitipPage() {
   const fetchBarangByKategori = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(
-        `http://localhost:8000/api/penitipan/barang/kategori/${encodeURIComponent(kategori)}`,
+      const res = await API.get(
+        `/api/penitipan/barang/kategori/${encodeURIComponent(kategori)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,10 +57,10 @@ export default function KategoriPenitipPage() {
               <div className="bg-gray-100 h-56 flex items-center justify-center">
                 <img
                   src={
-                      barang.foto_barang?.[0]?.foto_barang
-                        ? `http://localhost:8000/storage/${barang.foto_barang[0].foto_barang}`
-                        : "https://via.placeholder.com/300x300?text=No+Image"
-                    }
+                    barang.foto_barang?.[0]?.foto_barang
+                      ? `${API.defaults.baseURL}/storage/${barang.foto_barang[0].foto_barang}`
+                      : "https://via.placeholder.com/300x300?text=No+Image"
+                  }
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = "https://via.placeholder.com/300x300?text=No+Image";

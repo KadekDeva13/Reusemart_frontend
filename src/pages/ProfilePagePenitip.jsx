@@ -12,7 +12,7 @@ import {
   Badge,
 } from "react-bootstrap";
 import { Eye, EyeOff } from "lucide-react";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function ProfilePagePenitip() {
   const [formData, setFormData] = useState({
@@ -44,17 +44,17 @@ export default function ProfilePagePenitip() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    axios
-      .get("http://localhost:8000/api/user", {
+    API
+      .get("/api/user", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
         const data = res.data;
-        const imageUrl = data.image_user
-          ? data.image_user.startsWith("http")
-            ? data.image_user
-            : `http://localhost:8000/storage/foto_penitip/${data.image_user}`
-          : formData.imagePreview;
+const imageUrl = data.image_user
+  ? data.image_user.startsWith("http")
+    ? data.image_user
+    : `${API.defaults.baseURL}/storage/foto_penitip/${data.image_user}`
+  : formData.imagePreview;
 
         setFormData((prev) => ({
           ...prev,
@@ -70,8 +70,8 @@ export default function ProfilePagePenitip() {
         setLoading(false);
       });
 
-    axios
-      .get("http://localhost:8000/api/riwayat-penjualan", {
+    API
+      .get("/api/riwayat-penjualan", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -113,8 +113,8 @@ export default function ProfilePagePenitip() {
         if (formData.password) payload.append("password", formData.password);
         payload.append("image_user", formData.image_user);
 
-        response = await axios.post(
-          "http://localhost:8000/api/penitip/update",
+        response = await API.post(
+          "/api/penitip/update",
           payload,
           {
             headers: {
@@ -131,8 +131,8 @@ export default function ProfilePagePenitip() {
         };
         if (formData.password) payload.password = formData.password;
 
-        response = await axios.post(
-          "http://localhost:8000/api/penitip/update",
+        response = await API.post(
+          "/api/penitip/update",
           payload,
           {
             headers: {
@@ -147,8 +147,8 @@ export default function ProfilePagePenitip() {
       setFormData((prev) => ({
         ...prev,
         imagePreview: updatedData?.image_user
-          ? `http://localhost:8000/storage/foto_penitip/${updatedData.image_user}`
-          : prev.imagePreview,
+  ? `${API.defaults.baseURL}/storage/foto_penitip/${updatedData.image_user}`
+  : prev.imagePreview,
         password: "",
       }));
 

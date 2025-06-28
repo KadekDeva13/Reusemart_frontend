@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
-import axios from "axios";
 import LaporanDonasiBarangPDF from "./LaporanDonasi";
+import API from "@/utils/api";
 
 const LaporanDonasiDownloadButton = () => {
   const [data, setData] = useState([]);
@@ -13,8 +13,8 @@ const LaporanDonasiDownloadButton = () => {
     const fetchLaporan = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(
-          "http://localhost:8000/api/donasi/laporan/barang",
+        const res = await API.get(
+          "/api/donasi/laporan/barang",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -27,7 +27,6 @@ const LaporanDonasiDownloadButton = () => {
         setTanggalCetak(tanggal);
         setLoading(false);
 
-        // ✅ Buat PDF Preview
         const doc = (
           <LaporanDonasiBarangPDF data={hasil} tanggalCetak={tanggal} />
         );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API from "@/utils/api";
 
 const TambahPenitipanPage = () => {
     const [penitipList, setPenitipList] = useState([]);
@@ -74,7 +74,7 @@ const TambahPenitipanPage = () => {
 
     const fetchPenitip = async () => {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/api/penitip/all", {
+        const res = await API.get("/api/penitip/all", {
             headers: { Authorization: `Bearer ${token}` },
         });
         setPenitipList(res.data.data || []);
@@ -82,7 +82,7 @@ const TambahPenitipanPage = () => {
 
     const fetchHunter = async () => {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/api/pegawai/hunter", {
+        const res = await API.get("/api/pegawai/hunter", {
             headers: { Authorization: `Bearer ${token}` },
         });
         setHunterList(res.data.data || []);
@@ -90,7 +90,7 @@ const TambahPenitipanPage = () => {
 
     const fetchQcList = async () => {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/api/pegawai/qc", {
+        const res = await API.get("/api/pegawai/qc", {
             headers: { Authorization: `Bearer ${token}` },
         });
         setQcList(res.data.data || []);
@@ -118,8 +118,8 @@ const TambahPenitipanPage = () => {
             setLoading(true);
             const token = localStorage.getItem("token");
 
-            const res = await axios.post(
-                "http://localhost:8000/api/penitipan/full-store",
+            const res = await API.post(
+                "/api/penitipan/full-store",
                 {
                     id_penitip: form.id_penitip,
                     id_qc: form.id_qc,
@@ -154,8 +154,8 @@ const TambahPenitipanPage = () => {
                     formData.append("foto_barang[]", file);
                 });
 
-                await axios.post(
-                    `http://localhost:8000/api/penitipan/barang/${id_penitipan}`,
+                await API.post(
+                    `/api/penitipan/barang/${id_penitipan}`,
                     formData,
                     {
                         headers: {

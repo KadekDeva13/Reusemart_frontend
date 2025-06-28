@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import NotaPDFPembeli from "../pages/NotaPenjualan/NotaPenjualanPagePembeli";
 import { pdf, PDFViewer } from "@react-pdf/renderer";
+import API from "@/utils/api";
 
 // Fungsi generate nomor nota frontend format YY.MM.id_transaksi
 const generateNomorNotaFrontend = (trx) => {
@@ -24,7 +24,7 @@ export default function NotaPenjualanPembeliPage() {
   const fetchTransaksi = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/transaksi/semua", {
+      const res = await API.get("/api/transaksi/semua", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (Array.isArray(res.data)) {
@@ -77,8 +77,8 @@ export default function NotaPenjualanPembeliPage() {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      await axios.post(
-        `http://localhost:8000/api/transaksi/proses-final/${selectedTransaksi.id_transaksi}`,
+      await API.post(
+        `/api/transaksi/proses-final/${selectedTransaksi.id_transaksi}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

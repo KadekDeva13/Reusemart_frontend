@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button, Alert, Container } from "react-bootstrap";
 import { AlertCircle } from "lucide-react";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
     if (!email) return setError("Email tidak boleh kosong.");
 
     try {
-      const res = await axios.post("http://localhost:8000/api/password/email", {
+      const res = await API.post("/api/password/email", {
         email,
       });
 

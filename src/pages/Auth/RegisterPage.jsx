@@ -12,6 +12,7 @@ import {
   InputGroup,
 } from "react-bootstrap";
 import { AlertCircle, Eye, EyeOff, Upload } from "lucide-react";
+import API from "@/utils/api";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -97,29 +98,22 @@ export default function RegisterPage() {
       formPayload.append("password", formData.password);
       formPayload.append("image_user", userImage);
 
-      const response = await fetch("http://localhost:8000/api/register", {
-        method: "POST",
-        body: formPayload,
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        const message =
-          result.errors?.[Object.keys(result.errors)[0]]?.[0] ||
-          result.message ||
-          "Registrasi gagal";
-        throw new Error(message);
-      }
+      const res = await API.post("/api/register", formPayload);
 
       toast.success("Registrasi berhasil! Silahkan login.");
       navigate("/");
     } catch (err) {
-      setError(err.message || "Gagal mendaftar. Silahkan coba lagi.");
+      const message =
+        err.response?.data?.errors?.[Object.keys(err.response.data.errors || {})[0]]?.[0] ||
+        err.response?.data?.message ||
+        "Registrasi gagal";
+
+      setError(message);
       toast.error("Registrasi gagal!");
     } finally {
       setIsLoading(false);
     }
+
   };
 
   return (
@@ -225,7 +219,7 @@ export default function RegisterPage() {
                           onChange={handleChange}
                           disabled={isLoading}
                           className="bg-light text-dark"
-                        />  
+                        />
                       </Form.Group>
                     </Col>
                     <Col md={6} className="mb-3">

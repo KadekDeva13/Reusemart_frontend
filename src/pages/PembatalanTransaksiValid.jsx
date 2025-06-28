@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Table, Button, Badge, Spinner, Modal } from "react-bootstrap";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function DisiapkanTransaksiPage() {
   const [transaksiList, setTransaksiList] = useState([]);
@@ -16,7 +16,7 @@ export default function DisiapkanTransaksiPage() {
   const fetchDisiapkanTransaksi = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/transaksi/valid", {
+      const res = await API.get("/api/transaksi/valid", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTransaksiList(res.data.data || []);

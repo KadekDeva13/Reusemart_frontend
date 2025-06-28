@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import NotaPenitipanBarang from "../component/NotaPenitipan/NotaPenitipanBarang";
+import API from "@/utils/api";
 
 function DetailPenitipanPage() {
     const { id } = useParams();
@@ -28,7 +28,7 @@ function DetailPenitipanPage() {
     const fetchDetail = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get(`http://localhost:8000/api/penitipan/show-detail/${id}`, {
+            const res = await API.get(`/api/penitipan/show-detail/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -45,7 +45,7 @@ function DetailPenitipanPage() {
     const fetchQCList = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:8000/api/pegawai/qc", {
+            const res = await API.get("/api/pegawai/qc", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setQcList(res.data.data);
@@ -81,7 +81,7 @@ function DetailPenitipanPage() {
 
         try {
             const token = localStorage.getItem("token");
-            await axios.delete(`http://localhost:8000/api/penitipan/${id}`, {
+            await API.delete(`/api/penitipan/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -188,7 +188,7 @@ function DetailPenitipanPage() {
                                                                 {barang.foto_barang.map((foto, i) => (
                                                                     <img
                                                                         key={i}
-                                                                        src={`http://localhost:8000/storage/${foto.foto_barang}`}
+                                                                        src={`${API.defaults.baseURL}/storage/${foto.foto_barang}`}
                                                                         alt={`foto-${i}`}
                                                                         className="w-24 h-24 object-cover rounded"
                                                                     />
@@ -271,8 +271,8 @@ function DetailPenitipanPage() {
                                 onClick={async () => {
                                     try {
                                         const token = localStorage.getItem("token");
-                                        await axios.put(
-                                            `http://localhost:8000/api/penitipan/${id}`,
+                                        await API.put(
+                                            `/api/penitipan/${id}`,
                                             {
                                                 tanggal_masuk: formEdit.tanggal_masuk,
                                                 tanggal_akhir: formEdit.tanggal_akhir,

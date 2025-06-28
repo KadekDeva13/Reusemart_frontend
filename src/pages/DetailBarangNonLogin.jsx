@@ -1,35 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
-import axios from "axios";
 import { MessageCircle, Heart, Share2 } from "lucide-react";
-import TopNavbarNonLogin from "../component/TopNavBarNonLogin"; // Mengimpor TopNavbarNonLogin
+import TopNavbarNonLogin from "../component/TopNavBarNonLogin";
+import API from "@/utils/api";
 
 export default function DetailBarangNonLoginPage() {
-  const { id } = useParams(); // Mendapatkan id barang dari parameter URL
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [barang, setBarang] = useState(null); // Menyimpan data barang
-  const [loading, setLoading] = useState(true); // Menyimpan status loading
-  const [selectedImage, setSelectedImage] = useState(0); // Menyimpan gambar yang dipilih
+  const [barang, setBarang] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(0);
 
   // Fungsi untuk mengambil data barang berdasarkan id
   useEffect(() => {
     const fetchBarang = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/barang/${id}`);
+        const res = await API.get(`/api/barang/${id}`);
         setBarang(res.data);
       } catch (error) {
         console.error("Gagal memuat detail barang:", error);
       } finally {
-        setLoading(false); // Mengubah status loading menjadi false setelah data selesai diambil
+        setLoading(false);
       }
     };
 
-    fetchBarang(); // Memanggil fungsi fetchBarang ketika id berubah
+    fetchBarang();
   }, [id]);
 
   const handleChatClick = () => {
-    // Navigasi ke halaman chat dengan id barang
     navigate(`/user/nonlogin/diskusi/${barang.id_barang}`);
   };
 
@@ -39,7 +38,7 @@ export default function DetailBarangNonLoginPage() {
   return (
     <>
       {/* Navbar untuk non-login */}
-      <TopNavbarNonLogin /> 
+      <TopNavbarNonLogin />
 
       {/* Main content */}
       <Container className="my-4 mt-8">
@@ -49,23 +48,27 @@ export default function DetailBarangNonLoginPage() {
             <img
               src={
                 barang.fotoBarang?.[selectedImage]?.url_foto
-                  ? `http://localhost:8000/storage/foto_barang/${barang.fotoBarang[selectedImage].url_foto}`
+                  ? `${API.defaults.baseURL}/storage/foto_barang/${barang.fotoBarang[selectedImage].url_foto}`
                   : "https://via.placeholder.com/500x500?text=No+Image"
               }
-              alt={barang.nama_barang}
-              className="w-100 rounded border"
-              style={{ objectFit: "cover", maxHeight: "500px" }}
+              alt="Foto Barang"
+              className="object-contain w-full h-auto"
             />
 
             <div className="d-flex gap-2 mt-3">
               {barang.fotoBarang?.map((foto, i) => (
                 <img
                   key={i}
-                  src={`http://localhost:8000/storage/foto_barang/${foto.url_foto}`}
+                  src={`${API.defaults.baseURL}/storage/foto_barang/${foto.url_foto}`}
                   alt={`Foto ${i + 1}`}
                   onClick={() => setSelectedImage(i)}
                   className={`border rounded ${i === selectedImage ? "border-primary" : ""}`}
-                  style={{ width: "60px", height: "60px", objectFit: "cover", cursor: "pointer" }}
+                  style={{
+                    width: "60px",
+                    height: "60px",
+                    objectFit: "cover",
+                    cursor: "pointer",
+                  }}
                 />
               ))}
             </div>

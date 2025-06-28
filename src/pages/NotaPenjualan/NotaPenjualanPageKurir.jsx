@@ -114,10 +114,6 @@ const getQcName = () => {
   }
   return "-";
 };
-
-
-
-
         return (
           <Page key={index} size={[283.5, pageHeight]} style={styles.page}>
             <View style={styles.outlineBox}>

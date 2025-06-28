@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Container, Card, Button, Row, Col, Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import API from "@/utils/api";
 
 const BarangPegawaiPage = () => {
   const [barangList, setBarangList] = useState([]);
@@ -12,7 +12,7 @@ const BarangPegawaiPage = () => {
     const fetchBarang = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/api/barang/all", {
+        const res = await API.get("/api/barang/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -29,8 +29,8 @@ const BarangPegawaiPage = () => {
   const handleBukaDiskusi = async (id_barang) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        `http://localhost:8000/api/diskusi/baca/${id_barang}`,
+      await API.post(
+        `/api/diskusi/baca/${id_barang}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },

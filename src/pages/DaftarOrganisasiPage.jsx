@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+
 import ModalDetailOrganisasi from "../components/ModalDetailOrganisasi";
+import API from "@/utils/api";
 
 const DaftarOrganisasiPage = () => {
   const [organisasiList, setOrganisasiList] = useState([]);
@@ -15,7 +16,7 @@ const DaftarOrganisasiPage = () => {
   const fetchOrganisasi = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/organisasi", {
+      const res = await API.get("/api/organisasi", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -36,32 +37,24 @@ const DaftarOrganisasiPage = () => {
   };
 
   const handleEdit = async (formData) => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.put(
-        `http://localhost:8000/api/organisasi/update/${formData.id_organisasi}`,
-        {
-          nama_organisasi: formData.nama_organisasi,
-          nama_penerima: formData.nama_penerima,
-          email: formData.email,
-          no_telepon: formData.no_telepon,
-          alamat: formData.alamat,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  try {
+    const res = await API.put(`/api/organisasi/update/${formData.id_organisasi}`, {
+      nama_organisasi: formData.nama_organisasi,
+      nama_penerima: formData.nama_penerima,
+      email: formData.email,
+      no_telepon: formData.no_telepon,
+      alamat: formData.alamat,
+    });
 
-      console.log(res.data.message);
-      fetchOrganisasi();
-      setShowModal(false);
-    } catch (error) {
-      console.error("Gagal update data organisasi", error);
-      alert("Terjadi kesalahan saat menyimpan data.");
-    }
-  };
+    console.log(res.data.message);
+    fetchOrganisasi();
+    setShowModal(false);
+  } catch (error) {
+    console.error("Gagal update data organisasi", error);
+    alert("Terjadi kesalahan saat menyimpan data.");
+  }
+};
+
 
   const handleDelete = async (id) => {
     const konfirmasi = window.confirm("Yakin ingin menghapus organisasi ini?");
@@ -70,7 +63,7 @@ const DaftarOrganisasiPage = () => {
     try {
       const token = localStorage.getItem("token");
 
-      await axios.delete(`http://localhost:8000/api/organisasi/destroy/${id}`, {
+      await API.delete(`/api/organisasi/destroy/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

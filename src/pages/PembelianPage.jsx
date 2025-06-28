@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card, Nav, Table, Badge, Spinner, Button, Modal } from "react-bootstrap";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function PembelianPage() {
   const [activeFilter, setActiveFilter] = useState("semua");
@@ -10,7 +10,7 @@ export default function PembelianPage() {
   const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
-    axios.get("/api/transaksi")
+    API.get("/api/transaksi")
       .then((res) => {
         const data = Array.isArray(res.data) ? res.data : [];
         setPembelianList(data);

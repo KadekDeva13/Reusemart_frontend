@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
 import { toast } from 'react-toastify';
 import {
   FaTachometerAlt,
@@ -12,6 +11,7 @@ import {
   FaMoneyCheckAlt,
   FaChevronDown,
 } from 'react-icons/fa';
+import API from '@/utils/api';
 
 const AdminSidebar = ({ activePage }) => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -29,8 +29,8 @@ const AdminSidebar = ({ activePage }) => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
-        "http://localhost:8000/api/penitip/generate-top-seller",
+      const res = await API.post(
+        "/api/penitip/generate-top-seller",
         {},
         {
           headers: {
@@ -55,8 +55,8 @@ const AdminSidebar = ({ activePage }) => {
 
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.post(
-                "http://localhost:8000/api/barang/generate-konversi-donasi",
+            const res = await API.post(
+                "/api/barang/generate-konversi-donasi",
                 {},
                 {
                     headers: {

@@ -12,9 +12,9 @@ import {
     Badge,
 } from "react-bootstrap";
 import { Eye, EyeOff } from "lucide-react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { form } from "framer-motion/client";
+import API from "@/utils/api";
 
 export default function PengajuanPenarikanSaldoPage() {
     const [formData, setFormData] = useState({
@@ -50,47 +50,46 @@ export default function PengajuanPenarikanSaldoPage() {
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-        axios
-            .get("http://localhost:8000/api/user", {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-            .then((res) => {
-                const data = res.data;
-                const imageUrl = data.image_user
-                    ? data.image_user.startsWith("http")
-                        ? data.image_user
-                        : `http://localhost:8000/storage/foto_penitip/${data.image_user}`
-                    : formData.imagePreview;
+  API.get("/api/user", {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((res) => {
+      const data = res.data;
+      const imageUrl = data.image_user
+        ? data.image_user.startsWith("http")
+          ? data.image_user
+          : `${API.defaults.baseURL}/storage/foto_penitip/${data.image_user}`
+        : formData.imagePreview;
 
-                setFormData((prev) => ({
-                    ...prev,
-                    ...data,
-                    image_user: null,
-                    imagePreview: imageUrl,
-                    password: "",
-                }));
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.error("Gagal ambil data penitip:", err);
-                setLoading(false);
-            });
+      setFormData((prev) => ({
+        ...prev,
+        ...data,
+        image_user: null,
+        imagePreview: imageUrl,
+        password: "",
+      }));
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error("Gagal ambil data penitip:", err);
+      setLoading(false);
+    });
 
-        axios
-            .get("http://localhost:8000/api/riwayat-penjualan", {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-            .then((res) => {
-                if (res.data && Array.isArray(res.data.data)) {
-                    setTransaksiList(res.data.data);
-                }
-            })
-            .catch((err) => {
-                console.error("Gagal ambil riwayat penjualan:", err);
-            });
-    }, []);
+  API.get("/api/riwayat-penjualan", {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((res) => {
+      if (res.data && Array.isArray(res.data.data)) {
+        setTransaksiList(res.data.data);
+      }
+    })
+    .catch((err) => {
+      console.error("Gagal ambil riwayat penjualan:", err);
+    });
+}, []);
+
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -110,9 +109,9 @@ export default function PengajuanPenarikanSaldoPage() {
 
         const token = localStorage.getItem("token");
 
-        axios
+        API
             .post(
-                "http://localhost:8000/api/penitip/penarikan-saldo",
+                "/api/penitip/penarikan-saldo",
                 {
                     nominal_tarik: nominal_tarik,
                 },

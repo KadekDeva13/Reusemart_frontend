@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function ModalJadwalPengiriman({ show, onHide, transaksi, onSuccess }) {
   const [kurirList, setKurirList] = useState([]);
@@ -19,7 +19,7 @@ export default function ModalJadwalPengiriman({ show, onHide, transaksi, onSucce
   const fetchKurir = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/pegawai/kurir", {
+      const res = await API.get("/api/pegawai/kurir", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setKurirList(res.data.kurir || []);
@@ -38,8 +38,8 @@ export default function ModalJadwalPengiriman({ show, onHide, transaksi, onSucce
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        `http://localhost:8000/api/gudang/transaksi/jadwalkan-kurir/${transaksi.id_transaksi}`,
+      await API.post(
+        `/api/gudang/transaksi/jadwalkan-kurir/${transaksi.id_transaksi}`,
         { id_pegawai: idPegawai },
         { headers: { Authorization: `Bearer ${token}` } }
       );

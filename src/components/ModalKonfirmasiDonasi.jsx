@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import axios from "axios";
+import API from "@/utils/api";
 
 function ModalKonfirmasiDonasi({
   show,
@@ -28,8 +28,8 @@ function ModalKonfirmasiDonasi({
       const token = localStorage.getItem("token");
 
       if (mode === "kirim") {
-        await axios.post(
-          `http://localhost:8000/api/donasi/kirim/${request.id_donasi}`,
+        await API.post(
+          `/api/donasi/kirim/${request.id_donasi}`,
           {
             id_barang: barang.id_barang,
             tanggal_donasi: tanggalDonasi,
@@ -48,8 +48,8 @@ function ModalKonfirmasiDonasi({
           if (!konfirmasi) return;
         }
 
-        await axios.put(
-          `http://localhost:8000/api/donasi/update-donasi/${request.id_donasi}`,
+        await API.put(
+          `/api/donasi/update-donasi/${request.id_donasi}`,
           {
             tanggal_donasi: tanggalDonasi,
             nama_penerima: namaPenerima,

@@ -10,9 +10,9 @@ import {
   Table,
   Modal,
 } from "react-bootstrap";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import API from "@/utils/api";
 
 export default function PenitipPageCS() {
   const [penitipList, setPenitipList] = useState([]);
@@ -65,7 +65,7 @@ export default function PenitipPageCS() {
         return;
       }
 
-      const res = await axios.get("http://localhost:8000/api/penitip/", {
+      const res = await API.get("/api/penitip/", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -129,34 +129,34 @@ export default function PenitipPageCS() {
     payload.append("id_role", 3);
 
     try {
-      const endpoint = editingId
-        ? `http://127.0.0.1:8000/api/penitip/update/${editingId}?_method=PUT`
-        : "http://127.0.0.1:8000/api/penitip/store";
+  const endpoint = editingId
+    ? `/api/penitip/update/${editingId}?_method=PUT`
+    : "/api/penitip/store";
 
-      const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-      await axios.post(endpoint, payload, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  await API.post(endpoint, payload, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-      showModal(
-        true,
-        editingId ? "Data berhasil diubah." : "Data berhasil ditambahkan."
-      );
-      fetchPenitip();
-      resetForm();
-      setShowEditModal(false);
-    } catch (err) {
-      console.error("Error submit data:", err);
-      const msg =
-        err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.";
-      showModal(false, msg);
-    }
-    resetForm();
-  };
+  showModal(
+    true,
+    editingId ? "Data berhasil diubah." : "Data berhasil ditambahkan."
+  );
+  fetchPenitip();
+  resetForm();
+  setShowEditModal(false);
+} catch (err) {
+  console.error("Error submit data:", err);
+  const msg =
+    err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.";
+  showModal(false, msg);
+}
+resetForm();
+};
 
   const handleEdit = async (item) => {
     setFormData({
@@ -177,7 +177,7 @@ export default function PenitipPageCS() {
       try {
         const token = localStorage.getItem("token");
 
-        await axios.delete(`http://127.0.0.1:8000/api/penitip/delete/${id}`, {
+        await API.delete(`/api/penitip/delete/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -203,7 +203,7 @@ export default function PenitipPageCS() {
   const fetchKlaim = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/merchandise/klaim", {
+      const res = await API.get("/api/merchandise/klaim", {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
@@ -224,8 +224,8 @@ export default function PenitipPageCS() {
   const submitTanggalAmbil = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:8000/api/merchandise/klaim/tanggal-ambil/${selectedKlaimId}`,
+      await API.put(
+        `/api/merchandise/klaim/tanggal-ambil/${selectedKlaimId}`,
         { tanggal_ambil: tanggalAmbil },
         {
           headers: {

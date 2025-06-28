@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Row, Col, Badge, Modal, Form } from "react-bootstrap";
-import axios from "axios";
+import API from "@/utils/api";
 
 const wilayahDIY = {
   Gedongtengen: ["Sosromenduran", "Pringgokusuman"],
@@ -44,19 +44,23 @@ export default function AlamatPage() {
     fetchAlamat();
   }, []);
 
-  const fetchAlamat = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:8000/api/alamat/show/user",
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-      setAlamatList(Array.isArray(res.data) ? res.data : res.data.data ?? []);
-    } catch {
-      setAlamatList([]);
-    }
-  };
+const fetchAlamat = async () => {
+  try {
+    const res = await API.get("/api/alamat/show/user", {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+
+    const result = Array.isArray(res.data)
+      ? res.data
+      : res.data.data ?? [];
+
+    setAlamatList(result);
+  } catch (err) {
+    console.error("Gagal memuat alamat:", err);
+    setAlamatList([]);
+  }
+};
+
 
   const aturSebagaiUtama = (id) => {
     setAlamatList((prev) =>
@@ -70,7 +74,7 @@ export default function AlamatPage() {
   const handleHapus = async (id) => {
     if (window.confirm("Yakin ingin menghapus alamat ini?")) {
       try {
-        await axios.delete(`http://localhost:8000/api/alamat/destroy/${id}`, {
+        await API.delete(`/api/alamat/destroy/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         fetchAlamat();
@@ -133,15 +137,15 @@ export default function AlamatPage() {
 
     try {
       if (editMode && editId) {
-        await axios.put(
-          `http://localhost:8000/api/alamat/update/${editId}`,
+        await API.put(
+          `/api/alamat/update/${editId}`,
           formData,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
       } else {
-        await axios.post("http://localhost:8000/api/alamat/store", formData, {
+        await API.post("/api/alamat/store", formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }

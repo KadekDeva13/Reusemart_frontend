@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "@/utils/api";
 
 function DaftarMerchandisePage() {
     const [merchandiseList, setMerchandiseList] = useState([]);
@@ -15,7 +15,7 @@ function DaftarMerchandisePage() {
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:8000/api/merchandise", {
+            const res = await API.get("/api/merchandise", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setMerchandiseList(res.data.data || []);
@@ -99,7 +99,11 @@ function DaftarMerchandisePage() {
                                         <td className="py-2 border">
                                             {item.foto_merchandise?.length > 0 ? (
                                                 <img
-                                                    src={`http://localhost:8000/storage/${item.foto_merchandise[0].foto_merchandise}`}
+                                                    src={
+                                                        item.foto_merchandise?.[0]?.foto_merchandise
+                                                            ? `${API.defaults.baseURL}/storage/${item.foto_merchandise[0].foto_merchandise}`
+                                                            : "https://via.placeholder.com/64x64?text=No+Image"
+                                                    }
                                                     alt="foto"
                                                     className="w-16 h-16 object-cover rounded mx-auto"
                                                 />

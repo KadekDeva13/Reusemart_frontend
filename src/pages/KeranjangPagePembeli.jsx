@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Container, Table, Button, Spinner } from "react-bootstrap";
 import { Trash2 } from "lucide-react";
+import API from "@/utils/api";
 
 const KeranjangPagePembeli = () => {
   const [keranjang, setKeranjang] = useState([]);
@@ -23,7 +23,7 @@ const KeranjangPagePembeli = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/keranjang", {
+      const res = await API.get("/api/keranjang", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -39,7 +39,7 @@ const KeranjangPagePembeli = () => {
     if (!token) return;
 
     try {
-      const res = await axios.get("http://localhost:8000/api/pembeli/profile", {
+      const res = await API.get("/api/pembeli/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -64,8 +64,8 @@ const KeranjangPagePembeli = () => {
     setRefreshing(true);
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(
-        `http://localhost:8000/api/keranjang/hapus/${idKeranjang}`,
+      await API.delete(
+        `/api/keranjang/hapus/${idKeranjang}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -101,8 +101,8 @@ const KeranjangPagePembeli = () => {
     if (selectedItems.length === 0) return;
 
     try {
-      await axios.post(
-        "http://localhost:8000/api/checkout",
+      await API.post(
+        "/api/checkout",
         {
           keranjang_ids: selectedItems,
           metode_pengiriman: metodePengiriman,

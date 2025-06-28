@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import API from "@/utils/api";
 
 const formatRupiah = (angka) => {
   return new Intl.NumberFormat("id-ID", {
@@ -13,22 +13,27 @@ const FilterKurirPage = () => {
   const [bulan, setBulan] = useState("5");
   const [tahun] = useState(new Date().getFullYear());
   const [dataBarang, setDataBarang] = useState([]);
-  co
 
   const fetchLaporanKurir = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(
-        `http://localhost:8000/api/laporan/kurir?id_kurir=${idKurir}&bulan=${bulan}&tahun=${tahun}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setDataBarang(res.data.data || []);
-    } catch (error) {
-      alert("Gagal memuat laporan pengiriman kurir.");
-    }
-  };
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await API.get("/api/laporan/kurir", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        id_kurir: idKurir,
+        bulan,
+        tahun,
+      },
+    });
+
+    setDataBarang(res.data.data || []);
+  } catch (error) {
+    alert("Gagal memuat laporan pengiriman kurir.");
+  }
+};
 
   return (
     <div className="p-4">

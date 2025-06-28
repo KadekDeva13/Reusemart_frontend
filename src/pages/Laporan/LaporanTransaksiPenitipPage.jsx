@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
-import axios from "axios";
 import LaporanTransaksiPenitipPDF from "./LaporanTransaksiPenitipPDF";
+import API from "@/utils/api";
 
 const LaporanTransaksiPenitipPage = () => {
   const [data, setData] = useState([]);
@@ -18,7 +18,7 @@ const LaporanTransaksiPenitipPage = () => {
   const fetchPenitipList = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8000/api/penitip", {
+      const res = await API.get("/api/penitip", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPenitipList(res.data.data || []);
@@ -32,8 +32,8 @@ const LaporanTransaksiPenitipPage = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(
-        `http://localhost:8000/api/laporan/transaksi-penitip/${idPenitip}/${bulan}/${tahun}`,
+      const res = await API.get(
+        `/api/laporan/transaksi-penitip/${idPenitip}/${bulan}/${tahun}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

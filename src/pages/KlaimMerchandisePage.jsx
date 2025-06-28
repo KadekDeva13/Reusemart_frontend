@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
+import API from "@/utils/api";
 
 export default function KlaimMerchandisePage() {
     const [merchandiseList, setMerchandiseList] = useState([]);
@@ -16,13 +16,13 @@ export default function KlaimMerchandisePage() {
 
         try {
             const [merchRes, userRes] = await Promise.all([
-                axios.get("http://localhost:8000/api/merchandise", {
+                API.get("/api/merchandise", {
                     headers: {
                         Accept: "application/json",
                         Authorization: `Bearer ${token}`,
                     },
                 }),
-                axios.get("http://localhost:8000/api/pembeli/profile", {
+                API.get("/api/pembeli/profile", {
                     headers: {
                         Accept: "application/json",
                         Authorization: `Bearer ${token}`,
@@ -43,7 +43,7 @@ export default function KlaimMerchandisePage() {
 
     const handleKlaim = async (id_merchandise) => {
         try {
-            await axios.post("/api/merchandise/klaim", { id_merchandise });
+            await API.post("/api/merchandise/klaim", { id_merchandise });
             toast.success("Klaim berhasil!");
             fetchData(); // refresh data
         } catch (err) {

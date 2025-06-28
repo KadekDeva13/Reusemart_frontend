@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "swiper/css";
 import "swiper/css/pagination";
+import API from "@/utils/api";
 
 export default function DetailBarangPenitipanPage() {
   const { id } = useParams();
@@ -23,7 +23,7 @@ export default function DetailBarangPenitipanPage() {
     const fetchDetail = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:8000/api/penitipan/show/${id}`, {
+        const res = await API.get(`/api/penitipan/show/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -49,8 +49,8 @@ export default function DetailBarangPenitipanPage() {
       setKonfirmasiLoading(true);
       const token = localStorage.getItem("token");
       // const konfirmasi = window.confirm("Yakin ingin mengambil barang ini?");
-      await axios.post(
-        `http://localhost:8000/api/transaksi/konfirmasi-ambil/${id}`,
+      await API.post(
+        `/api/transaksi/konfirmasi-ambil/${id}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -76,8 +76,8 @@ export default function DetailBarangPenitipanPage() {
       setPerpanjangLoading(true);
       const token = localStorage.getItem("token");
 
-      const res = await axios.post(
-        `http://localhost:8000/api/penitipan/perpanjang/${id}`,
+      const res = await API.post(
+        `/api/penitipan/perpanjang/${id}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -167,7 +167,7 @@ export default function DetailBarangPenitipanPage() {
                 <SwiperSlide key={i}>
                   <div className="flex justify-center items-center h-[450px] bg-black-100">
                     <img
-                      src={`http://localhost:8000/storage/${foto.foto_barang}`}
+                      src={`${API.defaults.baseURL}/storage/${foto.foto_barang}`}
                       alt={`Foto ${i + 1}`}
                       className="rounded max-h-full max-w-full object-contain"
                     />
@@ -185,12 +185,10 @@ export default function DetailBarangPenitipanPage() {
             {barang.foto_barang.map((foto, i) => (
               <img
                 key={i}
-                src={`http://localhost:8000/storage/${foto.foto_barang}`}
+                src={`${API.defaults.baseURL}/storage/${foto.foto_barang}`}
                 alt={`Thumb ${i + 1}`}
                 onClick={() => swiperRef.current.slideToLoop(i)}
-                className={`w-[70px] h-[70px] object-cover cursor-pointer rounded border ${i === selectedImage
-                  ? "border-blue-600 border-2"
-                  : "border-gray-300"
+                className={`w-[70px] h-[70px] object-cover cursor-pointer rounded border ${i === selectedImage ? "border-blue-600 border-2" : "border-gray-300"
                   }`}
               />
             ))}

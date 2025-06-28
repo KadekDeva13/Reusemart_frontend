@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Tab, Nav, Card, Form, Button, Row, Col, Table, Modal } from "react-bootstrap";
-import axios from "axios";
 import { toast } from "react-toastify";
+import API from "@/utils/api";
 
 export default function RequestDonasiPage() {
   const [donasiList, setDonasiList] = useState([]);
@@ -25,7 +25,7 @@ export default function RequestDonasiPage() {
 
   const fetchDonasi = async () => {
     const token = localStorage.getItem("token");
-    const res = await axios.get("http://localhost:8000/api/donasi", {
+    const res = await API.get("/api/donasi", {
       headers: { Authorization: `Bearer ${token}` },
     });
     setDonasiList(res.data);
@@ -33,7 +33,7 @@ export default function RequestDonasiPage() {
 
   const fetchOrganisasi = async () => {
     const token = localStorage.getItem("token");
-    const res = await axios.get("http://localhost:8000/api/organisasi", {
+    const res = await API.get("/api/organisasi", {
       headers: { Authorization: `Bearer ${token}` },
     });
     setOrganisasiList(res.data);
@@ -62,7 +62,7 @@ export default function RequestDonasiPage() {
         pesan_request: formData.pesan_request,
       };
 
-      const res = await axios.post("http://localhost:8000/api/donasi/", payload, {
+      const res = await API.post("/api/donasi/", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -92,7 +92,7 @@ export default function RequestDonasiPage() {
   const handleUpdate = async () => {
     const token = localStorage.getItem("token");
     try {
-      await axios.put(`http://localhost:8000/api/donasi/update/${editingId}`, formData, {
+      await API.put(`/api/donasi/update/${editingId}`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setModalMessage("Berhasil mengubah request donasi.");
@@ -116,7 +116,7 @@ export default function RequestDonasiPage() {
   const handleDelete = async () => {
     const token = localStorage.getItem("token");
     try {
-      await axios.delete(`http://localhost:8000/api/donasi/delete/${deleteId}`, {
+      await API.delete(`/api/donasi/delete/${deleteId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setModalMessage("Berhasil menghapus data.");

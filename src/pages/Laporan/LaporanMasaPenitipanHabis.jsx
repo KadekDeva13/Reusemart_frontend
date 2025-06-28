@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { pdf, PDFDownloadLink } from '@react-pdf/renderer';
 import LaporanBarangHabisPDF from './LaporanBarangHabisPDF';
+import API from '@/utils/api';
 
 const LaporanBarangHabisPage = () => {
     const [data, setData] = useState([]);
@@ -42,7 +42,7 @@ const LaporanBarangHabisPage = () => {
             if (tahun !== '') params.tahun = tahun;
             console.log("🔍 Mengirim filter:", params);
 
-            const res = await axios.get('http://localhost:8000/api/laporan/barang-penitipan-habis', {
+            const res = await API.get('/api/laporan/barang-penitipan-habis', {
                 headers: { Authorization: `Bearer ${token}` },
                 params,
             });

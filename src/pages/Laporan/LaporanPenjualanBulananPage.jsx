@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
+import API from '@/utils/api';
 import {
   Document,
   Page,
@@ -189,8 +189,8 @@ const LaporanPenjualanBulananPage = () => {
   const fetchData = async (tahunDipilih) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(
-        `http://localhost:8000/api/laporan/penjualan-bulanan?tahun=${tahunDipilih}`,
+      const res = await API.get(
+        `/api/laporan/penjualan-bulanan?tahun=${tahunDipilih}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const hasil = res.data.data || [];

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FaChartBar } from 'react-icons/fa';
-import axios from 'axios';
+import API from '@/utils/api';
 import {
   Page,
   Text,
@@ -107,7 +107,7 @@ const LaporanKategoriPage = () => {
   const fetchLaporanByTahun = async (tahun) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`http://localhost:8000/api/laporan/kategori-barang?tahun=${tahun}`, {
+      const res = await API.get(`/api/laporan/kategori-barang?tahun=${tahun}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

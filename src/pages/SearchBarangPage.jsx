@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Container } from "react-bootstrap";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "@/utils/api";
 
 export default function SearchBarangPage() {
     const [searchParams] = useSearchParams();
@@ -15,7 +15,7 @@ export default function SearchBarangPage() {
 
         const fetchData = async () => {
             try {
-                const res = await axios.get("http://localhost:8000/api/barang/search");
+                const res = await API.get("/api/barang/search");
                 const filtered = res.data.filter((barang) =>
                     barang.nama_barang.toLowerCase().startsWith(keyword.toLowerCase())
                 );
@@ -51,7 +51,7 @@ export default function SearchBarangPage() {
                                     <img
                                         src={
                                             barang.foto_barang?.[0]?.foto_barang
-                                                ? `http://localhost:8000/storage/${barang.foto_barang[0].foto_barang}`
+                                                ? `${API.defaults.baseURL}/storage/${barang.foto_barang[0].foto_barang}`
                                                 : "https://via.placeholder.com/300x300?text=No+Image"
                                         }
                                         alt={barang.nama_barang}
