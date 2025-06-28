@@ -3,6 +3,7 @@ import { Card, Row, Col, Container, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TopNavbarNonLogin from "../component/TopNavBarNonLogin";
+import API from "@/utils/api";
 
 const categories = [
   { label: "Elektronik & Gadget", icon: "https://cdn-icons-png.flaticon.com/512/1041/1041880.png" },
@@ -27,9 +28,7 @@ const HomeNonLogin = () => {
 
   const fetchBarang = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/barang/rekomendasi", {
-        withCredentials: false,
-      });
+      const res = await API.get("/api/barang/rekomendasi");
 
       console.log("Data barang:", res.data.barang);
       setBarangList(res.data.barang);
