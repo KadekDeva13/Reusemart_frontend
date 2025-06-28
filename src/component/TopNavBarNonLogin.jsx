@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
 import { Navbar, Container, Form, Button } from "react-bootstrap";
 import SearchBar from "./SearchBar";
 

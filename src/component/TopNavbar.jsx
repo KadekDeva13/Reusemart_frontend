@@ -2,8 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { Navbar, Container, Form } from "react-bootstrap";
 import { Bell, ShoppingCart, Mail } from "lucide-react";
-import axios from "axios";
 import SearchBar from "./SearchBar";
+import API from "@/utils/api";
 
 const TopNavbar = ({ onLogout }) => {
   const navigate = useNavigate();
@@ -21,8 +21,8 @@ const TopNavbar = ({ onLogout }) => {
 
     const fetchProfileImage = () => {
       if (token) {
-        axios
-          .get("http://localhost:8000/api/user", {
+        API
+          .get("/api/user", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -34,7 +34,7 @@ const TopNavbar = ({ onLogout }) => {
               const isFullUrl = image.startsWith("http");
               const url = isFullUrl
                 ? image
-                : `http://localhost:8000/storage/foto_pembeli/${image}`;
+                : `${API.defaults.baseURL}/storage/foto_pembeli/${image}`;
               setAvatarUrl(url);
             } else {
               setAvatarUrl(
@@ -69,8 +69,8 @@ const TopNavbar = ({ onLogout }) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    axios
-      .get("http://localhost:8000/api/keranjang/count", {
+    API
+      .get("/api/keranjang/count", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

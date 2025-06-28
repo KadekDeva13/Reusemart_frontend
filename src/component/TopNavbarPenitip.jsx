@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { Navbar, Container, Form } from "react-bootstrap";
 import { Bell, ShoppingCart, Mail } from 'lucide-react';
-import axios from "axios";
+import API from "@/utils/api";
 
 const TopNavbarPenitip = ({ onLogout, searchQuery, setSearchQuery }) => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const TopNavbarPenitip = ({ onLogout, searchQuery, setSearchQuery }) => {
 
     const fetchProfileImage = () => {
       if (token) {
-        axios.get("http://localhost:8000/api/user", {
+        API.get("/api/user", {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -24,7 +24,7 @@ const TopNavbarPenitip = ({ onLogout, searchQuery, setSearchQuery }) => {
           const image = data.image_user;
           if (image) {
             const isFullUrl = image.startsWith("http");
-            const url = isFullUrl ? image : `http://localhost:8000/storage/foto_penitip/${image}`;
+            const url = isFullUrl ? image : `${API.defaults.baseURL}/storage/foto_penitip/${image}`;
             setAvatarUrl(url);
           } else {
             setAvatarUrl("https://cdn-icons-png.flaticon.com/512/847/847969.png");
