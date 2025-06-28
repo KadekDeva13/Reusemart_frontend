@@ -45,9 +45,7 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const res = await API.post("/api/login", { email, password });
-      console.log("✅ Respon dari Laravel:");
-      console.log("X-Debug-CORS:", debugCors);
-      console.log("X-Laravel-Debug:", debugLaravel);
+      console.log("Respon dari Laravel:", res);
 
       const { token, role } = res.data;
 
@@ -86,6 +84,7 @@ export default function LoginPage() {
 
       fetchUser(token);
     } catch (error) {
+      console.error("LOGIN ERROR:", error);
       if (error.response?.status === 403) {
         const errData = error.response.data;
         setError(errData.message || "Akun belum memiliki role atau role tidak valid");
@@ -97,7 +96,6 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false);
     }
-
   };
 
   return (
