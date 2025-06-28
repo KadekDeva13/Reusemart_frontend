@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AlertCircle, Eye, EyeOff, ArrowRight } from "lucide-react";
+import API from "@/utils/api";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -13,15 +14,13 @@ export default function LoginPage() {
 
   const fetchUser = async (token) => {
     try {
-      const res = await fetch("http://localhost:8000/api/user", {
+      const res = await API.get("/api/user", {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
       });
 
-      if (!res.ok) throw new Error("Gagal ambil data user");
-      const userData = await res.json();
+      const userData = res.data;
       console.log("User yang login:", userData);
     } catch (err) {
       console.error("Gagal fetch user:", err);
@@ -45,25 +44,9 @@ export default function LoginPage() {
 
     setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const res = await API.post("/api/login", { email, password });
 
-      if (res.status === 403) {
-        const errData = await res.json();
-        setError(
-          errData.message || "Akun belum memiliki role atau role tidak valid"
-        );
-        toast.error("Role tidak valid!");
-        return;
-      }
-
-      if (!res.ok) throw new Error("Gagal login");
-
-      const data = await res.json();
-      const { token, role } = data;
+      const { token, role } = res.data;
 
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
@@ -99,13 +82,19 @@ export default function LoginPage() {
       }
 
       fetchUser(token);
-    // eslint-disable-next-line no-unused-vars
-    } catch (err) {
-      setError("Gagal masuk. Periksa email dan password Anda.");
-      toast.error("Login gagal!");
+    } catch (error) {
+      if (error.response?.status === 403) {
+        const errData = error.response.data;
+        setError(errData.message || "Akun belum memiliki role atau role tidak valid");
+        toast.error("Role tidak valid!");
+      } else {
+        setError("Gagal masuk. Periksa email dan password Anda.");
+        toast.error("Login gagal!");
+      }
     } finally {
       setIsLoading(false);
     }
+
   };
 
   return (
