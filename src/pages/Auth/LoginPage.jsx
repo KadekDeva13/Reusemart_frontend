@@ -45,11 +45,14 @@ export default function LoginPage() {
 
     setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const res = await fetch(
+        "https://reusemart-backend-five.vercel.app/api/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       if (res.status === 403) {
         const errData = await res.json();
@@ -99,7 +102,7 @@ export default function LoginPage() {
       }
 
       fetchUser(token);
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setError("Gagal masuk. Periksa email dan password Anda.");
       toast.error("Login gagal!");
