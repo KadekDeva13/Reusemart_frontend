@@ -121,6 +121,52 @@ const handleSubmit = async (e) => {
   e.preventDefault();
 
   const payload = new FormData();
+  const token = localStorage.getItem("token");
+
+  // mode edit
+  if (editingId) {
+    const allowedFields = [
+      "nama_lengkap",
+      "email",
+      "password",
+      "tanggal_lahir",
+      "image_user",
+    ];
+
+    for (const key of allowedFields) {
+      const value = formData[key];
+      if (value !== null && value !== "") {
+        payload.append(key, value);
+      }
+    }
+
+    payload.append("_method", "PUT");
+
+    try {
+      await API.post(`/api/penitip/update/${editingId}`, payload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      showModal(true, "Data berhasil diubah.");
+      fetchPenitip();
+      resetForm();
+      setShowEditModal(false);
+    } catch (err) {
+      console.error("Error saat update:", err);
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.errors?.[Object.keys(err.response?.data?.errors || {})[0]]?.[0] ||
+        "Terjadi kesalahan saat update.";
+      showModal(false, msg);
+    }
+
+    return;
+  }
+
+  // mode tambah
   for (const key in formData) {
     if (formData[key] !== null && formData[key] !== "") {
       payload.append(key, formData[key]);
@@ -129,44 +175,24 @@ const handleSubmit = async (e) => {
   payload.append("id_role", 3);
 
   try {
-    const endpoint = editingId
-      ? `/api/penitip/update/${editingId}?_method=PUT`
-      : "/api/penitip/register";
-
-    const token = localStorage.getItem("token");
-
-    await API.post(endpoint, payload, {
+    await API.post("/api/penitip/register", payload, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
     });
 
-    showModal(
-      true,
-      editingId ? "Data berhasil diubah." : "Data berhasil ditambahkan."
-    );
+    showModal(true, "Data berhasil ditambahkan.");
     fetchPenitip();
     resetForm();
-    setShowEditModal(false);
   } catch (err) {
-    console.error("Error submit data:", err);
-
-    // Tampilkan error validasi Laravel jika ada
-    if (err.response?.status === 422 && err.response?.data?.errors) {
-      const errors = err.response.data.errors;
-      console.table(errors); // tampilkan semua error di console
-
-      const firstError = Object.values(errors)[0]?.[0]; // ambil error pertama
-      showModal(false, firstError || "Validasi gagal.");
-    } else {
-      const msg =
-        err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.";
-      showModal(false, msg);
-    }
+    console.error("Error saat tambah:", err);
+    const msg =
+      err.response?.data?.message ||
+      err.response?.data?.errors?.[Object.keys(err.response?.data?.errors || {})[0]]?.[0] ||
+      "Terjadi kesalahan saat tambah.";
+    showModal(false, msg);
   }
-
-  resetForm();
 };
 
 

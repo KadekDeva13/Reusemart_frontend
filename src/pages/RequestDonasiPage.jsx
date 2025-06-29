@@ -8,7 +8,6 @@ export default function RequestDonasiPage() {
   const [organisasiList, setOrganisasiList] = useState([]);
   const [formData, setFormData] = useState({
     nama_barang: "",
-    kategori_barang: "",
     pesan_request: "",
   });
   const [editingId, setEditingId] = useState(null);
@@ -58,7 +57,6 @@ export default function RequestDonasiPage() {
       const token = localStorage.getItem("token");
       const payload = {
         nama_barang: formData.nama_barang,
-        kategori_barang: formData.kategori_barang,
         pesan_request: formData.pesan_request,
       };
 
@@ -72,7 +70,6 @@ export default function RequestDonasiPage() {
         toast.success("Request donasi berhasil dikirim!");
         setFormData({
           nama_barang: "",
-          kategori_barang: "",
           pesan_request: "",
         });
       }
@@ -160,7 +157,7 @@ export default function RequestDonasiPage() {
                     </Form.Group>
                   </Col>
 
-                  <Col md={6}>
+                  {/* <Col md={6}>
                     <Form.Group className="mb-3">
                       <Form.Label>Kategori Barang</Form.Label>
                       <Form.Select
@@ -182,7 +179,7 @@ export default function RequestDonasiPage() {
                         <option value="Kosmetik & Perawatan Diri">Kosmetik & Perawatan Diri</option>
                       </Form.Select>
                     </Form.Group>
-                  </Col>
+                  </Col> */}
 
                   <Col md={12}>
                     <Form.Group className="mb-3">
