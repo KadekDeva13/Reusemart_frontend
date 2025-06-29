@@ -39,8 +39,9 @@ const kategoriListMaster = [
 const LaporanPDF = ({ data, tahun, tanggalCetak }) => {
   const rowsPerPage = 25;
   const totalPages = Math.ceil(data.length / rowsPerPage);
-  const totalTerjual = data.reduce((sum, item) => sum + (item.terjual || 0), 0);
-  const totalGagal = data.reduce((sum, item) => sum + (item.gagal || 0), 0);
+const totalTerjual = data.reduce((sum, item) => sum + Number(item.terjual || 0), 0);
+const totalGagal = data.reduce((sum, item) => sum + Number(item.gagal || 0), 0);
+
 
   const pages = Array.from({ length: totalPages }, (_, pageIndex) => {
     const start = pageIndex * rowsPerPage;

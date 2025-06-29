@@ -30,9 +30,11 @@ const styles = StyleSheet.create({
 const safeText = (val) => typeof val === 'string' ? val : String(val ?? '-');
 
 const formatRupiah = (number) => {
-  if (!number && number !== 0) return '-';
-  return number.toLocaleString('id-ID');
+  const parsed = Number(number);
+  if (isNaN(parsed)) return '-';
+  return parsed.toLocaleString('id-ID');
 };
+
 
 const formatTanggalDenganJamLokal = (tanggalDb) => {
   if (!tanggalDb) return '-';
@@ -65,12 +67,11 @@ const getNamaKurir = (transaksi) => {
 
 const generateNomorNota = (transaksi) => {
   const tanggal = new Date(transaksi.created_at || Date.now());
-  const tahun = String(tanggal.getFullYear()).slice(-2); // ambil 2 digit akhir
+  const tahun = String(tanggal.getFullYear()).slice(-2);
   const bulan = String(tanggal.getMonth() + 1).padStart(2, '0');
-  const urut = String(transaksi.id_transaksi).padStart(3, '0'); // << penting!
+  const urut = String(transaksi.id_transaksi).padStart(3, '0');
   return `${tahun}.${bulan}.${urut}`;
 };
-
 
 const NotaPDF = ({ transaksiList }) => {
   if (!Array.isArray(transaksiList) || transaksiList.length === 0) {
@@ -86,7 +87,8 @@ const NotaPDF = ({ transaksiList }) => {
   return (
     <Document>
       {transaksiList.map((transaksi, index) => {
-        const itemCount = transaksi?.detailtransaksi?.length || 1;
+        const detailList = (transaksi.detailtransaksi || []).filter(dt => dt && dt.barang);
+        const itemCount = detailList.length || 1;
         const baseHeight = 430;
         const pageHeight = baseHeight + itemCount * 22;
 
@@ -98,22 +100,27 @@ const NotaPDF = ({ transaksiList }) => {
           );
         }
 
-        const totalBarang = transaksi.detailtransaksi?.reduce(
-          (sum, dt) => sum + (dt.barang?.harga_barang || 0),
+        const totalBarang = detailList.reduce(
+          (sum, dt) => sum + Number(dt.barang?.harga_barang || 0),
           0
         );
-        const ongkir = transaksi.biaya_pengiriman || 0;
-        const potongan = (transaksi.poin_digunakan || 0) * 100;
+
+        const ongkir = Number(transaksi.biaya_pengiriman || 0);
+        const potongan = Number(transaksi.poin_digunakan || 0) * 100;
         const totalAkhir = totalBarang + ongkir - potongan;
 
-const getQcName = () => {
-  for (const dt of transaksi.detailtransaksi || []) {
-    const penitipan = dt?.barang?.detailpenitipan?.penitipan;
-    const qcName = penitipan?.pegawaiqc?.nama_lengkap;
-    if (qcName) return qcName;
-  }
-  return "-";
-};
+        const getQcName = () => {
+          for (const dt of detailList) {
+            const qcName =
+              dt?.barang?.detailpenitipan?.penitipan?.pegawaiqc?.nama_lengkap;
+            if (typeof qcName === 'string' && qcName.trim() !== '') {
+              return qcName;
+            }
+          }
+          return '-';
+        };
+
+
         return (
           <Page key={index} size={[283.5, pageHeight]} style={styles.page}>
             <View style={styles.outlineBox}>
@@ -166,7 +173,7 @@ const getQcName = () => {
               </View>
 
               <View style={styles.section}>
-                {transaksi.detailtransaksi?.length > 0 ? transaksi.detailtransaksi.map((dt, i) => (
+                {detailList.length > 0 ? detailList.map((dt, i) => (
                   <View key={i} style={styles.row}>
                     <Text>{safeText(dt.barang?.nama_barang)}</Text>
                     <Text>{formatRupiah(dt.barang?.harga_barang)}</Text>
@@ -190,7 +197,6 @@ const getQcName = () => {
               <View style={styles.section}>
                 <Text>QC oleh: {safeText(getQcName())}</Text>
               </View>
-
 
               <View style={styles.section}>
                 <Text>Diterima oleh:</Text>

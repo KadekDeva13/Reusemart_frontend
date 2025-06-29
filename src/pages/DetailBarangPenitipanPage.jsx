@@ -19,82 +19,75 @@ export default function DetailBarangPenitipanPage() {
   const [perpanjangLoading, setPerpanjangLoading] = useState(false);
   const swiperRef = useRef(null);
 
-  useEffect(() => {
-    const fetchDetail = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await API.get(`/api/penitipan/show/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+ useEffect(() => {
+  fetchDetail();
+}, [id]);
 
-        setPenitipan(res.data.penitipan);
-        setBarang(res.data.barang);
-        setStatusTransaksi(res.data.status_transaksi);
-        setStatusBarang(res.data.status_barang);
-      } catch (error) {
-        console.error("Gagal memuat detail penitipan:", error);
-      } finally {
-        setLoading(false);
+const fetchDetail = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await API.get(`/api/penitipan/show/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    setPenitipan(res.data.penitipan);
+    setBarang(res.data.barang);
+    setStatusTransaksi(res.data.status_transaksi);
+    setStatusBarang(res.data.status_barang);
+  } catch (error) {
+    console.error("Gagal memuat detail penitipan:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleKonfirmasiAmbil = async () => {
+  try {
+    setKonfirmasiLoading(true);
+    const token = localStorage.getItem("token");
+
+    await API.post(
+      `/api/transaksi/konfirmasi-ambil/${id}`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
-    };
+    );
 
-    fetchDetail();
-  }, [id]);
+    alert("Barang berhasil dikonfirmasi telah diambil.");
+    fetchDetail(); // sekarang sudah bisa diakses
+  } catch (error) {
+    alert(
+      error.response?.data?.message || "Gagal mengonfirmasi pengambilan barang."
+    );
+  } finally {
+    setKonfirmasiLoading(false);
+  }
+};
 
-  const handleKonfirmasiAmbil = async () => {
-    // if (!window.confirm("Yakin ingin mengambil barang ini?")) return;
-    try {
-      setKonfirmasiLoading(true);
-      const token = localStorage.getItem("token");
-      // const konfirmasi = window.confirm("Yakin ingin mengambil barang ini?");
-      await API.post(
-        `/api/transaksi/konfirmasi-ambil/${id}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+const handlePerpanjang = async () => {
+  try {
+    setPerpanjangLoading(true);
+    const token = localStorage.getItem("token");
 
-      alert("Barang berhasil dikonfirmasi telah diambil.");
-      // eslint-disable-next-line no-undef
-      fetchDetail();
-    } catch (error) {
-      alert(
-        error.response?.data?.message || "Gagal mengonfirmasi pengambilan barang."
-      );
-    } finally {
-      setKonfirmasiLoading(false);
-    }
-  };
+    const res = await API.post(
+      `/api/penitipan/perpanjang/${id}`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
 
-  const handlePerpanjang = async () => {
-    // if (!window.confirm("Yakin ingin memperpanjang masa penitipan 30 hari?")) return;
+    alert(res.data.message || "Perpanjangan berhasil.");
+    fetchDetail(); // sekarang sudah bisa diakses
+  } finally {
+    setPerpanjangLoading(false);
+  }
+};
 
-    try {
-      setPerpanjangLoading(true);
-      const token = localStorage.getItem("token");
 
-      const res = await API.post(
-        `/api/penitipan/perpanjang/${id}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      alert(res.data.message || "Perpanjangan berhasil.");
-      // eslint-disable-next-line no-undef
-      fetchDetail();
-    } catch (error) {
-      alert(
-        error.response?.data?.message || "Gagal memperpanjang masa penitipan."
-      );
-    } finally {
-      setPerpanjangLoading(false);
-    }
-  };
 
   const renderStatusBarang = () => {
     const text = statusBarang?.toLowerCase();

@@ -25,17 +25,22 @@ const HomeNonLogin = () => {
     fetchBarang();
   }, []);
 
-  const fetchBarang = async () => {
-    try {
-      const res = await API.get("api/barang/rekomendasi", {
-        withCredentials: false,
-      });
-      console.log("Data barang:", res.data.barang);
-      setBarangList(res.data.barang);
-    } catch (error) {
-      console.error("Gagal mengambil data barang:", error);
-    }
-  };
+const fetchBarang = async () => {
+  try {
+    const res = await API.get("api/barang/rekomendasi", {
+      withCredentials: false,
+    });
+
+    console.log("Data barang:", res.data);
+    setBarangList(Array.isArray(res.data?.barang) ? res.data.barang : []);
+  } catch (error) {
+    console.error("Gagal mengambil data barang:", error);
+    setBarangList([]);
+  }
+};
+
+
+
 
   return (
     <>

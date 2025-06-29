@@ -94,7 +94,7 @@ export default function PenitipPageCS() {
       password: "",
       gender: "",
       tanggal_lahir: "",
-      komisi: 0,
+      saldo: 0,
       bonus: 0,
       foto_ktp: null,
       no_ktp: "",
@@ -117,46 +117,58 @@ export default function PenitipPageCS() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const payload = new FormData();
-    for (const key in formData) {
-      if (formData[key] !== null && formData[key] !== "") {
-        payload.append(key, formData[key]);
-      }
+  const payload = new FormData();
+  for (const key in formData) {
+    if (formData[key] !== null && formData[key] !== "") {
+      payload.append(key, formData[key]);
     }
-    payload.append("id_role", 3);
+  }
+  payload.append("id_role", 3);
 
-    try {
-  const endpoint = editingId
-    ? `/api/penitip/update/${editingId}?_method=PUT`
-    : "/api/penitip/store";
+  try {
+    const endpoint = editingId
+      ? `/api/penitip/update/${editingId}?_method=PUT`
+      : "/api/penitip/register";
 
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  await API.post(endpoint, payload, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    await API.post(endpoint, payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  showModal(
-    true,
-    editingId ? "Data berhasil diubah." : "Data berhasil ditambahkan."
-  );
-  fetchPenitip();
+    showModal(
+      true,
+      editingId ? "Data berhasil diubah." : "Data berhasil ditambahkan."
+    );
+    fetchPenitip();
+    resetForm();
+    setShowEditModal(false);
+  } catch (err) {
+    console.error("Error submit data:", err);
+
+    // Tampilkan error validasi Laravel jika ada
+    if (err.response?.status === 422 && err.response?.data?.errors) {
+      const errors = err.response.data.errors;
+      console.table(errors); // tampilkan semua error di console
+
+      const firstError = Object.values(errors)[0]?.[0]; // ambil error pertama
+      showModal(false, firstError || "Validasi gagal.");
+    } else {
+      const msg =
+        err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.";
+      showModal(false, msg);
+    }
+  }
+
   resetForm();
-  setShowEditModal(false);
-} catch (err) {
-  console.error("Error submit data:", err);
-  const msg =
-    err.response?.data?.message || "Terjadi kesalahan saat menyimpan data.";
-  showModal(false, msg);
-}
-resetForm();
 };
+
 
   const handleEdit = async (item) => {
     setFormData({
@@ -352,15 +364,12 @@ resetForm();
                   </Col>
 
                   <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Gender</Form.Label>
-                      <Form.Control
-                        name="gender"
-                        value={formData.gender}
-                        type="text"
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
+                    <Form.Select name="gender" value={formData.gender} onChange={handleInputChange}>
+                      <option value="">Pilih</option>
+                      <option value="L">Laki-laki</option>
+                      <option value="P">Perempuan</option>
+                    </Form.Select>
+
 
                     <Form.Group className="mb-3">
                       <Form.Label>Tanggal Lahir</Form.Label>
@@ -373,14 +382,15 @@ resetForm();
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                      <Form.Label>Komisi</Form.Label>
+                      <Form.Label>Saldo</Form.Label>
                       <Form.Control
-                        name="komisi"
-                        value={formData.komisi}
+                        name="saldo"
+                        value={formData.saldo}
                         type="number"
                         onChange={handleInputChange}
                       />
                     </Form.Group>
+
 
                     <Form.Group className="mb-3">
                       <Form.Label>Bonus</Form.Label>

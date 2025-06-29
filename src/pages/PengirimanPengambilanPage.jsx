@@ -12,7 +12,6 @@ export default function PengirimanPengambilanPage() {
   useEffect(() => {
     fetchJadwal();
   }, []);
-  
 
   const fetchJadwal = async () => {
     try {
@@ -21,7 +20,6 @@ export default function PengirimanPengambilanPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTransaksiList(res.data || []);
-      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       setAlert({ show: true, message: "Gagal memuat data.", variant: "danger" });
     } finally {
@@ -74,92 +72,76 @@ export default function PengirimanPengambilanPage() {
                 <th className="w-[25%] border border-gray-300 px-3 py-3">Jenis Pengiriman</th>
                 <th className="w-[20%] border border-gray-300 px-3 py-3">Status transaksi</th>
                 <th className="w-[25%] border border-gray-300 px-3 py-3">Aksi</th>
-                <th className="w-[25%] border border-gray-300 px-3 py-3">status pengiriman</th>
+                <th className="w-[25%] border border-gray-300 px-3 py-3">Status Pengiriman</th>
               </tr>
             </thead>
             <tbody className="bg-white text-center">
               {transaksiList.length > 0 ? (
-                transaksiList.map((trx, index) => (
-                  <tr key={trx.id_transaksi}>
-                    <td className="border border-gray-300 px-3 py-2">{trx.id_transaksi}</td>
-                    <td className="border border-gray-300 px-3 py-2">{trx.pembeli?.nama_lengkap || "-"}</td>
-                    <td className="border border-gray-300 px-3 py-2">{trx.jenis_pengiriman}</td>
-                    <td className="border border-gray-300 px-3 py-2">
-                      <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                        {trx.status_transaksi}
-                      </span>
-                    </td>
-                    <td className="border border-gray-300 px-3 py-2 space-x-2">
-                      {trx.jenis_pengiriman?.toLowerCase() === "kurir" && (
-                        <button
-                          className={`text-white text-sm font-semibold px-3 py-1 rounded ${trx.status_transaksi === "dikirim"
-                              ? "bg-gray-400 cursor-not-allowed"
-                              : "bg-yellow-400 hover:bg-yellow-500"
+                transaksiList.map((trx, index) => {
+                  const jenis = trx.jenis_pengiriman?.toLowerCase() || "";
+                  const isKurir = jenis.includes("kurir");
+                  const isAmbil = jenis.includes("ambil");
+
+                  return (
+                    <tr key={trx.id_transaksi}>
+                      <td className="border border-gray-300 px-3 py-2">{trx.id_transaksi}</td>
+                      <td className="border border-gray-300 px-3 py-2">{trx.pembeli?.nama_lengkap || "-"}</td>
+                      <td className="border border-gray-300 px-3 py-2">{trx.jenis_pengiriman}</td>
+                      <td className="border border-gray-300 px-3 py-2">
+                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                          {trx.status_transaksi}
+                        </span>
+                      </td>
+                      <td className="border border-gray-300 px-3 py-2 space-x-2">
+                        {isKurir && (
+                          <button
+                            className={`text-white text-sm font-semibold px-3 py-1 rounded ${
+                              ["dikirim", "kurir sedang mengirim"].includes(trx.status_transaksi)
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-yellow-400 hover:bg-yellow-500"
                             }`}
-                          onClick={() => {
-                            if (trx.status_transaksi !== "dikirim") {
-                              handleOpenModalKurir(trx);
-                            }
-                          }}
-                          disabled={trx.status_transaksi === "belum selesai"}
-                        >
-                          {trx.status_transaksi === "dikirim"
-                            ? new Date(trx.tanggal_dikirim).toLocaleDateString("id-ID")
-                            : "Jadwalkan Kurir"}
-                        </button>
-                      )}
+                            onClick={() => {
+                              if (!["dikirim", "kurir sedang mengirim"].includes(trx.status_transaksi)) {
+                                handleOpenModalKurir(trx);
+                              }
+                            }}
+                            disabled={trx.status_transaksi === "belum selesai"}
+                          >
+                            {trx.status_transaksi === "dikirim"
+                              ? new Date(trx.tanggal_dikirim).toLocaleDateString("id-ID")
+                              : "Jadwalkan Kurir"}
+                          </button>
+                        )}
 
-                      {trx.jenis_pengiriman?.toLowerCase() === "kurir" && (
-                        <button
-                          className={`text-white text-sm font-semibold px-3 py-1 rounded ${
-                            trx.status_transaksi === "kurir sedang mengirim"
-                              ? "bg-gray-400 cursor-not-allowed"
-                              : "bg-yellow-400 hover:bg-yellow-500"
-                          }`}
-                          onClick={() => {
-                            if (trx.status_transaksi !== "belum selesai") {
-                              handleOpenModalKurir(trx);
-                            }
-                          }}
-                          disabled={trx.status_transaksi === "belum selesai"}
-                        >
-                          {trx.status_transaksi === "belum selesai"
-                            ? "belum selesai"
-                            : "Jadwalkan Kurir"}
-                        </button>
-                      )}
-
-                      {trx.jenis_pengiriman?.toLowerCase() === "ambil" && (
-                        <button
-                          className={`text-white text-sm font-semibold px-3 py-1 rounded ${
-                            trx.status_transaksi === "disiapkan"
-                              ? "bg-gray-400 cursor-not-allowed"
-                              : "bg-green-600 hover:bg-green-700"
-                          }`}
-                          onClick={() => {
-                            if (trx.status_transaksi !== "") {
-                              handleJadwalkanAmbilSendiri(trx);
-                            }
-                          }}
-                          disabled={trx.status_transaksi === "belum selesai"}
-                        >
-                          {trx.status_transaksi === "disiapkan"
-                            ? "disiapkan"
-                            : "Jadwalkan Ambil"}
-                        </button>
-                      )}
-
-                    </td>
-                    <td>
-                       <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                        {trx.status_pengiriman}
-                      </span>
-                    </td>
-                  </tr>
-                ))
+                        {isAmbil && (
+                          <button
+                            className={`text-white text-sm font-semibold px-3 py-1 rounded ${
+                              trx.status_transaksi === "disiapkan"
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-green-600 hover:bg-green-700"
+                            }`}
+                            onClick={() => {
+                              if (trx.status_transaksi !== "") {
+                                handleJadwalkanAmbilSendiri(trx);
+                              }
+                            }}
+                            disabled={trx.status_transaksi === "belum selesai"}
+                          >
+                            {trx.status_transaksi === "disiapkan" ? "disiapkan" : "Jadwalkan Ambil"}
+                          </button>
+                        )}
+                      </td>
+                      <td>
+                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                          {trx.status_pengiriman}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
-                  <td colSpan="5" className="text-center border border-gray-300 py-3 text-gray-600">
+                  <td colSpan="6" className="text-center border border-gray-300 py-3 text-gray-600">
                     Tidak ada transaksi untuk dijadwalkan.
                   </td>
                 </tr>
