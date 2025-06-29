@@ -98,13 +98,19 @@ export default function RegisterPage() {
       formPayload.append("password", formData.password);
       formPayload.append("image_user", userImage);
 
-      const res = await API.post("/api/register", formPayload);
+      const res = await API.post("/api/register", formPayload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       toast.success("Registrasi berhasil! Silahkan login.");
       navigate("/");
     } catch (err) {
       const message =
-        err.response?.data?.errors?.[Object.keys(err.response.data.errors || {})[0]]?.[0] ||
+        err.response?.data?.errors?.[
+          Object.keys(err.response.data.errors || {})[0]
+        ]?.[0] ||
         err.response?.data?.message ||
         "Registrasi gagal";
 
@@ -113,7 +119,6 @@ export default function RegisterPage() {
     } finally {
       setIsLoading(false);
     }
-
   };
 
   return (
@@ -164,11 +169,16 @@ export default function RegisterPage() {
                           )}
                         </div>
                         <Form.Group controlId="userImage">
-                          <Form.Label className="btn btn-sm btn-outline-secondary mt-1">
+                          <Form.Label
+                            className="btn btn-sm btn-outline-secondary mt-1"
+                            htmlFor="userImageInput"
+                          >
                             {imagePreview ? "Ganti Foto" : "Unggah Foto"}
                           </Form.Label>
                           <Form.Control
+                            id="userImageInput"
                             type="file"
+                            name="image_user"
                             accept="image/*"
                             onChange={handleImageChange}
                             style={{ display: "none" }}
@@ -208,7 +218,7 @@ export default function RegisterPage() {
                   </Row>
 
                   <Row>
-                    <Col md={6} className="mb-3" >
+                    <Col md={6} className="mb-3">
                       <Form.Group>
                         <Form.Label>Email</Form.Label>
                         <Form.Control
