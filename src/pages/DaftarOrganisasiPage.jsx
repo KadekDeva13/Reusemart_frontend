@@ -3,9 +3,6 @@ import React, { useState, useEffect } from "react";
 import ModalDetailOrganisasi from "../components/ModalDetailOrganisasi";
 import API from "@/utils/api";
 
-
-
-
 const DaftarOrganisasiPage = () => {
   const [organisasiList, setOrganisasiList] = useState([]);
   const [search, setSearch] = useState("");
@@ -53,7 +50,9 @@ const DaftarOrganisasiPage = () => {
         },
         {
           headers: {
-             Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
           },
         }
       );
