@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 
 import ModalDetailOrganisasi from "../components/ModalDetailOrganisasi";
 import API from "@/utils/api";
-import { head } from "framer-motion/dist/types/client";
+
+
+
 
 const DaftarOrganisasiPage = () => {
   const [organisasiList, setOrganisasiList] = useState([]);
@@ -39,6 +41,7 @@ const DaftarOrganisasiPage = () => {
 
   const handleEdit = async (formData) => {
     try {
+      const token = localStorage.getItem("token");
       const res = await API.put(
         `/api/organisasi/update/${formData.id_organisasi}`,
         {
@@ -50,7 +53,7 @@ const DaftarOrganisasiPage = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+             Authorization: `Bearer ${token}`,
           },
         }
       );
