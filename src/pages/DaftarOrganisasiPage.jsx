@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import ModalDetailOrganisasi from "../components/ModalDetailOrganisasi";
 import API from "@/utils/api";
+import { head } from "framer-motion/dist/types/client";
 
 const DaftarOrganisasiPage = () => {
   const [organisasiList, setOrganisasiList] = useState([]);
@@ -37,24 +38,31 @@ const DaftarOrganisasiPage = () => {
   };
 
   const handleEdit = async (formData) => {
-  try {
-    const res = await API.put(`/api/organisasi/update/${formData.id_organisasi}`, {
-      nama_organisasi: formData.nama_organisasi,
-      nama_penerima: formData.nama_penerima,
-      email: formData.email,
-      no_telepon: formData.no_telepon,
-      alamat: formData.alamat,
-    });
+    try {
+      const res = await API.put(
+        `/api/organisasi/update/${formData.id_organisasi}`,
+        {
+          nama_organisasi: formData.nama_organisasi,
+          nama_penerima: formData.nama_penerima,
+          email: formData.email,
+          no_telepon: formData.no_telepon,
+          alamat: formData.alamat,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
-    console.log(res.data.message);
-    fetchOrganisasi();
-    setShowModal(false);
-  } catch (error) {
-    console.error("Gagal update data organisasi", error);
-    alert("Terjadi kesalahan saat menyimpan data.");
-  }
-};
-
+      console.log(res.data.message);
+      fetchOrganisasi();
+      setShowModal(false);
+    } catch (error) {
+      console.error("Gagal update data organisasi", error);
+      alert("Terjadi kesalahan saat menyimpan data.");
+    }
+  };
 
   const handleDelete = async (id) => {
     const konfirmasi = window.confirm("Yakin ingin menghapus organisasi ini?");
@@ -98,12 +106,15 @@ const DaftarOrganisasiPage = () => {
       >
         <thead className="bg-green-100 font-semibold text-gray-700">
           <tr>
-            <th className="w-[5%] border border-gray-300 px-3 py-3">Nama Organisasi</th>
-            <th className="w-[10%] border border-gray-300 px-3 py-3">Nomor Telepon</th>
+            <th className="w-[5%] border border-gray-300 px-3 py-3">
+              Nama Organisasi
+            </th>
+            <th className="w-[10%] border border-gray-300 px-3 py-3">
+              Nomor Telepon
+            </th>
             <th className="w-[25%] border border-gray-300 px-3 py-3">
               Detail Organisasi
             </th>
-          
           </tr>
         </thead>
         <tbody>
