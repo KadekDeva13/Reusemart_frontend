@@ -26,13 +26,13 @@ const GudangSidebar = () => {
                 <h2 className="text-center font-bold text-xl py-4 border-b border-gray-700">Reusemart Gudang</h2>
 
                 {/* MENU UTAMA */}
-                <div
+                {/* <div
                     className={`flex items-center px-4 py-2 cursor-pointer font-semibold hover:bg-[#2c2d2f] ${activePage === '/user/gudang' ? 'bg-[#798248]' : ''}`}
                     onClick={() => navigate("/user/gudang")}
                 >
                     <FaTachometerAlt className="mr-3" />
                     Dashboard
-                </div>
+                </div> */}
 
                 {/* MENU PENITIPAN */}
                 <div

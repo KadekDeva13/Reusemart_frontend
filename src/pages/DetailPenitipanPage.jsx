@@ -161,7 +161,7 @@ function DetailPenitipanPage() {
                                             <th className="py-3 border">Kategori</th>
                                             <th className="py-3 border">Harga</th>
                                             <th className="py-3 border">Status</th>
-                                            <th className="py-3 border">Foto Utama</th>
+                                            <th className="py-3 border">Foto</th>
                                             <th className="py-3 border"></th>
                                         </tr>
                                     </thead>

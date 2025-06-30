@@ -80,7 +80,7 @@ const OwnerSidebar = () => {
               { label: "Laporan Donasi Barang", path: "laporan-donasi-barang" },
               { label: "Laporan Request Donasi", path: "laporan-request-donasi" },
               { label: "Laporan Transaksi Penitip", path: "laporan-transaksi-penitip" },
-              { label: "Filter Kurir", path: "filter-kurir" },
+              // { label: "Filter Kurir", path: "filter-kurir" },
             ].map((item) => (
               <div
                 key={item.path}
